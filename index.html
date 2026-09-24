@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="济海追风 · 哈尔滨工程大学智能科学与工程学院——硬件培训学习视频导航">
+<title>济海追风 · 硬件培训学习导航</title>
+<link rel="icon" type="image/png" href="assets/heu-emblem.png">
+<style>
+  :root{
+    --bg0:#060b17; --bg1:#0a1428;
+    --panel:rgba(148,190,255,.06);
+    --panel-hi:rgba(148,190,255,.1);
+    --line:rgba(148,190,255,.16);
+    --txt:#e8f1ff; --sub:#9db1d6;
+    --blue:#3f8cff; --cyan:#4fd6ff; --deep:#0b3d91;
+    --grad:linear-gradient(135deg,#5fb0ff,#3f8cff 55%,#1c55c4);
+    --ok:#4ade80;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei","Source Han Sans SC",system-ui,sans-serif;
+    color:var(--txt); line-height:1.6; overflow-x:hidden;
+    background:
+      radial-gradient(1100px 520px at 85% -120px, rgba(63,140,255,.20), transparent 62%),
+      radial-gradient(900px 520px at -10% 28%, rgba(79,214,255,.10), transparent 60%),
+      radial-gradient(800px 600px at 108% 78%, rgba(28,85,196,.14), transparent 60%),
+      linear-gradient(180deg,#070d1c,#060a15 45%,#081021);
+    background-attachment:fixed;
+  }
+  /* 电路网格底纹 */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(148,190,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,190,255,.05) 1px, transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%);
+            mask-image:radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%);
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  ::selection{background:rgba(63,140,255,.4)}
+  ::-webkit-scrollbar{width:10px;height:8px}
+  ::-webkit-scrollbar-thumb{background:rgba(93,158,255,.25);border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+
+  /* ============ 顶栏 ============ */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(7,13,28,.74);
+    backdrop-filter:blur(16px) saturate(1.4);
+    -webkit-backdrop-filter:blur(16px) saturate(1.4);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:18px}
+  .brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .brand img{height:38px;width:auto;filter:drop-shadow(0 0 7px rgba(79,214,255,.32));transition:filter .25s}
+  .brand:hover img{filter:drop-shadow(0 0 13px rgba(79,214,255,.6))}
+  .brand-text strong{display:block;font-size:16px;letter-spacing:2px}
+  .brand-text span{display:block;font-size:11px;color:var(--sub);letter-spacing:3px;margin-top:1px}
+  .topnav{margin-left:auto;display:flex;gap:2px}
+  .topnav a{padding:8px 13px;border-radius:9px;font-size:13.5px;color:var(--sub);transition:.2s}
+  .topnav a:hover{color:var(--txt);background:var(--panel-hi)}
+  .topnav a.active{color:#fff;background:rgba(93,158,255,.16)}
+  .top-cta{
+    flex-shrink:0;font-size:13.5px;font-weight:700;padding:9px 18px;color:#fff;
+    background:var(--grad);
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);
+    transition:.2s;
+  }
+  .top-cta:hover{filter:brightness(1.18)}
+
+  /* ============ Hero ============ */
+  .hero{position:relative;padding:92px 24px 66px;overflow:hidden}
+  .hero-inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:9px;padding:7px 15px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel);font-size:12.5px;color:var(--sub);letter-spacing:1px;
+  }
+  .hero-badge i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 2.4s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .hero h1{font-size:clamp(38px,5.2vw,62px);line-height:1.16;letter-spacing:1px;margin:20px 0 16px;font-weight:900}
+  .hero h1 em{
+    font-style:normal;
+    background:linear-gradient(100deg,#7cc4ff 10%,#3f8cff 45%,#4fd6ff 90%);
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    animation:shine 5.5s linear infinite;
+  }
+  .hero-copy p{font-size:15.5px;color:var(--sub);max-width:560px;line-height:2}
+  .hero-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 26px;border-radius:10px;font-size:15px;font-weight:700;transition:.2s;cursor:pointer;
+  }
+  .btn-primary{
+    color:#fff;background:var(--grad);
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);
+    box-shadow:0 10px 28px -10px rgba(63,140,255,.6);
+  }
+  .btn-primary:hover{filter:brightness(1.15);transform:translateY(-2px)}
+  .btn-ghost{color:var(--txt);border:1px solid var(--line);background:var(--panel)}
+  .btn-ghost:hover{border-color:rgba(93,158,255,.5);background:var(--panel-hi);transform:translateY(-2px)}
+  .hero-stats{display:flex;gap:38px;margin-top:42px}
+  .hero-stats>div{position:relative;padding-left:16px}
+  .hero-stats>div::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--grad)}
+  .hero-stats b{font-size:30px;font-weight:800;font-family:Consolas,monospace}
+  .hero-stats span{display:block;font-size:12.5px;color:var(--sub);margin-top:2px;letter-spacing:1px}
+
+  .hero-visual{position:relative;display:flex;flex-direction:column;align-items:center;gap:30px;min-width:0}
+  .streak{position:absolute;height:2px;width:300px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(79,214,255,.75),transparent);animation:slide 4.5s ease-in-out infinite}
+  .streak.s1{top:24px;right:-20px}
+  .streak.s2{bottom:36px;left:-30px;animation-delay:2.2s}
+  @keyframes slide{0%,100%{opacity:0;transform:translateX(40px)}50%{opacity:.9;transform:translateX(-30px)}}
+  .emblem-wrap{position:relative;width:min(238px,56vw);flex-shrink:0}
+  .emblem-wrap::before{
+    content:"";position:absolute;inset:-15px;border-radius:50%;
+    border:1.5px dashed rgba(93,158,255,.5);animation:spin 28s linear infinite;
+  }
+  .emblem-wrap::after{
+    content:"";position:absolute;top:-19px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;
+    background:var(--cyan);box-shadow:0 0 14px var(--cyan);
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .emblem{width:100%;border-radius:50%;
+    box-shadow:0 0 0 1px rgba(148,190,255,.2),0 26px 70px -20px rgba(63,140,255,.55);}
+  .logo-stage{position:relative;padding:28px 36px;
+    transform:rotate(-2.5deg);transition:transform .5s cubic-bezier(.2,.7,.3,1.25)}
+  .logo-stage:hover{transform:rotate(0deg) translateY(-5px)}
+  .ls-glow{position:absolute;inset:-6%;border-radius:26px;
+    background:radial-gradient(60% 70% at 50% 55%,rgba(63,140,255,.24),rgba(79,214,255,.09) 55%,transparent 75%);
+    filter:blur(6px);animation:lsGlow 4.5s ease-in-out infinite}
+  @keyframes lsGlow{50%{opacity:.55;transform:scale(1.045)}}
+  .hero-logo{position:relative;width:min(470px,100%);z-index:1;
+    filter:drop-shadow(-12px 0 14px rgba(79,214,255,.28)) drop-shadow(0 0 16px rgba(79,214,255,.38)) drop-shadow(0 18px 38px rgba(0,0,0,.55));
+    -webkit-box-reflect:below 6px linear-gradient(transparent 62%,rgba(255,255,255,.17))}
+  .ls-sweep{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none;border-radius:26px}
+  .ls-sweep::before{content:"";position:absolute;top:-20%;bottom:-20%;width:34%;left:-50%;transform:skewX(-18deg);
+    background:linear-gradient(90deg,transparent,rgba(160,220,255,.15) 45%,rgba(225,245,255,.3) 50%,rgba(160,220,255,.15) 55%,transparent);
+    animation:lsSweep 5.2s ease-in-out infinite}
+  @keyframes lsSweep{0%,55%{left:-50%}88%,100%{left:118%}}
+  .ls-corner{position:absolute;width:22px;height:22px;z-index:3;border:0 solid rgba(126,196,255,.8);
+    filter:drop-shadow(0 0 6px rgba(79,214,255,.55))}
+  .ls-corner.tl{top:0;left:0;border-top-width:2px;border-left-width:2px;border-top-left-radius:9px}
+  .ls-corner.tr{top:0;right:0;border-top-width:2px;border-right-width:2px;border-top-right-radius:9px}
+  .ls-corner.bl{bottom:0;left:0;border-bottom-width:2px;border-left-width:2px;border-bottom-left-radius:9px}
+  .ls-corner.br{bottom:0;right:0;border-bottom-width:2px;border-right-width:2px;border-bottom-right-radius:9px}
+  .ls-dashes{position:absolute;left:-14%;top:16%;bottom:16%;width:60%;z-index:0;pointer-events:none}
+  .ls-dashes i{position:absolute;height:2.5px;border-radius:2px;opacity:0;
+    background:linear-gradient(90deg,transparent,rgba(126,196,255,.85),transparent);
+    animation:dashFly 2.6s linear infinite}
+  .ls-dashes i:nth-child(1){top:10%;left:-4%;width:36%;animation-duration:2.2s}
+  .ls-dashes i:nth-child(2){top:28%;left:-16%;width:48%;animation-delay:.5s;animation-duration:2.9s}
+  .ls-dashes i:nth-child(3){top:46%;left:-8%;width:30%;animation-delay:1.1s;animation-duration:2.4s}
+  .ls-dashes i:nth-child(4){top:63%;left:-20%;width:54%;animation-delay:.25s;animation-duration:3.1s}
+  .ls-dashes i:nth-child(5){top:79%;left:-6%;width:27%;animation-delay:1.6s;animation-duration:2.5s}
+  .ls-dashes i:nth-child(6){top:55%;left:2%;width:19%;animation-delay:2s;animation-duration:2.1s}
+  @keyframes dashFly{0%{transform:translateX(52px);opacity:0}18%{opacity:.85}70%{opacity:.45}100%{transform:translateX(-78px);opacity:0}}
+  .ls-sparks{position:absolute;right:-9%;top:30%;bottom:22%;width:30%;z-index:0;pointer-events:none}
+  .ls-sparks i{position:absolute;border-radius:50%;width:5px;height:5px;background:#c8ecff;opacity:0;
+    box-shadow:0 0 10px 2px rgba(126,196,255,.85);animation:sparkFly 2.8s ease-out infinite}
+  .ls-sparks i:nth-child(1){right:6%;top:22%;animation-delay:0s}
+  .ls-sparks i:nth-child(2){right:0;top:52%;animation-delay:.9s;width:4px;height:4px}
+  .ls-sparks i:nth-child(3){right:12%;top:80%;animation-delay:1.8s;width:3.5px;height:3.5px}
+  @keyframes sparkFly{0%{transform:translateX(0) scale(1);opacity:0}15%{opacity:.95}100%{transform:translateX(96px) scale(.6);opacity:0}}
+  @media (max-width:640px){
+    .logo-stage{padding:20px 22px}
+    .hero-logo{width:min(380px,84vw)}
+    .ls-dashes{left:-8%;width:44%}
+    .ls-sparks{right:-4%}
+  }
+
+  /* ============ 通用节标题 ============ */
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .sec-head h2{font-size:23px;letter-spacing:1px}
+  .sec-head h2 small{font-size:12px;font-weight:600;letter-spacing:3px;color:var(--cyan);display:block;margin-bottom:6px}
+  .sec-head .tip{font-size:13px;color:var(--sub);max-width:520px}
+
+  /* ============ 学习路线 ============ */
+  .roadmap{padding:34px 0 8px}
+  .steps{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}
+  .steps a{
+    position:relative;display:block;height:100%;padding:16px 15px;border-radius:12px;
+    border:1px solid var(--line);background:var(--panel);transition:.25s;
+  }
+  .steps a:hover{transform:translateY(-4px);border-color:rgba(93,158,255,.55);background:var(--panel-hi);
+    box-shadow:0 16px 34px -16px rgba(63,140,255,.45)}
+  .steps li:not(:last-child) a::after{
+    content:"›";position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+    color:rgba(93,158,255,.7);font-size:20px;font-weight:700;z-index:2;
+  }
+  .steps .num{font-size:12px;font-weight:800;letter-spacing:2px;font-family:Consolas,monospace;
+    background:linear-gradient(100deg,#7cc4ff,#4fd6ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .steps b{display:block;font-size:15.5px;margin:7px 0 4px}
+  .steps span{font-size:12px;color:var(--sub)}
+
+  /* ============ 资源库 ============ */
+  .library{padding:30px 0 46px}
+  .toolbar{
+    position:sticky;top:64px;z-index:40;margin:22px 0 10px;padding:12px 14px;border-radius:12px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    background:rgba(7,13,28,.82);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);
+  }
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    white-space:nowrap;padding:7px 15px;border-radius:999px;border:1px solid var(--line);
+    background:transparent;color:var(--sub);font-size:13px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:7px;
+  }
+  .chip i{width:7px;height:7px;border-radius:50%;background:var(--c,#3f8cff)}
+  .chip:hover{color:var(--txt);border-color:rgba(93,158,255,.5)}
+  .chip.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 16px -6px rgba(63,140,255,.6)}
+  .chip.on i{background:#fff}
+  .search{position:relative;flex:1;min-width:210px;max-width:340px;margin-left:auto}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--sub)}
+  .search input{
+    width:100%;padding:10px 14px 10px 36px;border-radius:10px;font-size:13.5px;color:var(--txt);
+    background:rgba(6,11,26,.6);border:1px solid var(--line);outline:none;transition:.2s;font-family:inherit;
+  }
+  .search input::placeholder{color:rgba(157,177,214,.6)}
+  .search input:focus{border-color:rgba(79,214,255,.6);box-shadow:0 0 0 3px rgba(79,214,255,.12)}
+  .count{font-size:12.5px;color:var(--sub);flex-shrink:0}
+
+  .cat-section{margin:36px 0 50px;scroll-margin-top:150px}
+  .cat-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .ico-box{
+    width:46px;height:46px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;
+    color:var(--ac);background:var(--ac-soft);border:1px solid var(--ac-bd);
+  }
+  .ico-box svg{width:22px;height:22px}
+  .cat-head h3{font-size:20px;letter-spacing:1px}
+  .cat-head h3 small{font-size:11.5px;font-weight:600;letter-spacing:3px;color:var(--sub);margin-left:10px}
+  .cat-desc{width:100%;font-size:13.5px;color:var(--sub);margin-top:-6px;padding-left:60px}
+  .prog{margin-left:auto;font-size:12.5px;color:var(--sub);font-family:Consolas,monospace}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px;margin-top:20px}
+  .vcard{
+    position:relative;display:flex;flex-direction:column;gap:10px;overflow:hidden;
+    padding:18px 18px 16px;border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(148,190,255,.075),rgba(148,190,255,.025));
+    border:1px solid var(--line);
+    transition:transform .25s,border-color .25s,box-shadow .25s;
+  }
+  .vcard::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:2.5px;
+    background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.55;transition:.25s;
+  }
+  .vcard:hover{transform:translateY(-5px);border-color:var(--ac-bd);box-shadow:0 20px 44px -20px var(--ac-sh)}
+  .vcard:hover::before{opacity:1}
+  .vcard.done{border-color:rgba(74,222,128,.4)}
+  .v-top{display:flex;align-items:center;gap:11px}
+  .v-ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--ac);background:var(--ac-soft);flex-shrink:0}
+  .v-ico svg{width:17px;height:17px}
+  .v-plat{margin-left:auto;font-size:11px;color:var(--sub);padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(4,8,20,.45)}
+  .vt{font-size:16px;font-weight:700;line-height:1.5}
+  .vcard.done .vt{color:var(--sub);text-decoration:line-through;text-decoration-color:rgba(148,190,255,.5);text-decoration-thickness:1.5px}
+  .flag{
+    display:inline-block;vertical-align:2px;margin-left:7px;padding:1.5px 8px;border-radius:999px;
+    font-size:10.5px;font-weight:600;color:#ffce7a;border:1px solid rgba(255,159,67,.4);background:rgba(255,159,67,.1);
+  }
+  .vd{font-size:13.2px;color:var(--sub);line-height:1.85;flex-grow:1}
+  .v-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .v-tags span{font-size:11px;color:var(--sub);padding:2.5px 9px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+  .v-foot{display:flex;align-items:center;gap:10px;margin-top:2px}
+  .btn-go{
+    flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:10.5px 0;border-radius:9px;font-size:13.5px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,#3f8cff,#2257d6);
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%);
+    transition:.2s;
+  }
+  .btn-go:hover{filter:brightness(1.2)}
+  .btn-go svg{width:12px;height:12px}
+  .btn-done{
+    width:40px;height:40px;border-radius:9px;border:1px solid var(--line);background:var(--panel);
+    color:var(--sub);display:grid;place-items:center;cursor:pointer;transition:.2s;flex-shrink:0;
+  }
+  .btn-done svg{width:16px;height:16px}
+  .btn-done:hover{border-color:rgba(74,222,128,.55);color:var(--ok)}
+  .vcard.done .btn-done{background:rgba(74,222,128,.16);border-color:rgba(74,222,128,.55);color:var(--ok)}
+
+  .empty{text-align:center;padding:80px 0;color:var(--sub)}
+  .empty b{display:block;font-size:17px;color:var(--txt);margin-bottom:8px}
+
+  footer .foot-note{font-size:12px;color:rgba(157,177,214,.75);margin-top:14px}
+
+  /* ============ 回到顶部 ============ */
+  #toTop{
+    position:fixed;right:26px;bottom:26px;z-index:60;width:50px;height:50px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(10,20,40,.8);backdrop-filter:blur(10px);
+    color:var(--sub);display:grid;place-items:center;cursor:pointer;
+    opacity:0;pointer-events:none;transform:translateY(12px);transition:.3s;
+  }
+  #toTop svg{width:19px;height:19px}
+  #toTop.show{opacity:1;pointer-events:auto;transform:none}
+  #toTop:hover{color:#fff;border-color:rgba(93,158,255,.6)}
+
+  /* ============ 入场动画 ============ */
+  .rv{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.2,.7,.3,1),transform .6s cubic-bezier(.2,.7,.3,1)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ============ 校园元素背景装饰 ============ */
+  .hero{padding-bottom:200px}
+  .hero .hero-inner{position:relative;z-index:1}
+  .bg-year{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:0;
+    font-family:Consolas,monospace;font-weight:900;line-height:1;
+    font-size:clamp(110px,19vw,250px);letter-spacing:.06em;white-space:nowrap;
+    color:transparent;-webkit-text-stroke:1.5px rgba(122,168,255,.10);
+    -webkit-mask-image:linear-gradient(180deg,#000 25%,transparent 92%);
+            mask-image:linear-gradient(180deg,#000 25%,transparent 92%);
+    pointer-events:none;user-select:none;
+  }
+  .skyline{
+    position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);
+    height:185px;z-index:0;opacity:.85;pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  }
+  footer{position:relative;overflow:hidden}
+  footer > *{position:relative;z-index:1}
+  .bg-emblem{
+    position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
+    width:540px;max-width:85vw;opacity:.05;pointer-events:none;z-index:0;
+  }
+  .waves{position:absolute;left:0;right:0;bottom:0;height:140px;overflow:hidden;pointer-events:none;z-index:0;opacity:.6}
+  .waves svg{position:absolute;bottom:-2px;left:0;width:200%;height:100%;animation:drift 18s linear infinite}
+  .waves svg.w2{opacity:.6;animation-duration:30s;animation-direction:reverse}
+  @keyframes drift{to{transform:translateX(-50%)}}
+  @media (max-width:1020px){
+    .skyline{height:140px;opacity:.55}
+    .hero{padding-bottom:150px}
+  }
+  @media (max-width:640px){
+    .bg-year{font-size:120px;top:6px}
+  }
+
+  /* ============ 竞赛专区特色样式 ============ */
+  .cat-section.featured{position:relative;padding:24px 22px 26px;border-radius:16px;margin-top:46px;
+    background:linear-gradient(180deg,rgba(255,92,92,.075),rgba(255,92,92,.015));
+    border:1px solid rgba(255,92,92,.3)}
+  .cat-section.featured::before{content:"";position:absolute;top:-1px;left:-1px;right:-1px;height:5px;
+    border-radius:16px 16px 0 0;opacity:.85;
+    background:repeating-conic-gradient(rgba(232,241,255,.85) 0 25%,rgba(28,39,64,.85) 0 50%) 0 0/12px 6px}
+  .race-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:999px;
+    font-size:11px;font-weight:700;letter-spacing:2px;color:#ffb3b3;white-space:nowrap;
+    border:1px solid rgba(255,92,92,.45);background:rgba(255,92,92,.12)}
+  .race-badge i{width:13px;height:13px;border-radius:3px;
+    background:repeating-conic-gradient(#e8f1ff 0 25%,#1c2740 0 50%) 0 0/8px 8px}
+  .race-cta{margin-top:18px;display:flex;align-items:center;gap:18px;padding:17px 22px;border-radius:12px;
+    background:linear-gradient(90deg,rgba(255,92,92,.13),rgba(255,92,92,.03) 60%,transparent);
+    border:1px solid rgba(255,92,92,.35);transition:.25s}
+  .race-cta:hover{transform:translateY(-3px);border-color:rgba(255,92,92,.6);
+    box-shadow:0 16px 36px -16px rgba(255,92,92,.45)}
+  .rc-flag{width:46px;height:46px;border-radius:10px;flex-shrink:0;border:1px solid rgba(232,241,255,.35);
+    background:repeating-conic-gradient(#e8f1ff 0 25%,#0a1226 0 50%) 0 0/15px 15px}
+  .race-cta > div{min-width:0;flex:1}
+  .race-cta b{display:block;font-size:15.5px}
+  .race-cta span{font-size:12.5px;color:var(--sub)}
+  .race-cta em{margin-left:auto;font-style:normal;font-size:22px;font-weight:700;color:#ff8585}
+  @media (max-width:640px){
+    .race-cta{flex-direction:column;align-items:flex-start;gap:12px}
+    .race-cta em{display:none}
+  }
+
+
+  /* ============ 两侧主题装饰 ============ */
+  .side-deco{position:fixed;top:0;bottom:0;width:110px;z-index:1;pointer-events:none;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+  .sd-left{left:6px}.sd-right{right:6px}
+  .sd-left svg{height:min(74vh,700px);width:100%;opacity:.9}
+  .sd-cap{writing-mode:vertical-rl;font:700 10.5px Consolas,monospace;letter-spacing:5px;
+    color:rgba(140,178,240,.45);user-select:none}
+  .sd-checker{width:14px;height:min(42vh,380px);border-radius:8px;opacity:.55;
+    background:repeating-conic-gradient(rgba(232,241,255,.6) 0 25%,rgba(16,25,46,.9) 0 50%) 0 0/14px 14px;
+    animation:checkerFlow 9s linear infinite}
+  @keyframes checkerFlow{to{background-position:0 420px}}
+  .sd-speed{display:flex;flex-direction:column;gap:20px;width:64px}
+  .sd-speed i{display:block;height:2px;width:72%;margin-left:auto;border-radius:2px;
+    background:linear-gradient(90deg,transparent,rgba(79,214,255,.75),transparent);
+    animation:speedline 3.2s ease-in-out infinite}
+  .sd-speed i:nth-child(2){width:42%;animation-delay:.7s;animation-duration:2.7s}
+  .sd-speed i:nth-child(3){width:60%;animation-delay:1.5s;animation-duration:3.6s}
+  .sd-speed i:nth-child(4){width:34%;animation-delay:2.2s;animation-duration:2.9s}
+  @keyframes speedline{0%{transform:translateX(28px);opacity:0}35%{opacity:.9}100%{transform:translateX(-32px);opacity:0}}
+  @media (max-width:1519px){.side-deco{display:none}}
+
+  /* ============ 首屏增强 ============ */
+  .hero-particles{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .hero-particles i{position:absolute;border-radius:50%;background:rgba(139,199,255,.5);
+    box-shadow:0 0 10px rgba(126,196,255,.75);opacity:.7;animation:floaty 8s ease-in-out infinite}
+  .hero-particles i:nth-child(1){width:5px;height:5px;left:12%;top:18%}
+  .hero-particles i:nth-child(2){width:4px;height:4px;left:30%;top:64%;animation-delay:1.4s}
+  .hero-particles i:nth-child(3){width:6px;height:6px;left:46%;top:12%;animation-delay:2.8s}
+  .hero-particles i:nth-child(4){width:3.5px;height:3.5px;left:58%;top:72%;animation-delay:.9s}
+  .hero-particles i:nth-child(5){width:5px;height:5px;left:70%;top:26%;animation-delay:2s}
+  .hero-particles i:nth-child(6){width:4px;height:4px;left:84%;top:56%;animation-delay:3.4s}
+  .hero-particles i:nth-child(7){width:3px;height:3px;left:90%;top:14%;animation-delay:1.1s}
+  @keyframes floaty{0%,100%{transform:translateY(0);opacity:.7}50%{transform:translateY(-18px);opacity:.25}}
+  .hero-motto{display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:6px;
+    color:#8fb6ff;margin:-6px 0 18px}
+  .hero-motto::before,.hero-motto::after{content:"";height:1px;width:34px;
+    background:linear-gradient(90deg,transparent,rgba(143,182,255,.7))}
+  .hero-motto::after{background:linear-gradient(90deg,rgba(143,182,255,.7),transparent)}
+  @keyframes shine{to{background-position:200% 0}}
+  .hero-stats{padding:16px 20px;border:1px solid var(--line);border-radius:14px;
+    background:rgba(10,20,40,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .orbit{position:absolute;inset:-32px;border-radius:50%;animation:spin 22s linear infinite;pointer-events:none}
+  .orbit.o2{inset:-50px;animation:spinrev 34s linear infinite}
+  .orbit::before{content:"";position:absolute;top:-8px;left:50%;width:16px;height:16px;margin-left:-8px;
+    border-radius:5px;background:rgba(12,24,48,.92);border:1px solid rgba(79,214,255,.65);
+    box-shadow:0 0 16px rgba(79,214,255,.5)}
+  .orbit.o2::before{top:-6px;width:12px;height:12px;margin-left:-6px;border-radius:50%;
+    border-color:rgba(255,159,67,.6);box-shadow:0 0 16px rgba(255,159,67,.45)}
+  @keyframes spinrev{to{transform:rotate(-360deg)}}
+
+  /* ============ 页脚重构 ============ */
+  footer{margin-top:70px;padding:0 0 30px;text-align:left;
+    border-top:1px solid var(--line);
+    background:linear-gradient(180deg,transparent,rgba(63,140,255,.07))}
+  footer > *{position:relative;z-index:1}
+  .check-strip{height:10px;margin:0;z-index:0;opacity:.5;
+    background:repeating-conic-gradient(rgba(232,241,255,.55) 0 25%,rgba(20,30,52,.9) 0 50%) 0 0/20px 10px;
+    animation:stripFlow 14s linear infinite}
+  @keyframes stripFlow{to{background-position:400px 0}}
+  .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:34px;align-items:start;
+    max-width:1080px;margin:44px auto 6px;padding:0 24px}
+  .fg-brand .foot-logo{height:44px;margin-bottom:12px;
+    filter:drop-shadow(0 0 10px rgba(79,214,255,.3));transition:filter .25s}
+  .fg-brand:hover .foot-logo{filter:drop-shadow(0 0 16px rgba(79,214,255,.55))}
+  .fg-brand .f1{font-size:17px;font-weight:800;letter-spacing:3px}
+  .fg-brand .f2{font-size:12.5px;color:var(--sub);margin-top:6px;letter-spacing:1px}
+  .f-motto{display:inline-block;margin-top:14px;padding:5px 14px;border:1px solid var(--line);
+    border-radius:999px;font-size:12px;letter-spacing:4px;color:#9fc3ff;background:rgba(63,140,255,.08)}
+  .fg-col{display:flex;flex-direction:column;gap:9px;padding-top:6px}
+  .fg-col b{font-size:13px;letter-spacing:2px;color:#cfe0ff;margin-bottom:4px}
+  .fg-col a{font-size:13px;color:var(--sub);transition:.2s;width:fit-content}
+  .fg-col a:hover{color:#fff;transform:translateX(3px)}
+  footer .foot-note{text-align:center;font-size:12px;color:rgba(157,177,214,.7);margin-top:34px;padding:0 24px}
+  .waves svg.w3{animation-duration:11s;opacity:.85}
+  .boat{position:absolute;bottom:86px;left:11%;width:56px;opacity:.9;z-index:0;
+    animation:bob 5.5s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-9px) rotate(-3deg)}}
+  @media (max-width:880px){
+    .foot-grid{grid-template-columns:1fr;gap:26px;text-align:center}
+    .fg-brand .foot-logo{margin:0 auto 10px}
+    .fg-col{align-items:center}
+    .boat{left:5%}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+  }
+
+  /* ============ 响应式 ============ */
+  @media (max-width:1020px){
+    .topnav{display:none}
+    .hero-inner{grid-template-columns:1fr;gap:52px}
+    .hero{padding-top:64px}
+    .hero-visual{order:2}
+    .steps{grid-template-columns:repeat(2,1fr)}
+    .steps li:not(:last-child) a::after{display:none}
+  }
+  @media (max-width:640px){
+    .steps{grid-template-columns:1fr}
+    .hero-stats{gap:22px}
+    .toolbar{top:63px}
+    .cat-desc{padding-left:0}
+    .search{max-width:none;margin-left:0;flex-basis:100%}
+    .brand-text span{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="side-deco sd-left" aria-hidden="true">
+  <span class="sd-cap">HEU EST.1953</span>
+  <svg viewBox="0 0 110 760" preserveAspectRatio="xMidYMid meet">
+    <g fill="none" stroke="rgba(93,158,255,.28)" stroke-width="1.4">
+      <path id="ct1" d="M55 0 V90 H25 V210 H70 V330 H30 V450 H75 V570 H35 V680 H55 V760"/>
+      <path id="ct2" d="M15 60 V180 H60 V300 H20 V420 H65 V540 H25 V660 V760"/>
+      <path id="ct3" d="M95 120 V240 H55 V360 H90 V480 H50 V600 H85 V720 V760"/>
+    </g>
+    <g fill="rgba(93,158,255,.45)">
+      <circle cx="25" cy="90" r="3"/><circle cx="70" cy="210" r="3"/><circle cx="30" cy="330" r="3"/>
+      <circle cx="75" cy="450" r="3"/><circle cx="35" cy="570" r="3"/>
+      <circle cx="60" cy="180" r="2.6"/><circle cx="65" cy="540" r="2.6"/>
+      <circle cx="55" cy="360" r="2.6"/><circle cx="90" cy="480" r="2.6"/>
+    </g>
+    <circle r="2.6" fill="#4fd6ff" filter="drop-shadow(0 0 4px #4fd6ff)">
+      <animateMotion dur="9s" repeatCount="indefinite"><mpath href="#ct1"/></animateMotion></circle>
+    <circle r="2.2" fill="#7cc4ff" filter="drop-shadow(0 0 4px #7cc4ff)">
+      <animateMotion dur="12s" begin="3s" repeatCount="indefinite"><mpath href="#ct2"/></animateMotion></circle>
+    <circle r="2.4" fill="#4fd6ff" filter="drop-shadow(0 0 4px #4fd6ff)">
+      <animateMotion dur="10s" begin="5s" repeatCount="indefinite"><mpath href="#ct3"/></animateMotion></circle>
+  </svg>
+</div>
+<div class="side-deco sd-right" aria-hidden="true">
+  <span class="sd-cap">SMART CAR RACING</span>
+  <div class="sd-checker"></div>
+  <div class="sd-speed"><i></i><i></i><i></i><i></i></div>
+</div>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">
+      <img src="assets/club-logo.png" alt="济海追风">
+      <div class="brand-text">
+        <strong>济海追风</strong>
+        <span>硬件培训 · 学习导航</span>
+      </div>
+    </a>
+    <nav class="topnav" id="topnav">
+      <a href="#roadmap" data-spy="roadmap">学习路线</a>
+      <a href="#cat-basics"  data-spy="cat-basics">入门</a>
+      <a href="#cat-solder"  data-spy="cat-solder">焊接</a>
+      <a href="#cat-pcb"     data-spy="cat-pcb">PCB</a>
+      <a href="#cat-tools"   data-spy="cat-tools">工具</a>
+      <a href="#cat-growth"  data-spy="cat-growth">成长</a>
+      <a href="#cat-race"    data-spy="cat-race">竞赛</a>
+      <a href="#cat-live"    data-spy="cat-live">实录</a>
+    </nav>
+    <a class="top-cta" href="#library">开始学习</a>
+  </div>
+</header>
+
+<!-- ================= 首屏 ================= -->
+<section class="hero" id="top">
+  <div class="hero-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="hero-badge"><i></i>哈尔滨工程大学 · 智能科学与工程学院</div>
+      <h1>硬件入门<br><em>从动手开始</em></h1>
+      <p class="hero-motto">大工至善 · 大学至真</p>
+      <p>刚进社团，看着电烙铁和电路板不知道从哪儿下手？别慌——这份导航按新生的成长顺序整理好了入门视频：先认识元器件，再练焊接、画板子。不用等理论全懂才动手，跟着做、做出来，就算入门了。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#roadmap">开始入门之路
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#cat-race">🏁 智能车竞赛专区</a>
+      </div>
+      <div class="hero-stats">
+        <div><b id="statCats">6</b><span>大学习板块</span></div>
+        <div><b id="statVids">--</b><span>精选视频资源</span></div>
+        <div><b>4</b><span>步入门路线</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <span class="streak s1"></span><span class="streak s2"></span>
+      <div class="emblem-wrap">
+        <img class="emblem" src="assets/heu-emblem.png" alt="哈尔滨工程大学校徽">
+        <span class="orbit" aria-hidden="true"></span>
+        <span class="orbit o2" aria-hidden="true"></span>
+      </div>
+      <div class="logo-stage">
+        <div class="ls-dashes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ls-sparks" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="ls-glow" aria-hidden="true"></div>
+        <img class="hero-logo" src="assets/club-logo.png" alt="济海追风">
+        <i class="ls-sweep" aria-hidden="true"></i>
+        <span class="ls-corner tl" aria-hidden="true"></span><span class="ls-corner tr" aria-hidden="true"></span>
+        <span class="ls-corner bl" aria-hidden="true"></span><span class="ls-corner br" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-year" aria-hidden="true">1953</div>
+  <svg class="skyline" viewBox="0 0 1440 210" aria-hidden="true">
+    <defs>
+      <pattern id="heuWin" width="17" height="21" patternUnits="userSpaceOnUse">
+        <rect x="5" y="5" width="7" height="11" fill="rgba(148,190,255,.28)"/>
+      </pattern>
+    </defs>
+    <g stroke="rgba(126,172,255,.4)" stroke-width="1.4" stroke-linejoin="round">
+      <text x="182" y="150" font-family="Consolas,monospace" font-size="13" letter-spacing="4" stroke="none" fill="rgba(126,172,255,.4)">HEU · EST. 1953</text>
+      <rect x="238" y="108" width="964" height="96" fill="url(#heuWin)"/>
+      <rect x="222" y="104" width="34" height="100" fill="url(#heuWin)"/>
+      <rect x="1184" y="104" width="34" height="100" fill="url(#heuWin)"/>
+      <rect x="652" y="80" width="136" height="124" fill="url(#heuWin)"/>
+      <rect x="698" y="42" width="44" height="38" fill="url(#heuWin)"/>
+      <path d="M206 104 L239 86 L272 104 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M1168 104 L1201 86 L1234 104 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M242 110 Q258 102 272 96 L1168 96 Q1182 102 1198 110 L1198 114 L242 114 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M634 82 Q650 76 666 62 L774 62 Q790 76 806 82 L806 86 L634 86 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M684 42 Q698 38 708 28 L732 28 Q742 38 756 42 L756 45 L684 45 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M704 204 L704 182 Q720 170 736 182 L736 204 Z" fill="rgba(8,16,36,.9)"/>
+      <path d="M180 204 L1260 204" stroke="rgba(126,172,255,.22)"/>
+    </g>
+  </svg>
+</section>
+
+<!-- ================= 学习路线 ================= -->
+<section class="roadmap wrap" id="roadmap" style="scroll-margin-top:90px">
+  <div class="sec-head">
+    <h2><small>LEARNING PATH</small>新手入门路线</h2>
+    <p class="tip">按顺序一步步来：前三步练好硬件基本功，第四步帮你找到自己的方向。「仪器与工具」是全程都用得上的支线。</p>
+  </div>
+  <ol class="steps">
+    <li><a href="#cat-basics"><span class="num">01</span><b>认识元器件</b><span>电路基础 · 万用表</span></a></li>
+    <li><a href="#cat-solder"><span class="num">02</span><b>练好焊接</b><span>烙铁 · 直插 · 贴片</span></a></li>
+    <li><a href="#cat-pcb"><span class="num">03</span><b>画出你的板子</b><span>立创EDA · 打板下单</span></a></li>
+    <li><a href="#cat-growth"><span class="num">04</span><b>找到你的方向</b><span>学习思维 · 赛道选择</span></a></li>
+  </ol>
+  <a class="race-cta" href="#cat-race">
+    <span class="rc-flag" aria-hidden="true"></span>
+    <div><b>想跑智能车？直通竞赛专区</b><span>赛规解析 · 组别介绍 · 往届国赛视频 —— 先看懂比赛，再决定怎么上车</span></div>
+    <em>→</em>
+  </a>
+</section>
+
+<!-- ================= 资源库 ================= -->
+<section class="library wrap" id="library">
+  <div class="toolbar">
+    <div class="chips" id="chips"></div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="搜索视频 / 关键词，按 / 键快速聚焦">
+    </label>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div id="sections"></div>
+
+  <div class="empty" id="empty" hidden>
+    <b>没有找到相关内容</b>
+    换个关键词试试，或清除筛选条件。
+  </div>
+</section>
+
+<!-- ================= 页脚 ================= -->
+<footer>
+  <div class="check-strip" aria-hidden="true"></div>
+  <img class="bg-emblem" src="assets/heu-emblem.png" alt="" aria-hidden="true">
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 2400 150" preserveAspectRatio="none">
+      <path d="M0 78 Q150 42 300 78 T600 78 T900 78 T1200 78 T1500 78 T1800 78 T2100 78 T2400 78 V150 H0 Z" fill="rgba(63,140,255,.14)"/>
+    </svg>
+    <svg class="w2" viewBox="0 0 2400 150" preserveAspectRatio="none">
+      <path d="M0 96 Q150 64 300 96 T600 96 T900 96 T1200 96 T1500 96 T1800 96 T2100 96 T2400 96 V150 H0 Z" fill="rgba(79,214,255,.11)"/>
+    </svg>
+    <svg class="w3" viewBox="0 0 2400 150" preserveAspectRatio="none">
+      <path d="M0 112 Q150 86 300 112 T600 112 T900 112 T1200 112 T1500 112 T1800 112 T2100 112 T2400 112 V150 H0 Z" fill="rgba(10,22,48,.85)"/>
+    </svg>
+  </div>
+  <svg class="boat" viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M34 5 L34 38 L55 38 Z" fill="rgba(148,190,255,.8)"/>
+    <path d="M30 13 L30 38 L17 38 Z" fill="rgba(148,190,255,.5)"/>
+    <path d="M10 43 L54 43 L46 54 L18 54 Z" fill="rgba(93,158,255,.85)"/>
+  </svg>
+  <div class="foot-grid">
+    <div class="fg-brand">
+      <img class="foot-logo" src="assets/club-logo.png" alt="济海追风">
+      <p class="f1">济海追风</p>
+      <p class="f2">哈尔滨工程大学 · 智能科学与工程学院</p>
+      <p class="f-motto">大工至善 · 大学至真</p>
+    </div>
+    <nav class="fg-col">
+      <b>快速导航</b>
+      <a href="#roadmap">学习路线</a>
+      <a href="#cat-basics">入门基础</a>
+      <a href="#cat-solder">焊接工艺</a>
+      <a href="#cat-pcb">PCB 设计</a>
+    </nav>
+    <nav class="fg-col">
+      <b>直通赛道</b>
+      <a href="#cat-tools">仪器与工具</a>
+      <a href="#cat-growth">学习思维与成长</a>
+      <a href="#cat-race">🏁 智能车竞赛专区</a>
+      <a href="#top">回到顶部 ↑</a>
+    </nav>
+  </div>
+  <p class="foot-note">视频来源于网络公开教程与社团自制培训资料，仅用于内部学习交流 · 链接由技术组持续维护更新，如失效请联系负责人</p>
+</footer>
+
+<button id="toTop" title="回到顶部" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+/* ================================================================
+ *  资源数据维护指南（社团技术组看这里）
+ *  1. 每个分类是一个对象，items 里放视频卡片；
+ *  2. 添加一条视频：复制一行 { t:'标题', d:'一句话说明', url:'视频链接', tags:['标签'] }
+ *  3. 目前 url 填的是 B站搜索占位链接（页面上会带「占位」角标），
+ *     请逐步替换为具体视频地址，如 https://www.bilibili.com/video/BVxxxx
+ *  4. 新增整个分类：在 CATS 里加一个对象，并在上面 topnav 中补一个锚点。
+ * ================================================================ */
+const ICONS = {
+  book:    '<path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/>',
+  thermo:  '<path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>',
+  pcb:     '<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="8" cy="9" r="1.7"/><circle cx="15.5" cy="14.8" r="1.7"/><path d="M8 10.7v3.6h5.5M15.5 13V8.2h-4.2"/>',
+  cpu:     '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1.5v3M15 1.5v3M9 19.5v3M15 19.5v3M20.5 9h3M20.5 15h3M.5 9h3M.5 15h3"/>',
+  compass: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  flag:    '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
+  video:   '<rect x="2" y="6.5" width="13" height="11" rx="2"/><path d="M15 10.5l7-3.5v10l-7-3.5"/>',
+  tool:    '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'
+};
+const svg = p => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
+
+const CATS = [
+  {
+    id:'basics', name:'入门基础', en:'BASICS', icon:ICONS.book,
+    color:'#4fd6ff', soft:'rgba(79,214,255,.12)', bd:'rgba(79,214,255,.45)', sh:'rgba(79,214,255,.25)',
+    desc:'一切的地基：看懂电路、认全元器件、建立数模电路的直觉。原理暂时看不懂没关系，先混个脸熟，动手时自然会明白。',
+    items:[
+      {t:'电子电路入门没你想的那么简（复）单（杂）', d:'用最直白的方式打破「电路很难」的恐惧——先把入门的全貌看一遍，再往下走。', url:'https://www.bilibili.com/video/BV1aa411g76U', tags:['电路基础','零基础']},
+      {t:'【0基础】这些常用元器件，你都认识吗', d:'电阻、电容、二极管……从零开始电子 DIY 第一课，认全你以后天天打交道的元器件。', url:'https://www.bilibili.com/video/BV1xv4y137LL', tags:['元器件','第一课']},
+      {t:'极速入门数模电路 P01：开箱认识元器件', d:'配合面包板开箱实操，边看边搭——极速入门系列的第一步。', url:'https://www.bilibili.com/video/BV12Z421x72o', tags:['面包板','实操']},
+      {t:'极速入门数模电路 P02：如何看懂电路图', d:'电路图怎么看、原理图怎么画——从符号到连接关系，一次讲清。', url:'https://www.bilibili.com/video/BV1LZ421x75m', tags:['电路图','原理图']},
+      {t:'二极管管压降为啥是 0.7V？一个视频讲清 PN 结', d:'工科男孙老师出品：PN 结原理讲得透亮，模电启蒙的首选。', url:'https://www.bilibili.com/video/BV1P5e3zGErT', tags:['模电','PN结']},
+      {t:'实际的 PN 结长啥样？二极管是如何制造出来的', d:'从原理到实物：看看芯片里的二极管到底长什么样。', url:'https://www.bilibili.com/video/BV1Hb4BzwE8W', tags:['半导体','器件']},
+      {t:'电容种类那么多！都有什么区别？怎么选？', d:'陶瓷、铝电解、钽电容……选型不再靠感觉。', url:'https://www.bilibili.com/video/BV112whefE8f', tags:['电容','选型']},
+      {t:'电路中 0 欧姆电阻有啥用', d:'超形象动画讲透一个新手必问的小问题——顺便理解电路设计的惯用手法。', url:'https://www.bilibili.com/video/BV12Te86UESM', tags:['元器件','进阶']},
+      {t:'80 分钟入门模拟电路！手把手设计 555 波形电路', d:'嘉立创EDA官方出品：以 555 电路为例把模电入门走一遍。', url:'https://www.bilibili.com/video/BV1yNNY62EQK', tags:['模电','实战']},
+      {t:'MOS 管发热的隐藏元凶：一个视频讲清米勒平台', d:'工科男孙老师硬核讲解——驱动 MOS 管之前必须懂的一课。', url:'https://www.bilibili.com/video/BV1Rj2LBSEq4', tags:['MOS管','进阶']}
+    ]
+  },
+  {
+    id:'solder', name:'焊接工艺', en:'SOLDERING', icon:ICONS.thermo,
+    color:'#ff9f43', soft:'rgba(255,159,67,.12)', bd:'rgba(255,159,67,.45)', sh:'rgba(255,159,67,.25)',
+    desc:'烙铁是硬件人的第一件兵器：从直插到贴片，练出可靠又漂亮的焊点。记住安全第一，先看规范再上电。',
+    items:[
+      {t:'★社团自制 | 超详细贴片元件焊接教程', d:'济海追风抖音出品：社团学长学姐亲自示范的贴片焊接全流程，跟着社团标准练。', url:'https://www.douyin.com/video/7653105325239672185', tags:['社团自制','贴片']},
+      {t:'工具 | 如何使用电烙铁？基础焊接、接线、接件', d:'烙铁持法、给锡时机、接线接件的标准手法——焊前第一课。', url:'https://www.bilibili.com/video/BV1yv41167ky', tags:['烙铁','入门']},
+      {t:'《焊武帝养成攻略》零基础三分钟精通焊接', d:'低成本快速上手：焊点成型的过程逐帧讲解，新手最容易出成果的一集。', url:'https://www.bilibili.com/video/BV1STqpBqEa5', tags:['实操','速成']},
+      {t:'【电子学会】焊接注意事项', d:'安全规范、常见坏习惯与事故预防——动手之前必看。', url:'https://www.bilibili.com/video/BV1wA411q7P2', tags:['安全','必读']},
+      {t:'一分钟教你热风枪使用规范【硬禾一分钟】', d:'热风枪温度、风量与距离的口诀——拆焊贴片元件的必备技能。', url:'https://www.bilibili.com/video/BV15J4119759', tags:['热风枪','规范']}
+    ]
+  },
+  {
+    id:'pcb', name:'PCB 设计', en:'PCB DESIGN', icon:ICONS.pcb,
+    color:'#3f8cff', soft:'rgba(63,140,255,.13)', bd:'rgba(63,140,255,.5)', sh:'rgba(63,140,255,.3)',
+    desc:'从屏幕上的一张原理图，到手里摸得着的真实电路板：布局布线的实用技巧，一块模块一块模块地学。',
+    items:[
+      {t:'★社团自制 | 硬件小科普：嘉立创盲埋孔', d:'济海追风抖音出品：智能车板上真的会用到的盲埋孔工艺，社团实战经验。', url:'https://www.douyin.com/video/7656749166488025338', tags:['社团自制','工艺']},
+      {t:'零基础入门 PCB 设计：国一学长带你学嘉立创 EDA', d:'422 万播放的口碑长课：从软件安装到成板全程保姆级实操——智能车国一学长亲授，看完就能画板。', url:'https://www.bilibili.com/video/BV1At421h7Ui', tags:['嘉立创EDA','保姆级']},
+      {t:'15 分钟学透 LDO 模块设计（6 个布局布线技巧）', d:'以 LDO 电源模块为例，把布局布线的通用套路一次讲透。', url:'https://www.bilibili.com/video/BV1eUh76HEWn', tags:['电源','布局布线']},
+      {t:'20 分钟学透 DCDC 模块设计（12 个布局布线技巧）', d:'DCDC 电源的布局要点更多——功率环、散热、滤波，一集全讲。', url:'https://www.bilibili.com/video/BV1m6ht6qELt', tags:['电源','进阶']},
+      {t:'18 分钟手把手设计晶振模块（含布局布线技巧）', d:'晶振这种「娇气」模块怎么摆、怎么走线——单片机板子的关键一课。', url:'https://www.bilibili.com/video/BV145hi6tEry', tags:['晶振','模块']},
+      {t:'20 分钟手把手设计 SD 卡模块（含阻抗计算）', d:'嘉立创EDA官方出品：SD 卡模块 + 阻抗计算，接口类模块的代表作。', url:'https://www.bilibili.com/video/BV12kht6KE8W', tags:['接口','阻抗']},
+      {t:'一个实验搞明白 PCB 走线应该画多宽', d:'走线宽度与电流的关系，用实验说话——以后走线不再靠猜。', url:'https://www.bilibili.com/video/BV1G34y1n7Eq', tags:['走线','实验']},
+      {t:'开关电源 PCB 布局 5 大技巧', d:'开关电源布局的五大铁律，避免板子「能跑但发热」。', url:'https://www.bilibili.com/video/BV13A411v7Nu', tags:['开关电源','布局']},
+      {t:'高速 PCB 并不神秘！一起画一块带 DDR4 的开发板', d:'工科男孙老师带画 DDR4 开发板——想挑战高速板的同学看这里。', url:'https://www.bilibili.com/video/BV13C6HYsECR', tags:['高速板','DDR4']},
+      {t:'PCB & SMT 下单：手把手教学', d:'嘉立创EDA官方系列第 41 课：打板与贴片下单全流程——社团打板就按这个流程走。', url:'https://www.bilibili.com/video/BV1Pz421i7bX', tags:['打板','SMT']}
+    ]
+  },
+  {
+    id:'tools', name:'仪器与工具', en:'INSTRUMENTS', icon:ICONS.tool,
+    color:'#94a3b8', soft:'rgba(148,163,184,.12)', bd:'rgba(148,163,184,.45)', sh:'rgba(148,163,184,.28)',
+    desc:'实验室的支线技能，但全程都用得上：万用表、示波器、总线与协议，还有进实验室前必看的安全规范。',
+    items:[
+      {t:'万用表不会用？老师傅教你每个档的测量方法', d:'电压、电流、电阻、通断每个档怎么用——0 基础也能快速学会。', url:'https://www.bilibili.com/video/BV1mu411L7UJ', tags:['万用表','必会']},
+      {t:'示波器那么重要，你确定不进来看看？', d:'为什么要用示波器、怎么开始用——调试电路的「眼睛」入门。', url:'https://www.bilibili.com/video/BV1K44y147LK', tags:['示波器','入门']},
+      {t:'为什么做控制要学这么多总线？它们有什么区别', d:'工科男孙老师：UART/CAN/SPI 等总线的区别与选用——做控制系统绕不开的一课。', url:'https://www.bilibili.com/video/BV1wwtz6pE9q', tags:['总线','控制']},
+      {t:'每个硬件协议 10 分钟简单解释', d:'UART、I2C、SPI 等常见协议的直观对比——抓波形、调通信前先看它。', url:'https://www.bilibili.com/video/BV1Swgf6GEaJ', tags:['通信协议','调试']},
+      {t:'16 通道 200MHz 成本 40 元：开源逻辑分析仪', d:'嘉立创EDA官方开源项目——自己做一个逻辑分析仪，顺便学会用它。', url:'https://www.bilibili.com/video/BV15TuP64EsW', tags:['逻辑分析仪','开源']},
+      {t:'用电安全知识（安全教育培训）', d:'正式的安全教育培训视频：用电隐患识别与应急处置——进实验室前必看。', url:'https://www.bilibili.com/video/BV1aK411J7Ks', tags:['安全','必读']}
+    ]
+  },
+  {
+    id:'growth', name:'学习思维与成长', en:'GROWTH', icon:ICONS.compass,
+    color:'#34d399', soft:'rgba(52,211,153,.12)', bd:'rgba(52,211,153,.5)', sh:'rgba(52,211,153,.3)',
+    desc:'比多看十个视频更重要的事：怎么自学、怎么选方向——以及跟着开源项目动手，把技能串起来。',
+    items:[
+      {t:'★社团自制 | 沉浸式体验济海追风硬件的一天', d:'社团B站官方号出品的 Vlog：看看学长学姐在实验室的一天是怎么过的。', url:'https://www.bilibili.com/video/BV1r9Lh6hEEQ', tags:['社团自制','实验室日常']},
+      {t:'新手如何入门硬件：一本正经的电子电路入门', d:'硬件学习路线的全景地图：先学什么、后学什么、坑在哪里。', url:'https://www.bilibili.com/video/BV1k3411W7qx', tags:['学习路线','必读']},
+      {t:'C 语言程序设计基础入门（千锋新版）', d:'硬件迟早要写代码——C 语言是单片机和智能车开发的通用语言。', url:'https://www.bilibili.com/video/BV1n34y1k7Y8', tags:['C语言','编程']},
+      {t:'STM32 入门教程 2023 版（细致讲解）', d:'进阶方向之一：主流单片机系统的入门系列，配最小系统板食用更佳。', url:'https://www.bilibili.com/video/BV1th411z7sn', tags:['STM32','进阶']},
+      {t:'PID 算法还是 AI 模型？搞清机器狗行走的秘密', d:'工科男孙老师：控制算法的思维入门——智能车速控背后的东西。', url:'https://www.bilibili.com/video/BV1mnuMzVEvB', tags:['PID','控制思维']},
+      {t:'用一块免费 PCB 做了个 140W 快充（已开源）', d:'嘉立创EDA官方实战项目：从原理图到成品——完整走一遍 PCB 项目流程。', url:'https://www.bilibili.com/video/BV1D4876kETB', tags:['开源项目','实战']},
+      {t:'【开源】墨水屏桌面备忘录', d:'照着一个完整开源项目做一遍：原理图、固件、外壳全流程——进步最快的路径。', url:'https://www.bilibili.com/video/BV1hEdBY6EPM', tags:['开源项目','实战']},
+      {t:'如何快速阅读芯片数据手册', d:'18 分钟抓住手册重点：初学者视角的 Datasheet 阅读方法——工程师的「说明书阅读法」。', url:'https://www.bilibili.com/video/BV1Bq4y1Z7yq', tags:['Datasheet','核心技能']}
+    ]
+  },
+  {
+    id:'race', name:'智能车竞赛专区', en:'SMART CAR RACE', icon:ICONS.flag, featured:true,
+    color:'#ff5c5c', soft:'rgba(255,92,92,.1)', bd:'rgba(255,92,92,.5)', sh:'rgba(255,92,92,.3)',
+    desc:'济海追风的主战场：全国大学生智能汽车竞赛。先看懂赛规和组别，再看技术方案——想要实录请移步下方专区。',
+    items:[
+      {t:'★社团自制 | 开箱测评：智能车选手值得尝试的轻量 3D 打印耗材', d:'社团B站官方号出品：实车验证的耗材推荐，做车壳结构件前先看。', url:'https://www.bilibili.com/video/BV1S5Q6BdEiL', tags:['社团自制','测评']},
+      {t:'国特选手带你弄懂 21 届智能车规则动向', d:'全国特级奖项学长逐条拆解最新竞赛规则——正是社团这一届在打的规则。', url:'https://www.bilibili.com/video/BV1yhsTzrE5A', tags:['赛规','必读']},
+      {t:'省冠学长带你入门智能车', d:'省赛冠军视角的竞赛入门：组别差异、起步路线与备赛节奏，一次讲清。', url:'https://www.bilibili.com/video/BV1SeCpYcEhH', tags:['组别','选组']},
+      {t:'2025 总决赛：智能车各组冠军超神操作盘点', d:'各组别冠军的高光操作合集——感受一下「天花板」是什么样子。', url:'https://www.bilibili.com/video/BV1Dre3zXEVW', tags:['比赛视频','国赛']},
+      {t:'智能车电磁寻迹相关知识讲解', d:'电磁组的原理核心：传感器排布、信号处理与循迹算法思路。', url:'https://www.bilibili.com/video/BV1Ki4y127kK', tags:['电磁组','循迹']},
+      {t:'20 届智能车缩微电磁组代码分享', d:'往届参赛队的真实代码——看看一辆能跑的电磁车程序长什么样。', url:'https://www.bilibili.com/video/BV14s23BZEhb', tags:['电磁组','代码']},
+      {t:'了解无刷直流电动机：无刷电机 & 电调 & PWM', d:'车模动力的底层原理：无刷电机怎么转起来、电调怎么驱动。', url:'https://www.bilibili.com/video/BV1B2421M7f6', tags:['电机','驱动']},
+      {t:'FOC 控制最核心的两个公式？只不过是力的合成', d:'工科男孙老师：FOC 的物理直觉——电控进阶的敲门砖。', url:'https://www.bilibili.com/video/BV1FyvaBjE9q', tags:['FOC','电控']},
+      {t:'新手入门向：无感无刷驱动方案分享', d:'进阶驱动方案直播切片——想深入电调设计的同学看这里。', url:'https://www.bilibili.com/video/BV1YJ4m1J7tn', tags:['驱动','进阶']},
+      {t:'技术报告怎么写？以电赛自动行驶小车为例', d:'15 分钟拆解一份完整技术文档的结构、图表与表述——智能车技术报告写法同理。', url:'https://www.bilibili.com/video/BV1VVLo6RE4N', tags:['报告','写作']}
+    ]
+  },
+  {
+    id:'live', name:'济海追风比赛实录', en:'RACE RECORDS', icon:ICONS.video, featured:true,
+    color:'#fbbf24', soft:'rgba(251,191,36,.1)', bd:'rgba(251,191,36,.5)', sh:'rgba(251,191,36,.3)',
+    desc:'来自社团抖音号「HEU济海追风」的赛场第一视角：发车、冲线、领奖——各战队在东北赛区与全国总决赛上的真实记录。',
+    items:[
+      {t:'第21届国赛 · 六队 飞檐走壁 全国一等奖比赛实录', d:'哈尔滨工程大学济海追风六队在全国总决赛的完整实录——全国一等奖的现场。', url:'https://www.douyin.com/video/7677174780085697381', tags:['国赛','一等奖']},
+      {t:'东北赛区 · 一队 飞跃雷区 冠军实录', d:'飞跃雷组东北冠军的发车实录——这支队伍最终拿下全国亚军。', url:'https://www.douyin.com/video/7668270591556120165', tags:['东北赛区','冠军']},
+      {t:'东北赛区 · 六队 飞檐走壁 亚军决赛实录', d:'飞檐走壁组决赛现场——爬壁、过弯、冲刺的完整记录。', url:'https://www.douyin.com/video/7668603429891399781', tags:['东北赛区','决赛']},
+      {t:'东北赛区 · 二队 轮腿穿越 亚军科目一实录', d:'轮腿穿越组科目一：越障与稳定性的考验。', url:'https://www.douyin.com/video/7668656043853402851', tags:['轮腿穿越','科目一']},
+      {t:'东北赛区 · 二队 轮腿穿越 亚军科目三实录', d:'轮腿穿越组科目三：速度与通过性的比拼。', url:'https://www.douyin.com/video/7668605438448351333', tags:['轮腿穿越','科目三']},
+      {t:'东北赛区 · 八队 卡丁快跑 冠军科目三实录', d:'卡丁快跑组东北冠军——看看「跑得最快」的车什么水平。', url:'https://www.douyin.com/video/7668651831132583397', tags:['卡丁快跑','冠军']},
+      {t:'沉浸式体验智能车 er 的备赛心路历程', d:'从实验室到赛场：备赛日常与嘉立创 SMT 打样的真实记录。', url:'https://www.douyin.com/video/7655179194687238577', tags:['备赛','日常']},
+      {t:'电调暴力测试', d:'社团实验室名场面：电调极限测试——硬件人的浪漫。', url:'https://www.douyin.com/video/7633011996925215080', tags:['实验室','测试']},
+      {t:'实验室爆改 P 房说是', d:'车队维修区（P House）爆改记录——比赛幕后同样精彩。', url:'https://www.douyin.com/video/7621940095381518457', tags:['幕后','P房']}
+    ]
+  }
+];
+
+
+
+
+/* ---------------- 渲染与交互 ---------------- */
+const $  = s => document.querySelector(s);
+const store = {
+  key:'jhzf_hw_done_v1',
+  get(){ try{return JSON.parse(localStorage.getItem(this.key))||[]}catch(e){return[]} },
+  set(a){ localStorage.setItem(this.key, JSON.stringify(a)) }
+};
+let done = new Set(store.get());
+let state = { cat:'all', q:'' };
+
+const isPlaceholder = u => u.includes('search.bilibili.com');
+const platform = u => u.includes('bilibili.com') ? 'B站视频'
+  : u.includes('douyin.com') ? '抖音视频'
+  : /lceda|jlc|szlcsc/.test(u) ? '图文教程'
+  : /\.pdf($|\?)/i.test(u) ? 'PDF 资料' : '在线资源';
+
+$('#statCats').textContent = CATS.length;
+$('#statVids').textContent = CATS.reduce((n,c)=>n+c.items.length,0);
+
+function cardHTML(cat, item, idx){
+  const id = cat.id + '-' + idx;
+  const isDone = done.has(id);
+  return `
+  <article class="vcard rv ${isDone?'done':''}" style="--ac:${cat.color};--ac-soft:${cat.soft};--ac-bd:${cat.bd};--ac-sh:${cat.sh}">
+    <div class="v-top">
+      <span class="v-ico">${svg(cat.icon)}</span>
+      <span class="v-plat">${platform(item.url)}</span>
+    </div>
+    <h3 class="vt">${item.t}${isPlaceholder(item.url)?'<span class="flag">占位</span>':''}</h3>
+    <p class="vd">${item.d}</p>
+    <div class="v-tags">${(item.tags||[]).map(t=>'<span># '+t+'</span>').join('')}</div>
+    <div class="v-foot">
+      <a class="btn-go" href="${item.url}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5v13l11-6.5z"/></svg>观看视频
+      </a>
+      <button class="btn-done" data-id="${id}" title="标记为已学" aria-label="标记为已学">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+    </div>
+  </article>`;
+}
+
+function renderLibrary(animate){
+  const q = state.q.trim().toLowerCase();
+  let total = 0, html = '';
+
+  CATS.forEach(cat=>{
+    if(state.cat !== 'all' && state.cat !== cat.id) return;
+    const items = cat.items.map((it,i)=>({it,i}))
+      .filter(({it})=>!q || (it.t+it.d+(it.tags||[]).join()+cat.name).toLowerCase().includes(q));
+    if(!items.length) return;
+    total += items.length;
+    const dn = items.filter(({i})=>done.has(cat.id+'-'+i)).length;
+    html += `
+    <section class="cat-section${cat.featured ? ' featured' : ''}" id="cat-${cat.id}" style="--ac:${cat.color};--ac-soft:${cat.soft};--ac-bd:${cat.bd};--ac-sh:${cat.sh}">
+      <div class="cat-head">
+        <span class="ico-box">${svg(cat.icon)}</span>
+        <h3>${cat.name}<small>${cat.en}</small></h3>${cat.featured ? '<span class="race-badge"><i></i>竞赛专场</span>' : ''}
+        <span class="prog">已学 ${dn}/${items.length}</span>
+        <p class="cat-desc">${cat.desc}</p>
+      </div>
+      <div class="grid">${items.map(({it,i})=>cardHTML(cat,it,i)).join('')}</div>
+    </section>`;
+  });
+
+  $('#sections').innerHTML = html;
+  $('#empty').hidden = total > 0;
+  $('#count').textContent = '共 ' + total + ' 个资源';
+
+  document.querySelectorAll('.rv').forEach(el=>{
+    if(animate) io.observe(el); else el.classList.add('in');
+  });
+}
+
+/* 分类筛选 chips */
+const chipsBox = $('#chips');
+chipsBox.innerHTML = '<button class="chip on" data-cat="all"><i></i>全部</button>' +
+  CATS.map(c=>'<button class="chip" data-cat="'+c.id+'" style="--c:'+c.color+'"><i></i>'+c.name+'</button>').join('');
+chipsBox.addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  chipsBox.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');
+  state.cat = b.dataset.cat;
+  renderLibrary(false);
+});
+
+/* 搜索 */
+$('#q').addEventListener('input', e=>{ state.q = e.target.value; renderLibrary(false); });
+document.addEventListener('keydown', e=>{
+  if(e.key === '/' && document.activeElement !== $('#q')){ e.preventDefault(); $('#q').focus(); }
+});
+
+/* 已学打卡 */
+$('#sections').addEventListener('click', e=>{
+  const b = e.target.closest('.btn-done'); if(!b) return;
+  const id = b.dataset.id;
+  done.has(id) ? done.delete(id) : done.add(id);
+  store.set([...done]);
+  renderLibrary(false);
+});
+
+/* 入场动画 */
+const io = new IntersectionObserver(es=>es.forEach(x=>{
+  if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); }
+}), {threshold:.08});
+
+/* 顶部导航 scrollspy */
+const spyLinks = {};
+document.querySelectorAll('#topnav a[data-spy]').forEach(a=>spyLinks[a.dataset.spy]=a);
+const spy = new IntersectionObserver(es=>es.forEach(x=>{
+  if(x.isIntersecting){
+    Object.values(spyLinks).forEach(a=>a.classList.remove('active'));
+    spyLinks[x.target.id]?.classList.add('active');
+  }
+}), {rootMargin:'-25% 0px -65% 0px'});
+
+/* 回到顶部 */
+const toTop = $('#toTop');
+addEventListener('scroll', ()=>toTop.classList.toggle('show', scrollY > 620), {passive:true});
+toTop.addEventListener('click', ()=>scrollTo({top:0, behavior:'smooth'}));
+
+renderLibrary(true);
+Object.keys(spyLinks).forEach(id=>{ const el=document.getElementById(id); if(el) spy.observe(el); });
+</script>
+</body>
+</html>
