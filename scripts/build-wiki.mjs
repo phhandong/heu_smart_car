@@ -67,7 +67,7 @@ function shell({ title, description, content, sidebar = '', kind = 'home' }) {
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escape(description)}"><title>${escape(title)} · 济海追风 Wiki</title><link rel="icon" href="/assets/heu-emblem.png"><link rel="stylesheet" href="/wiki/wiki.css"></head>
 <body class="${kind}"><header class="site-head"><div class="head-inner"><a class="brand" href="/wiki/"><img src="/assets/club-logo.png" alt=""><span><strong>济海追风</strong><small>WIKI / 社团文档</small></span></a><nav aria-label="主导航"><a href="/wiki/"${kind === 'home' ? ' aria-current="page"' : ''}>Wiki 首页</a><a href="/">学习导航 ↗</a></nav></div></header>
 ${content}
-<footer class="site-foot"><span>济海追风 · 哈尔滨工程大学</span><span>内容更新以页面日期为准</span><a href="/">返回硬件学习导航</a><a class="credit" href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a></footer></body></html>`;
+<footer class="site-foot"><span>济海追风 · 哈尔滨工程大学</span><span>内容更新以页面日期为准</span><a href="/">返回硬件学习导航</a</footer></body></html>`;
 }
 const cards = sections.map(s => {
   const list = docs.filter(d => d.section.id === s.id).sort(sortDocs);
