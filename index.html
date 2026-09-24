@@ -74,6 +74,7 @@
     transition:.2s;
   }
   .top-cta:hover{filter:brightness(1.18)}
+  .mobile-wiki{display:none;font-size:13px;color:#fff;border:1px solid rgba(79,214,255,.4);border-radius:8px;padding:7px 11px;white-space:nowrap}
 
   /* ============ Hero ============ */
   .hero{position:relative;padding:92px 24px 66px;overflow:hidden}
@@ -464,6 +465,7 @@
   /* ============ 响应式 ============ */
   @media (max-width:1020px){
     .topnav{display:none}
+    .mobile-wiki{display:inline-flex;margin-left:auto}
     .hero-inner{grid-template-columns:1fr;gap:52px}
     .hero{padding-top:64px}
     .hero-visual{order:2}
@@ -529,7 +531,9 @@
       <a href="#cat-growth"  data-spy="cat-growth">成长</a>
       <a href="#cat-race"    data-spy="cat-race">竞赛</a>
       <a href="#cat-live"    data-spy="cat-live">实录</a>
+      <a href="/wiki/">社团 Wiki</a>
     </nav>
+    <a class="mobile-wiki" href="/wiki/">社团 Wiki</a>
     <a class="top-cta" href="#library">开始学习</a>
   </div>
 </header>
@@ -548,6 +552,7 @@
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <a class="btn btn-ghost" href="#cat-race">🏁 智能车竞赛专区</a>
+        <a class="btn btn-ghost" href="/wiki/">📖 社团 Wiki</a>
       </div>
       <div class="hero-stats">
         <div><b id="statCats">6</b><span>大学习板块</span></div>
@@ -670,6 +675,7 @@
       <a href="#cat-basics">入门基础</a>
       <a href="#cat-solder">焊接工艺</a>
       <a href="#cat-pcb">PCB 设计</a>
+      <a href="/wiki/">社团 Wiki</a>
     </nav>
     <nav class="fg-col">
       <b>直通赛道</b>

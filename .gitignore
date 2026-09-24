@@ -1,2 +1,5 @@
 硬件培训.zip
 /硬件培训
+node_modules/
+dist/
+.vercel/
