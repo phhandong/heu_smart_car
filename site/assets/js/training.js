@@ -109,7 +109,7 @@
       '<div class="sec-head"><h2><small>LEARNING PATH</small>' + t.name + ' · 学习路线</h2>' +
       '<p class="tip">' + (t.id === 'hw'
         ? '按顺序一步步来：前三步练好硬件基本功，第四步帮你找到自己的方向。「仪器与工具」是全程都用得上的支线。'
-        : '五次培训层层递进，每次培训后都有考核任务（现场演示验收）；配套资源在下方资源库，按分类取用。') + '</p></div>' +
+        : '五次培训层层递进，每次培训后都有考核任务（一次培训周期内随时在培训场地找学长验收）；配套资源在下方资源库，按分类取用。') + '</p></div>' +
       '<ol class="steps ' + (t.roadmapCols || '') + '">' + steps + '</ol>' + cta;
   }
 
@@ -129,7 +129,7 @@
     }).join('');
     $('#schedule').innerHTML =
       '<div class="sec-head"><h2><small>SCHEDULE</small>培训日程与考核</h2>' +
-      '<p class="tip">具体时间以招新 QQ 群通知为准；每次培训考核均为「现场演示、负责人当场验收」。</p></div>' +
+      '<p class="tip">具体时间以招新 QQ 群通知为准；每次培训考核均为「一次培训周期内，随时在培训场地找学长验收」。</p></div>' +
       '<div class="sched-wrap"><table class="sched"><thead><tr>' +
       '<th>场次</th><th>主题</th><th>时间</th><th>讲义</th><th>考核</th><th>负责人</th><th>状态</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
@@ -319,7 +319,7 @@
         '<h3>' + e.title + '</h3>' +
         '<ul>' + e.points.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>' +
         (e.bonus ? '<p class="ex-bonus">★ ' + e.bonus + '</p>' : '') +
-        '<div class="ex-meta"><span>负责人：' + e.owner + '</span><span>' + e.period + '</span><span>现场演示验收</span></div>' +
+        '<div class="ex-meta"><span>负责人：' + e.owner + '</span><span>' + e.period + '</span><span>周期内随时找学长验收</span></div>' +
         '<p class="ex-ref">' + e.ref + '</p>' +
         '</article>';
     }).join('');

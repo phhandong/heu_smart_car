@@ -99,6 +99,9 @@ for (const [relative, html] of pages) {
 // Validate generated local links and fragments. Root paths resolve within dist,
 // so a missing document or incorrect hand-written heading anchor fails the build.
 const files = new Map([['/','index.html'], ...[...pages.keys()].map(p => [`/${p.replace(/index\.html$/, '')}`, p])]);
+// jhzf-full-site: 整站页面由 build-site.mjs 复制到 dist 根目录，校验期回退到 site/ 读取
+files.set('/legacy-nav/', 'index.html');
+const siteFile = f => readFile(path.join(root, 'site', f), 'utf8');
 for (const [relative, html] of [['index.html', await readFile(path.join(output, 'index.html'), 'utf8')], ...pages]) {
   for (const match of html.matchAll(/href="([^"]+)"/g)) {
     const href = match[1].replaceAll('&amp;', '&');
@@ -107,7 +110,7 @@ for (const [relative, html] of [['index.html', await readFile(path.join(output, 
     const target = new URL(href, `https://site.invalid/${relative.replace(/index\.html$/, '')}`);
     if (target.origin !== 'https://site.invalid') continue;
     const targetFile = files.get(target.pathname) || target.pathname.slice(1);
-    const targetHtml = targetFile === relative ? html : await readFile(path.join(output, targetFile), 'utf8').catch(() => { throw Error(`Broken link in ${relative}: ${href}`); });
+    const targetHtml = targetFile === relative ? html : await readFile(path.join(output, targetFile), 'utf8').catch(() => siteFile(targetFile).catch(() => { throw Error(`Broken link in ${relative}: ${href}`); }));
     if (target.hash && !targetHtml.includes(`id="${decodeURIComponent(target.hash.slice(1))}"`)) {
       const dynamicCategory = target.pathname === '/' && /^#cat-(basics|solder|pcb|tools|growth|race|live)$/.test(target.hash);
       if (!dynamicCategory) throw Error(`Broken anchor in ${relative}: ${href}`);

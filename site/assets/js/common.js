@@ -68,4 +68,17 @@
     });
   }, { threshold: .08 });
   document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+
+  /* ---- Wiki 入口自适应：本部署若无 /wiki/（如本地单独预览 site/），回退到线上 wiki ---- */
+  var wikiLinks = document.querySelectorAll('a[href="/wiki/"], a[href^="/wiki/"]');
+  if (wikiLinks.length) {
+    fetch('/wiki/', { method: 'HEAD' }).catch(function () { return null; }).then(function (r) {
+      if (r && r.ok) return;
+      wikiLinks.forEach(function (a) {
+        a.href = 'https://heusmartcar.fun' + a.getAttribute('href');
+        a.target = '_blank';
+        a.rel = 'noopener';
+      });
+    });
+  }
 })();

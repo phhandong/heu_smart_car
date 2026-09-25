@@ -155,10 +155,10 @@ var TRACKS = {
     raceCta: null,
     schedule: [
       { name: '第一次培训', topic: '嵌入式软件开发入门', date: '以群通知为准', doc: 'assets/docs/sw-training-1.pdf', owner: '李政熙', status: 'done', statusText: '讲义已发布', exam: '呼吸灯（基础）/ 呼吸闪烁交替（提高）· 考核周期 1 周' },
-      { name: '第二次培训', topic: '持久化菜单与简单阻塞按键', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '现场演示验收 · 考核周期 1 周' },
-      { name: '第三次培训', topic: '惯性测量单元与姿态解算', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '现场演示验收 · 考核周期 1 周' },
-      { name: '第四次培训', topic: '电机闭环控制', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '现场演示验收 · 考核周期 1 周' },
-      { name: '第五次培训', topic: '嵌入式数字图像处理入门', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '现场演示验收 · 考核周期 2 周' }
+      { name: '第二次培训', topic: '持久化菜单与简单阻塞按键', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 1 周' },
+      { name: '第三次培训', topic: '惯性测量单元与姿态解算', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 1 周' },
+      { name: '第四次培训', topic: '电机闭环控制', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 1 周' },
+      { name: '第五次培训', topic: '嵌入式数字图像处理入门', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 2 周' }
     ],
     cats: [
       {
