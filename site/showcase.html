@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="济海追风智能汽车实验室成果与技术沉淀：八个研究方向、七份全国总决赛技术报告全文、开源代码仓库与社团自制视频。">
+<meta property="og:title" content="成果沉淀 · 济海追风智能汽车实验室">
+<meta property="og:description" content="研究方向、全国总决赛技术报告全文、开源仓库与自制视频。">
+<meta property="og:image" content="assets/img/club-logo.png">
+<title>成果沉淀 · 济海追风智能汽车实验室</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/img/club-logo.svg" alt="济海追风标志">
+      <div class="brand-text"><strong>济海追风</strong><span>智能汽车实验室</span></div>
+    </a>
+    <nav class="topnav" aria-label="主导航">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="news.html">动态</a>
+      <a href="honors.html">荣誉</a>
+      <a href="showcase.html" class="active">成果</a>
+      <a href="recruit.html">招新</a>
+      <a href="training.html">培训</a>
+      <a href="/wiki/">Wiki</a>
+    </nav>
+    <a class="top-cta" href="recruit.html#join">加入我们</a>
+    <button class="menu-btn" id="menuBtn" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="mobile-nav" id="mobileNav" aria-label="移动端导航">
+    <a href="index.html">首页</a>
+    <a href="about.html">关于实验室</a>
+    <a href="news.html">新闻动态</a>
+    <a href="honors.html">获奖荣誉</a>
+    <a href="showcase.html" class="active">成果沉淀</a>
+    <a href="recruit.html">招新宣传</a>
+    <a href="training.html">培训中心</a>
+    <a href="/wiki/">社团 Wiki</a>
+    <a href="recruit.html#join">加入我们</a>
+  </nav>
+</header>
+
+<section class="page-head">
+  <div class="hero-badge"><i></i>SHOWCASE</div>
+  <h1>成果<em>沉淀</em></h1>
+  <p class="sub">比赛会结束，留下来的东西不会：技术方案、工程代码与踩坑经验，都开放给后来者。</p>
+</section>
+
+<main class="wrap">
+
+  <!-- 研究方向 -->
+  <section class="sec rv">
+    <div class="sec-head">
+      <h2><small>DIRECTIONS</small>研究方向</h2>
+      <p class="tip">以竞赛组别为载体的八个工程方向。</p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card"><span class="tc-no">01</span><b>室外综合任务</b><span>飞跃雷区：目标识别、路径规划与搬运放置的整车集成。</span></div>
+      <div class="team-card"><span class="tc-no">02</span><b>爬壁结构与姿态控制</b><span>飞檐走壁：吸附爬壁机构与高速姿态稳定。</span></div>
+      <div class="team-card"><span class="tc-no">03</span><b>轮腿复合越障</b><span>轮腿穿越：变形结构通过性与平衡控制。</span></div>
+      <div class="team-card"><span class="tc-no">04</span><b>极速竞速</b><span>卡丁快跑：动力、操控与赛道速度的极限平衡。</span></div>
+      <div class="team-card"><span class="tc-no">05</span><b>搬运与精准放置</b><span>蚂蚁搬家：定位精度与作业稳定性。</span></div>
+      <div class="team-card"><span class="tc-no">06</span><b>端到端 AI 驾驶</b><span>人工智能模型：模型决策替代手写规则。</span></div>
+      <div class="team-card"><span class="tc-no">07</span><b>自平衡平台</b><span>独轮/单车：欠驱动系统的姿态闭环控制。</span></div>
+      <div class="team-card"><span class="tc-no">08</span><b>视觉感知与跟踪</b><span>人工智能视觉：目标识别、跟踪与伺服。</span></div>
+    </div>
+  </section>
+
+
+  <!-- 竞赛速览 -->
+  <section class="sec rv" id="race-quick">
+    <div class="sec-head">
+      <h2><small>RACE 101</small>竞赛速览</h2>
+      <p class="tip">三步看懂比赛，再决定怎么上车。</p>
+    </div>
+    <div class="team-grid" style="grid-template-columns:repeat(3,1fr)">
+      <a class="team-card tilt" href="#cat-race" style="display:block">
+        <span class="tc-no">STEP 1</span><b>赛事总览</b>
+        <span>全国大学生智能汽车竞赛：竞速类与综合创意类两大类；竞速类按缩微赛道、室内赛道、室外赛道三个子类设组；晋级路径为校内选拔 → 分赛区 → 全国赛。</span>
+      </a>
+      <a class="team-card tilt" href="about.html#groups" style="display:block">
+        <span class="tc-no">STEP 2</span><b>组别选择</b>
+        <span>八个组别方向：从飞跃雷区、飞檐走壁、轮腿穿越到人工智能模型——看各组任务特点，找到最适合自己的那个。</span>
+      </a>
+      <a class="team-card tilt" href="#reports" style="display:block">
+        <span class="tc-no">STEP 3</span><b>看真东西</b>
+        <span>7 支队伍全国总决赛技术报告全文＋开源代码仓库——看看一辆能跑的车，里面到底长什么样。</span>
+      </a>
+    </div>
+  </section>
+
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+  <!-- 技术报告 -->
+  <section class="sec rv" id="reports">
+    <div class="sec-head">
+      <h2><small>REPORTS</small>技术报告全文（第 21 届国赛）</h2>
+      <p class="tip">七支队伍的全国总决赛技术报告，含方案设计、算法推导与调试记录；支持在线预览与下载。</p>
+    </div>
+    <div class="report-grid">
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>1 队 · 飞跃雷区</b></div>
+        <span>室外综合任务整车方案：多核流水线、共享邮箱通信与任务调度。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风1队-飞跃雷区.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风1队-飞跃雷区.pdf" download="第21届技术报告-济海追风1队-飞跃雷区.pdf">下载</a></span>
+      </article>
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>2 队 · 轮腿穿越</b></div>
+        <span>轮腿复合结构设计、越障策略与稳定性控制。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风2队-轮腿穿越.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风2队-轮腿穿越.pdf" download="第21届技术报告-济海追风2队-轮腿穿越.pdf">下载</a></span>
+      </article>
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>3 队 · 蚂蚁搬家</b></div>
+        <span>搬运放置任务的定位、抓取与流程控制方案。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风3队-蚂蚁搬家.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风3队-蚂蚁搬家.pdf" download="第21届技术报告-济海追风3队-蚂蚁搬家.pdf">下载</a></span>
+      </article>
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>5 队 · 人工智能模型</b></div>
+        <span>端到端 AI 决策模型的训练、部署与车上推理。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风5队-人工智能模型.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风5队-人工智能模型.pdf" download="第21届技术报告-济海追风5队-人工智能模型.pdf">下载</a></span>
+      </article>
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>6 队 · 飞檐走壁</b></div>
+        <span>爬壁机构、吸附方案与高速爬壁姿态控制。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风6队-飞檐走壁.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风6队-飞檐走壁.pdf" download="第21届技术报告-济海追风6队-飞檐走壁.pdf">下载</a></span>
+      </article>
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>7 队 · 单车定向</b></div>
+        <span>单车平台定向行驶的方案设计与控制实现。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风7队-单车定向.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风7队-单车定向.pdf" download="第21届技术报告-济海追风7队-单车定向.pdf">下载</a></span>
+      </article>
+      <article class="report-card">
+        <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>8 队 · 卡丁快跑</b></div>
+        <span>多核流水线图像识别与极速跟随控制（TC387 多核架构）。</span>
+        <span class="doc-actions"><a class="view" href="assets/docs/技术报告-济海追风8队-卡丁快跑.pdf" target="_blank" rel="noopener">在线预览</a><a class="dl" href="assets/docs/技术报告-济海追风8队-卡丁快跑.pdf" download="第21届技术报告-济海追风8队-卡丁快跑.pdf">下载</a></span>
+      </article>
+    </div>
+  </section>
+
+  <div id="showcaseCats" class="showcase-cats"></div>
+
+
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+  <!-- 自制视频内嵌 -->
+  <section class="sec rv">
+    <div class="sec-head">
+      <h2><small>VIDEOS</small>社团自制视频</h2>
+      <p class="tip">B站官方号出品，站内直接看；更多实录见培训中心「比赛实录」。</p>
+    </div>
+    <div class="embed-grid">
+      <div class="embed-card">
+        <div class="em-frame"><iframe src="https://player.bilibili.com/player.html?bvid=BV1r9Lh6hEEQ&autoplay=0" title="沉浸式体验济海追风硬件的一天" loading="lazy" allowfullscreen referrerpolicy="no-referrer"></iframe></div>
+        <div class="em-cap"><b>沉浸式体验济海追风硬件的一天</b><span>Vlog</span></div>
+      </div>
+      <div class="embed-card">
+        <div class="em-frame"><iframe src="https://player.bilibili.com/player.html?bvid=BV1S5Q6BdEiL&autoplay=0" title="智能车选手值得尝试的轻量3D打印耗材开箱测评" loading="lazy" allowfullscreen referrerpolicy="no-referrer"></iframe></div>
+        <div class="em-cap"><b>轻量 3D 打印耗材开箱测评</b><span>测评</span></div>
+      </div>
+    </div>
+    <a class="quick-card" href="training.html?track=hw#cat-live" style="--ac:#fbbf24;margin-top:16px">
+      <b>🏁 更多：东北赛区与国赛第一视角实录</b>
+      <span>发车、冲线、领奖的完整记录，在培训中心「比赛实录」板块（抖音源，手机端体验更佳）。</span>
+      <span class="go">去看实录 →</span>
+    </a>
+  </section>
+
+  <!-- 开源 -->
+  <section class="sec rv" style="padding-bottom:30px">
+    <div class="sec-head">
+      <h2><small>OPEN SOURCE</small>开源与代码</h2>
+    </div>
+    <div class="embed-grid">
+      <a class="quick-card" href="https://gitee.com/WL2002/ji_hai_zhui_feng" target="_blank" rel="noopener" style="--ac:#a78bfa">
+        <b>Gitee · 实验室公共仓库</b>
+        <span>19/20/21 届各组别工程代码归档：固件、驱动与控制算法，入队后的重要参考资料。</span>
+        <span class="go">前往仓库 →</span>
+      </a>
+      <a class="quick-card" href="training.html?track=sw#cat-hosting" style="--ac:#34d399">
+        <b>学习路线里的代码托管指南</b>
+        <span>GitHub / Gitee 怎么用、怎么找现成方案——培训中心「代码托管」分类。</span>
+        <span class="go">去看指南 →</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="check-strip" aria-hidden="true"></div>
+  <img class="bg-emblem" src="assets/img/heu-emblem.png" alt="" aria-hidden="true">
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 78 Q150 42 300 78 T600 78 T900 78 T1200 78 T1500 78 T1800 78 T2100 78 T2400 78 V150 H0 Z" fill="rgba(63,140,255,.14)"/></svg>
+    <svg class="w2" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 96 Q150 64 300 96 T600 96 T900 96 T1200 96 T1500 96 T1800 96 T2100 96 T2400 96 V150 H0 Z" fill="rgba(79,214,255,.11)"/></svg>
+    <svg class="w3" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 112 Q150 86 300 112 T600 112 T900 112 T1200 112 T1500 112 T1800 112 T2100 112 T2400 112 V150 H0 Z" fill="rgba(10,22,48,.85)"/></svg>
+  </div>
+  <svg class="boat" viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M34 5 L34 38 L55 38 Z" fill="rgba(148,190,255,.8)"/><path d="M30 13 L30 38 L17 38 Z" fill="rgba(148,190,255,.5)"/><path d="M10 43 L54 43 L46 54 L18 54 Z" fill="rgba(93,158,255,.85)"/>
+  </svg>
+  <div class="foot-grid">
+    <div class="fg-brand">
+      <img class="foot-logo" src="assets/img/club-logo.svg" alt="济海追风">
+      <p class="f1">济海追风智能汽车实验室</p>
+      <p class="f2">哈尔滨工程大学 · 智能科学与工程学院</p>
+      <p class="f-motto">大工至善 · 大学至真</p>
+    </div>
+    <nav class="fg-col" aria-label="站内导航">
+      <b>站内导航</b>
+      <a href="about.html">关于实验室</a>
+      <a href="news.html">新闻动态</a>
+      <a href="honors.html">获奖荣誉</a>
+      <a href="showcase.html">成果沉淀</a>
+      <a href="recruit.html">招新宣传</a>
+      <a href="training.html">培训中心</a>
+      <a href="/wiki/">社团 Wiki</a>
+    </nav>
+    <nav class="fg-col" aria-label="关注我们">
+      <b>关注我们</b>
+      <a href="https://search.bilibili.com/all?keyword=%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">B站官方号</a>
+      <a href="https://www.douyin.com/search/%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">抖音「HEU济海追风」</a>
+      <a href="https://gitee.com/WL2002/ji_hai_zhui_feng" target="_blank" rel="noopener">Gitee 公共仓库</a>
+    </nav>
+  </div>
+  <!-- 部署期填写 ICP 备案号后移除 hidden -->
+  <p class="foot-note"><span id="icp" hidden></span>本站视频与部分图片来自网络公开教程与社团自制资料，仅用于学习交流；外链跳转至第三方平台，本站不收集、不存储任何个人信息。<br>最近更新：2026-09-24 · © 2026 哈尔滨工程大学济海追风智能汽车实验室</p>
+</footer>
+
+<button id="toTop" title="回到顶部" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script src="assets/js/common.js"></script>
+<script src="data/training-data.js"></script>
+<script src="assets/js/showcase.js"></script>
+<script src="assets/js/fx.js"></script>
+</body>
+</html>

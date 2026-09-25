@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="济海追风智能汽车实验室官方网站——哈尔滨工程大学智能科学与工程学院，2006 年建队，连续二十年参加全国大学生智能汽车竞赛。招新宣传与软硬件培训中心。">
+<meta property="og:title" content="济海追风智能汽车实验室 · 哈尔滨工程大学">
+<meta property="og:description" content="2006 年建队，连续二十年参加全国大学生智能汽车竞赛；招新宣传与软硬件培训中心。">
+<meta property="og:image" content="assets/img/club-logo.png">
+<title>济海追风智能汽车实验室 · 哈尔滨工程大学</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/img/club-logo.svg" alt="济海追风标志">
+      <div class="brand-text">
+        <strong>济海追风</strong>
+        <span>智能汽车实验室</span>
+      </div>
+    </a>
+    <nav class="topnav" aria-label="主导航">
+      <a href="index.html" class="active">首页</a>
+      <a href="about.html">关于</a>
+      <a href="news.html">动态</a>
+      <a href="honors.html">荣誉</a>
+      <a href="showcase.html">成果</a>
+      <a href="recruit.html">招新</a>
+      <a href="training.html">培训</a>
+      <a href="/wiki/">Wiki</a>
+    </nav>
+    <a class="top-cta" href="recruit.html#join">加入我们</a>
+    <button class="menu-btn" id="menuBtn" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="mobile-nav" id="mobileNav" aria-label="移动端导航">
+    <a href="index.html">首页</a>
+    <a href="about.html">关于实验室</a>
+    <a href="news.html">新闻动态</a>
+    <a href="honors.html">获奖荣誉</a>
+    <a href="showcase.html">成果沉淀</a>
+    <a href="recruit.html">招新宣传</a>
+    <a href="training.html">培训中心</a>
+    <a href="/wiki/">社团 Wiki</a>
+    <a href="recruit.html#join">加入我们</a>
+  </nav>
+</header>
+
+<!-- ================= 首屏 ================= -->
+<section class="hero" id="top">
+  <canvas id="trackCanvas" class="track-canvas" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="hero-badge"><i></i>哈尔滨工程大学 · 智能科学与工程学院</div>
+      <h1>济海追风<br><em>智能汽车实验室</em></h1>
+      <p class="hero-motto">大工至善 · 大学至真</p>
+      <p>成立于 2006 年，连续二十年参加全国大学生智能汽车竞赛。围绕机械结构、嵌入式开发、感知算法、运动控制与整车调试开展系统训练，以「老带新」培养机制和项目攻关模式，让每一届新成员都能从零开始，亲手做出一辆会思考、能奔跑的智能车。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="recruit.html#join">加入我们
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="training.html">进入培训中心</a>
+      </div>
+      <div class="hero-stats">
+        <div><b data-count="2006">0</b><span>建队年份</span></div>
+        <div><b data-count="20" data-suffix=" 年">0</b><span>连续参赛</span></div>
+        <div><b data-count="8" data-suffix=" 支">0</b><span>第21届参赛队伍</span></div>
+        <div><b data-count="30" data-suffix=" 人次">0</b><span>第21届获奖人次</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="emblem-wrap">
+        <img class="emblem" src="assets/img/heu-emblem.png" alt="哈尔滨工程大学校徽">
+        <span class="orbit" aria-hidden="true"></span>
+        <span class="orbit o2" aria-hidden="true"></span>
+      </div>
+      <div class="logo-stage">
+        <div class="ls-glow" aria-hidden="true"></div>
+        <img class="hero-logo" src="assets/img/club-logo.png" alt="济海追风智能汽车实验室">
+        <i class="ls-sweep" aria-hidden="true"></i>
+        <span class="ls-corner tl" aria-hidden="true"></span><span class="ls-corner tr" aria-hidden="true"></span>
+        <span class="ls-corner bl" aria-hidden="true"></span><span class="ls-corner br" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-year" aria-hidden="true" data-parallax="0.12">2006</div>
+  <svg class="skyline" viewBox="0 0 1440 210" aria-hidden="true">
+    <defs>
+      <pattern id="heuWin" width="17" height="21" patternUnits="userSpaceOnUse">
+        <rect x="5" y="5" width="7" height="11" fill="rgba(148,190,255,.28)"/>
+      </pattern>
+    </defs>
+    <g stroke="rgba(126,172,255,.4)" stroke-width="1.4" stroke-linejoin="round">
+      <text x="182" y="150" font-family="Consolas,monospace" font-size="13" letter-spacing="4" stroke="none" fill="rgba(126,172,255,.4)">HEU · EST. 1953</text>
+      <rect x="238" y="108" width="964" height="96" fill="url(#heuWin)"/>
+      <rect x="222" y="104" width="34" height="100" fill="url(#heuWin)"/>
+      <rect x="1184" y="104" width="34" height="100" fill="url(#heuWin)"/>
+      <rect x="652" y="80" width="136" height="124" fill="url(#heuWin)"/>
+      <rect x="698" y="42" width="44" height="38" fill="url(#heuWin)"/>
+      <path d="M206 104 L239 86 L272 104 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M1168 104 L1201 86 L1234 104 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M242 110 Q258 102 272 96 L1168 96 Q1182 102 1198 110 L1198 114 L242 114 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M634 82 Q650 76 666 62 L774 62 Q790 76 806 82 L806 86 L634 86 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M684 42 Q698 38 708 28 L732 28 Q742 38 756 42 L756 45 L684 45 Z" fill="rgba(18,32,66,.65)"/>
+      <path d="M704 204 L704 182 Q720 170 736 182 L736 204 Z" fill="rgba(8,16,36,.9)"/>
+      <path d="M180 204 L1260 204" stroke="rgba(126,172,255,.22)"/>
+    </g>
+  </svg>
+  <div class="scroll-hint" aria-hidden="true"><span class="mouse"></span>SCROLL</div>
+</section>
+
+<!-- ================= 速达入口 ================= -->
+<section class="wrap sec rv">
+  <div class="sec-head">
+    <h2><small>QUICK LINKS</small>你想做什么？<span class="idx">01</span></h2>
+    <p class="tip">新生最常走的两条路：想加入看左边，想学习看右边。</p>
+  </div>
+  <div class="quick-grid">
+    <a class="quick-card tilt" href="recruit.html" style="--ac:#3f8cff">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span>
+      <b>招新宣传</b>
+      <span>报名通道（QQ 群）、招新流程、常见问题与宣传物料，一站看全。</span>
+      <span class="go">去看看 →</span>
+    </a>
+    <a class="quick-card tilt" href="training.html" style="--ac:#34d399">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1.5v3M15 1.5v3M9 19.5v3M15 19.5v3M20.5 9h3M20.5 15h3M.5 9h3M.5 15h3"/></svg></span>
+      <b>培训中心</b>
+      <span>软硬件双赛道学习路线、80+ 精选资源、培训日程、讲义与考核任务。</span>
+      <span class="go">开始学习 →</span>
+    </a>
+    <a class="quick-card tilt" href="showcase.html#cat-race" style="--ac:#ff5c5c">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20M2 12h20"/></svg></span>
+      <b>🏁 竞赛专区</b>
+      <span>全国大学生智能汽车竞赛：赛规解读、组别选择、电机与电控技术。</span>
+      <span class="go">了解比赛 →</span>
+    </a>
+    <a class="quick-card tilt" href="showcase.html#cat-live" style="--ac:#fbbf24">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6.5" width="13" height="11" rx="2"/><path d="M15 10.5l7-3.5v10l-7-3.5"/></svg></span>
+      <b>比赛实录</b>
+      <span>东北赛区与全国总决赛的第一视角：发车、冲线、领奖的真实记录。</span>
+      <span class="go">感受现场 →</span>
+    </a>
+  </div>
+</section>
+
+
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+<!-- ================= 第21届成绩 ================= -->
+<section class="wrap sec rv">
+  <div class="sec-head">
+    <h2><small>ACHIEVEMENTS</small>第 21 届全国大学生智能汽车竞赛 · 成绩<span class="idx">02</span></h2>
+    <p class="tip">2026 年，8 支参赛队伍全部获奖；一队获嘉立创卓越工程奖。</p>
+  </div>
+  <div class="honor-band">
+    <div><b data-count="3" data-suffix=" 队">0</b><span>全国一等奖</span></div>
+    <div><b data-count="3" data-suffix=" 队">0</b><span>全国二等奖</span></div>
+    <div><b data-count="1" data-suffix=" 队">0</b><span>全国三等奖</span></div>
+    <div><b>全国第二</b><span>飞跃雷区组 · 一队</span></div>
+  </div>
+  <p class="honor-note">数据口径：第 21 届全国大学生智能汽车竞赛获奖统计（2026-08）。另有 1 队获省二等奖。</p>
+</section>
+<!-- ================= 实验室快照 ================= -->
+<section class="wrap sec rv">
+  <div class="sec-head">
+    <h2><small>SNAPSHOTS</small>实验室快照</h2>
+    <p class="tip">赛场与实验室的真实切片，点击放大；更多见「关于实验室」。</p>
+  </div>
+  <div class="gallery snap">
+    <figure class="g-item"><img src="assets/img/gallery/gallery-race-0.jpg" alt="东北赛区竞赛现场发车准备" loading="lazy" data-lightbox="assets/img/gallery/gallery-race-0.jpg"><figcaption>东北赛区 · 发车准备</figcaption></figure>
+    <figure class="g-item"><img src="assets/img/gallery/gallery-race-1.jpg" alt="东北赛区竞赛现场冲线" loading="lazy" data-lightbox="assets/img/gallery/gallery-race-1.jpg"><figcaption>东北赛区 · 冲线瞬间</figcaption></figure>
+    <figure class="g-item"><img src="assets/img/gallery/gallery-feiyan-models.jpg" alt="飞檐走壁组历代车模" loading="lazy" data-lightbox="assets/img/gallery/gallery-feiyan-models.jpg"><figcaption>飞檐走壁 · 历代车模</figcaption></figure>
+    <figure class="g-item"><img src="assets/img/gallery/gallery-study-board.jpg" alt="自研主驱一体学习板" loading="lazy" data-lightbox="assets/img/gallery/gallery-study-board.jpg"><figcaption>自研主驱一体学习板</figcaption></figure>
+  </div>
+  <div class="gallery-more"><a class="btn btn-ghost" href="about.html#contact">环境与到访 →</a></div>
+</section>
+
+
+
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+<!-- ================= 关于实验室 ================= -->
+<section class="wrap sec rv">
+  <div class="sec-head">
+    <h2><small>ABOUT</small>关于济海追风<span class="idx">03</span></h2>
+  </div>
+  <div class="quick-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="quick-card" style="--ac:#4fd6ff">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
+      <b>方向</b>
+      <span>以「车」为载体，融合自动控制、传感器与图像处理：从嵌入式底层驱动到整车闭环控制的完整技术链路。</span>
+    </div>
+    <div class="quick-card" style="--ac:#34d399">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg></span>
+      <b>培养</b>
+      <span>「老带新」培养机制：招新后进入软硬件双赛道培训体系，每次培训配考核任务，做出来就算入门。</span>
+    </div>
+    <div class="quick-card" style="--ac:#fbbf24">
+      <span class="qc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M17 5h3v3a5 5 0 0 1-5 5M7 5H4v3a5 5 0 0 0 5 5M7 3h10v8a5 5 0 0 1-10 0z"/></svg></span>
+      <b>舞台</b>
+      <span>全国大学生智能汽车竞赛为主战场，校内选拔 → 分赛区 → 全国赛；也可跟指导老师参加电赛、大创、罗克韦尔中国工业智能挑战赛等；科创展台、成果展等活动同样常有身影。</span>
+    </div>
+  </div>
+</section>
+
+
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+<!-- ================= 最新动态 ================= -->
+<section class="wrap sec rv">
+  <div class="sec-head">
+    <h2><small>NEWS</small>最新动态<span class="idx">04</span></h2>
+    <p class="tip">实验室最近发生了什么；完整列表见新闻动态页。</p>
+  </div>
+  <div class="news-mini" id="newsMini">
+    <!-- 静态预渲染：无 JS 环境也能显示；JS 加载后按 data/news-data.js 重渲染 -->
+    <a class="news-item tilt" href="news.html">
+      <span class="ni-date">2026-09-24</span>
+      <div class="ni-body"><b>济海追风实验室官方网站启用<span class="ni-tag">本站</span></b><p>实验室官网正式上线：招新宣传、软硬件双赛道培训中心、实验室介绍、新闻动态与获奖荣誉一站可查。</p></div>
+    </a>
+    <a class="news-item tilt" href="news.html">
+      <span class="ni-date">2026-09-23</span>
+      <div class="ni-body"><b>实验室参展第十六届科创嘉年华<span class="ni-tag">活动</span></b><p>奥列霍夫广场「四创」成果展，创新创业特色展区：历届车模、技术海报与现场答疑，欢迎全校同学来展位交流。</p></div>
+    </a>
+    <a class="news-item tilt" href="training.html">
+      <span class="ni-date">2026-09-23</span>
+      <div class="ni-body"><b>2026 年第一次软件与硬件培训通知发布<span class="ni-tag">培训</span></b><p>新成员培训周期启动：软件赛道「嵌入式软件开发入门」、硬件赛道同步开讲，讲义已上线培训中心，一次培训周期内随时在培训场地找学长验收。</p></div>
+    </a>
+  </div>
+  <div class="gallery-more"><a class="btn btn-ghost" href="news.html">全部动态 →</a></div>
+</section>
+
+<!-- ================= 官方阵地 ================= -->
+<section class="wrap sec rv" style="padding-bottom:30px">
+  <div class="sec-head">
+    <h2><small>FOLLOW US</small>官方阵地<span class="idx">05</span></h2>
+    <p class="tip">日常动态、视频与代码都发布在这些平台。</p>
+  </div>
+  <div class="news-grid">
+    <a class="news-card" href="https://search.bilibili.com/all?keyword=%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">
+      <span class="nc-tag">BILIBILI</span>
+      <b>B站官方号</b>
+      <span>实验室日常 Vlog、开箱测评等社团自制内容。站内搜索「济海追风」即可找到。</span>
+      <span class="go">前往 B站 →</span>
+    </a>
+    <a class="news-card" href="https://www.douyin.com/search/%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">
+      <span class="nc-tag">DOUYIN</span>
+      <b>抖音「HEU济海追风」</b>
+      <span>赛场第一视角实录、硬件小科普与实验室名场面。</span>
+      <span class="go">前往抖音 →</span>
+    </a>
+    <a class="news-card" href="https://gitee.com/WL2002/ji_hai_zhui_feng" target="_blank" rel="noopener">
+      <span class="nc-tag">GITEE</span>
+      <b>公共代码仓库</b>
+      <span>19/20/21 届各组别工程代码归档，入队后的重要参考资料。</span>
+      <span class="go">前往 Gitee →</span>
+    </a>
+  </div>
+</section>
+
+<!-- ================= 页脚 ================= -->
+<footer>
+  <div class="check-strip" aria-hidden="true"></div>
+  <img class="bg-emblem" src="assets/img/heu-emblem.png" alt="" aria-hidden="true">
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 2400 150" preserveAspectRatio="none">
+      <path d="M0 78 Q150 42 300 78 T600 78 T900 78 T1200 78 T1500 78 T1800 78 T2100 78 T2400 78 V150 H0 Z" fill="rgba(63,140,255,.14)"/>
+    </svg>
+    <svg class="w2" viewBox="0 0 2400 150" preserveAspectRatio="none">
+      <path d="M0 96 Q150 64 300 96 T600 96 T900 96 T1200 96 T1500 96 T1800 96 T2100 96 T2400 96 V150 H0 Z" fill="rgba(79,214,255,.11)"/>
+    </svg>
+    <svg class="w3" viewBox="0 0 2400 150" preserveAspectRatio="none">
+      <path d="M0 112 Q150 86 300 112 T600 112 T900 112 T1200 112 T1500 112 T1800 112 T2100 112 T2400 112 V150 H0 Z" fill="rgba(10,22,48,.85)"/>
+    </svg>
+  </div>
+  <svg class="boat" viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M34 5 L34 38 L55 38 Z" fill="rgba(148,190,255,.8)"/>
+    <path d="M30 13 L30 38 L17 38 Z" fill="rgba(148,190,255,.5)"/>
+    <path d="M10 43 L54 43 L46 54 L18 54 Z" fill="rgba(93,158,255,.85)"/>
+  </svg>
+  <div class="foot-grid">
+    <div class="fg-brand">
+      <img class="foot-logo" src="assets/img/club-logo.svg" alt="济海追风">
+      <p class="f1">济海追风智能汽车实验室</p>
+      <p class="f2">哈尔滨工程大学 · 智能科学与工程学院</p>
+      <p class="f-motto">大工至善 · 大学至真</p>
+    </div>
+    <nav class="fg-col" aria-label="站内导航">
+      <b>站内导航</b>
+      <a href="about.html">关于实验室</a>
+      <a href="news.html">新闻动态</a>
+      <a href="honors.html">获奖荣誉</a>
+      <a href="showcase.html">成果沉淀</a>
+      <a href="recruit.html">招新宣传</a>
+      <a href="training.html">培训中心</a>
+      <a href="/wiki/">社团 Wiki</a>
+    </nav>
+    <nav class="fg-col" aria-label="关注我们">
+      <b>关注我们</b>
+      <a href="https://search.bilibili.com/all?keyword=%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">B站官方号</a>
+      <a href="https://www.douyin.com/search/%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">抖音「HEU济海追风」</a>
+      <a href="https://gitee.com/WL2002/ji_hai_zhui_feng" target="_blank" rel="noopener">Gitee 公共仓库</a>
+    </nav>
+  </div>
+    <!-- 部署期填写 ICP 备案号后移除 hidden -->
+  <p class="foot-note"><span id="icp" hidden></span>本站视频与部分图片来自网络公开教程与社团自制资料，仅用于学习交流；外链跳转至第三方平台，本站不收集、不存储任何个人信息。<br>最近更新：2026-09-24 · © 2026 哈尔滨工程大学济海追风智能汽车实验室</p>
+</footer>
+
+<button id="toTop" title="回到顶部" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script src="assets/js/common.js"></script>
+<script src="data/news-data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var box = document.getElementById('newsMini');
+  if (!box || typeof NEWS === 'undefined') return;
+  box.innerHTML = NEWS.slice(0, 3).map(function (n) {
+    return '<a class="news-item tilt" href="' + (n.link || 'news.html') + '">' +
+      '<span class="ni-date">' + n.date + '</span>' +
+      '<div class="ni-body"><b>' + n.t + '<span class="ni-tag">' + n.tag + '</span></b><p>' + n.d + '</p></div>' +
+      '</a>';
+  }).join('');
+});
+</script>
+<script src="assets/js/fx.js"></script>
+</body>
+</html>
