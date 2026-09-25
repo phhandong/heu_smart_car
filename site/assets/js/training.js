@@ -1,12 +1,14 @@
 /* ================================================================
- * 培训中心页逻辑
- * 数据来自 data/training-data.js（TRACKS / DOCS）
- * 交互：赛道切换 / 分类筛选 / 搜索 / 学习打卡（localStorage）
- * 设计要点（对旧版硬件导航页的修复）：
- *  - 筛选与搜索用 hide 类切换显隐，不重建 DOM → 页内锚点与观察器始终有效；
- *  - 打卡记录以「赛道:稳定ID」为键（BV 号等），增删/调序资源不串位；
- *  - 打卡切换只更新当前卡片与进度文本，不整页重渲染 → 键盘焦点不丢失；
- *  - 按钮文案随资源类型（视频/网站/文档）；统计数字排除「占位」条目。
+ * 培训中心逻辑（v0.4 拆页版）
+ * 页面模式由 <body data-track="sw|hw|hub"> 决定：
+ *  - hub：只渲染全站统计与讲义中心（training.html）；
+ *  - sw / hw：渲染该赛道的路线/日程/资源库（+sw 的考核与术语）。
+ * 数据来自 data/training-data.js（TRACKS / DOCS / GLOSSARY / EXAMS）。
+ * 交互：分类筛选 / 搜索 / 学习打卡（localStorage，键=赛道:稳定ID）。
+ * 设计要点（继承旧版修复）：
+ *  - 筛选与搜索用 hide 类切换显隐，不重建 DOM → 锚点始终有效；
+ *  - 打卡切换只更新当前卡片与进度文本，不整页重渲染 → 焦点不丢失；
+ *  - 按钮文案随资源类型；统计排除「占位」条目。
  * ================================================================ */
 (function () {
   'use strict';
@@ -43,6 +45,8 @@
     return type === 'site' ? '访问网站' : type === 'doc' ? '查看资料' : '观看视频';
   }
 
+  var TRACK = document.body.getAttribute('data-track') || 'hub';
+
   /* ---- 打卡存储：键 = 赛道:稳定ID ---- */
   var store = {
     key: 'jhzf_site_done_v1',
@@ -50,54 +54,29 @@
     set: function (a) { localStorage.setItem(this.key, JSON.stringify(a)); }
   };
   var done = new Set(store.get());
-
-  var state = { track: 'sw', cat: 'all', q: '' };
-  var params = new URLSearchParams(location.search);
-  if (params.get('track') === 'hw' || params.get('track') === 'sw') state.track = params.get('track');
+  var state = { cat: 'all', q: '' };
 
   /* ---- 顶部统计（排除占位条目） ---- */
   function renderGlobalStats() {
+    var el = $('#globalStats');
+    if (!el) return;
     var total = 0, real = 0;
     ['sw', 'hw'].forEach(function (k) {
       TRACKS[k].cats.forEach(function (c) {
         c.items.forEach(function (it) { total++; if (!isPlaceholder(it.url)) real++; });
       });
     });
-    var el = $('#globalStats');
-    if (el) {
-      el.innerHTML =
-        '<div><b>2</b><span>培训赛道</span></div>' +
-        '<div><b>' + real + '</b><span>精选资源（另有 ' + (total - real) + ' 条占位待补）</span></div>' +
-        '<div><b>' + DOCS.length + '</b><span>培训讲义</span></div>';
-    }
-  }
-
-  /* ---- 赛道切换按钮 ---- */
-  function renderTrackSwitch() {
-    var box = $('#trackSwitch');
-    box.innerHTML = ['sw', 'hw'].map(function (k) {
-      var t = TRACKS[k];
-      var ico = k === 'sw' ? ICONS.cpu : ICONS.pcb;
-      return '<button class="track-btn' + (state.track === k ? ' on' : '') + '" data-track="' + k + '" style="--tc:' + t.accent + '" aria-pressed="' + (state.track === k) + '">' +
-        '<span class="tb-ico">' + svg(ico) + '</span>' +
-        '<span><b>' + t.name + '</b><span>' + t.tagline + '</span></span>' +
-        '</button>';
-    }).join('');
-    box.addEventListener('click', function (e) {
-      var b = e.target.closest('.track-btn');
-      if (!b || b.dataset.track === state.track) return;
-      state.track = b.dataset.track;
-      state.cat = 'all'; state.q = '';
-      $('#q').value = '';
-      renderTrackSwitch();
-      renderTrackView();
-      $('#library').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    el.innerHTML =
+      '<div><b>2</b><span>培训赛道</span></div>' +
+      '<div><b>' + real + '</b><span>精选资源（另有 ' + (total - real) + ' 条占位待补）</span></div>' +
+      '<div><b>' + DOCS.length + '</b><span>培训讲义</span></div>';
   }
 
   /* ---- 学习路线 ---- */
   function renderRoadmap() {
-    var t = TRACKS[state.track];
+    var box = $('#roadmap');
+    if (!box) return;
+    var t = TRACKS[TRACK];
     var steps = t.roadmap.map(function (s) {
       var inner = '<span class="num">' + s.num + '</span><b>' + s.title + '</b><span>' + s.sub + '</span>';
       return '<li>' + (s.anchor ? '<a href="#' + s.anchor + '">' + inner + '</a>' : '<div class="step">' + inner + '</div>') + '</li>';
@@ -105,17 +84,19 @@
     var cta = t.raceCta ?
       '<a class="quick-card tilt" href="' + (t.raceCta.href || '#' + t.raceCta.anchor) + '" style="--ac:#ff5c5c;margin-top:16px">' +
       '<b>🏁 ' + t.raceCta.title + '</b><span>' + t.raceCta.sub + '</span></a>' : '';
-    $('#roadmap').innerHTML =
+    box.innerHTML =
       '<div class="sec-head"><h2><small>LEARNING PATH</small>' + t.name + ' · 学习路线</h2>' +
       '<p class="tip">' + (t.id === 'hw'
-        ? '按顺序一步步来：前三步练好硬件基本功，第四步帮你找到自己的方向。「仪器与工具」是全程都用得上的支线。'
-        : '五次培训层层递进，每次培训后都有考核任务（一次培训周期内随时在培训场地找学长验收）；配套资源在下方资源库，按分类取用。') + '</p></div>' +
+        ? '前三步练好硬件基本功，第四步帮你找到自己的方向；「仪器与工具」是全程支线。'
+        : '五次培训层层递进，每次培训后都有考核任务；配套资源在下方资源库。') + '</p></div>' +
       '<ol class="steps ' + (t.roadmapCols || '') + '">' + steps + '</ol>' + cta;
   }
 
   /* ---- 培训日程 ---- */
   function renderSchedule() {
-    var t = TRACKS[state.track];
+    var box = $('#schedule');
+    if (!box) return;
+    var t = TRACKS[TRACK];
     var rows = t.schedule.map(function (s) {
       return '<tr>' +
         '<td><b>' + s.name + '</b></td>' +
@@ -127,17 +108,19 @@
         '<td><span class="tag-status ' + s.status + '">' + s.statusText + '</span></td>' +
         '</tr>';
     }).join('');
-    $('#schedule').innerHTML =
+    box.innerHTML =
       '<div class="sec-head"><h2><small>SCHEDULE</small>培训日程与考核</h2>' +
-      '<p class="tip">具体时间以招新 QQ 群通知为准；每次培训考核均为「一次培训周期内，随时在培训场地找学长验收」。</p></div>' +
+      '<p class="tip">具体时间以招新 QQ 群通知为准；考核在一次培训周期内随时可找学长验收。</p></div>' +
       '<div class="sched-wrap"><table class="sched"><thead><tr>' +
       '<th>场次</th><th>主题</th><th>时间</th><th>讲义</th><th>考核</th><th>负责人</th><th>状态</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
 
-  /* ---- 讲义中心（两赛道共用，只渲染一次） ---- */
+  /* ---- 讲义中心（按容器存在与否渲染） ---- */
   function renderDocs() {
-    $('#docs').innerHTML = DOCS.map(function (d) {
+    var box = $('#docs');
+    if (!box) return;
+    box.innerHTML = DOCS.map(function (d) {
       var tname = TRACKS[d.track].name;
       return '<article class="doc-card rv">' +
         '<span class="dc-ico">' + svg(ICONS.doc) + '</span>' +
@@ -149,7 +132,7 @@
         '<a class="dl" href="' + d.file + '" download="' + d.name + '.pdf">下载</a>' +
         '</span></article>';
     }).join('');
-    observeRv($('#docs'));
+    observeRv(box);
   }
 
   /* ---- 资源卡片墙 ---- */
@@ -160,7 +143,7 @@
     return '<article class="vcard rv' + (isDone ? ' done' : '') + '" data-key="' + key + '" data-search="' +
       (item.t + item.d + (item.tags || []).join() + cat.name).toLowerCase().replace(/"/g, '&quot;') + '"' +
       ' style="--ac:' + cat.color + ';--ac-soft:' + cat.soft + ';--ac-bd:' + cat.bd + ';--ac-sh:' + cat.sh + '">' +
-      '<div class="v-top"><span class="v-ico">' + svg(cat.icon ? ICONS[cat.icon] || ICONS.book : ICONS.book) + '</span>' +
+      '<div class="v-top"><span class="v-ico">' + svg(ICONS[cat.icon] || ICONS.book) + '</span>' +
       '<span class="v-plat">' + platform(item.url, item.type) + '</span></div>' +
       '<h3 class="vt">' + item.t + (ph ? '<span class="flag">占位</span>' : '') + '</h3>' +
       '<p class="vd">' + item.d + '</p>' +
@@ -174,8 +157,10 @@
   }
 
   function renderSections() {
-    var t = TRACKS[state.track];
-    $('#sections').innerHTML = t.cats.filter(function (c) { return !c.scope; }).map(function (cat) {
+    var box = $('#sections');
+    if (!box) return;
+    var t = TRACKS[TRACK];
+    box.innerHTML = t.cats.filter(function (c) { return !c.scope; }).map(function (cat) {
       return '<section class="cat-section' + (cat.featured ? ' featured' : '') + '" id="cat-' + cat.id + '" data-cat="' + cat.id + '"' +
         ' style="--ac:' + cat.color + ';--ac-soft:' + cat.soft + ';--ac-bd:' + cat.bd + ';--ac-sh:' + cat.sh + '">' +
         '<div class="cat-head"><span class="ico-box">' + svg(ICONS[cat.icon] || ICONS.book) + '</span>' +
@@ -186,12 +171,13 @@
         '<div class="grid">' + cat.items.map(function (it) { return cardHTML(cat, it, t.id); }).join('') + '</div>' +
         '</section>';
     }).join('');
-    observeRv($('#sections'));
+    observeRv(box);
   }
 
   function renderChips() {
-    var t = TRACKS[state.track];
     var box = $('#chips');
+    if (!box) return;
+    var t = TRACKS[TRACK];
     box.innerHTML = '<button class="chip on" data-cat="all"><i></i>全部</button>' +
       t.cats.filter(function (c) { return !c.scope; }).map(function (c) {
         return '<button class="chip" data-cat="' + c.id + '" style="--c:' + c.color + '"><i></i>' + c.name + '</button>';
@@ -201,7 +187,7 @@
   /* ---- 筛选：只切换显隐，不重建 DOM ---- */
   function applyFilter() {
     var q = state.q.trim().toLowerCase();
-    var t = TRACKS[state.track];
+    var t = TRACKS[TRACK];
     var visible = 0;
     document.querySelectorAll('#sections .cat-section').forEach(function (sec) {
       var catId = sec.dataset.cat;
@@ -215,19 +201,21 @@
       });
       sec.classList.toggle('hide', shown === 0);
       visible += shown;
-      /* 每分类进度（不受筛选影响，始终反映全量） */
       var cat = t.cats.filter(function (c) { return c.id === catId; })[0];
       var dn = cat.items.filter(function (it) { return done.has(t.id + ':' + it.id); }).length;
       var prog = sec.querySelector('.prog');
       if (prog) prog.textContent = '已学 ' + dn + '/' + cat.items.length;
     });
-    $('#count').textContent = '共 ' + visible + ' 个资源';
-    $('#empty').hidden = visible > 0;
-    $('#trackProg').textContent = trackProgressText();
+    var count = $('#count');
+    if (count) count.textContent = '共 ' + visible + ' 个资源';
+    var empty = $('#empty');
+    if (empty) empty.hidden = visible > 0;
+    var tp = $('#trackProg');
+    if (tp) tp.textContent = trackProgressText();
   }
 
   function trackProgressText() {
-    var t = TRACKS[state.track];
+    var t = TRACKS[TRACK];
     var total = 0, dn = 0;
     t.cats.forEach(function (c) {
       c.items.forEach(function (it) { total++; if (done.has(t.id + ':' + it.id)) dn++; });
@@ -235,59 +223,7 @@
     return t.name + '进度：已学 ' + dn + '/' + total;
   }
 
-  /* ---- 入场动画观察 ---- */
-  var io = new IntersectionObserver(function (es) {
-    es.forEach(function (x) {
-      if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); }
-    });
-  }, { threshold: .08 });
-  function observeRv(root) {
-    root.querySelectorAll('.rv:not(.in)').forEach(function (el) { io.observe(el); });
-  }
-
-  /* ---- 整轨渲染 ---- */
-  function renderTrackView() {
-    renderRoadmap();
-    renderSchedule();
-    renderChips();
-    renderSections();
-    applyFilter();
-    /* 赛道切换后若带锚点（如 ?track=hw#cat-race），滚动到位 */
-    if (location.hash) {
-      var el = document.querySelector(location.hash);
-      if (el) setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
-    }
-  }
-
-  /* ---- 事件绑定 ---- */
-  $('#chips').addEventListener('click', function (e) {
-    var b = e.target.closest('.chip');
-    if (!b) return;
-    $('#chips').querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
-    b.classList.add('on');
-    state.cat = b.dataset.cat;
-    applyFilter();
-  });
-
-  $('#q').addEventListener('input', function (e) { state.q = e.target.value; applyFilter(); });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === '/' && document.activeElement !== $('#q')) { e.preventDefault(); $('#q').focus(); }
-  });
-
-  /* 打卡：只更新单卡，不整页重渲染 */
-  $('#sections').addEventListener('click', function (e) {
-    var b = e.target.closest('.btn-done');
-    if (!b) return;
-    var key = b.dataset.key;
-    var card = b.closest('.vcard');
-    if (done.has(key)) { done.delete(key); } else { done.add(key); }
-    store.set(Array.from(done));
-    card.classList.toggle('done', done.has(key));
-    b.setAttribute('aria-pressed', done.has(key) ? 'true' : 'false');
-    applyFilter(); /* 仅刷新进度文本与显隐，卡片节点不动 */
-  });
-
-  /* ---- 术语速查 ---- */
+  /* ---- 术语速查（软件页） ---- */
   function renderGloss() {
     var box = $('#glossGrid');
     if (!box) return;
@@ -309,7 +245,7 @@
     applyGloss();
   }
 
-  /* ---- 考核专区 ---- */
+  /* ---- 考核专区（软件页） ---- */
   function renderExams() {
     var box = $('#examGrid');
     if (!box) return;
@@ -325,11 +261,65 @@
     }).join('');
   }
 
+  /* ---- 入场动画观察 ---- */
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (x) {
+      if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); }
+    });
+  }, { threshold: .08 });
+  function observeRv(root) {
+    root.querySelectorAll('.rv:not(.in)').forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---- 事件绑定 ---- */
+  var chips = $('#chips');
+  if (chips) {
+    chips.addEventListener('click', function (e) {
+      var b = e.target.closest('.chip');
+      if (!b) return;
+      chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+      b.classList.add('on');
+      state.cat = b.dataset.cat;
+      applyFilter();
+    });
+  }
+  var q = $('#q');
+  if (q) {
+    q.addEventListener('input', function (e) { state.q = e.target.value; applyFilter(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
+  var sections = $('#sections');
+  if (sections) {
+    /* 打卡：只更新单卡，不整页重渲染 */
+    sections.addEventListener('click', function (e) {
+      var b = e.target.closest('.btn-done');
+      if (!b) return;
+      var key = b.dataset.key;
+      var card = b.closest('.vcard');
+      if (done.has(key)) { done.delete(key); } else { done.add(key); }
+      store.set(Array.from(done));
+      card.classList.toggle('done', done.has(key));
+      b.setAttribute('aria-pressed', done.has(key) ? 'true' : 'false');
+      applyFilter();
+    });
+  }
+
   /* ---- 启动 ---- */
   renderGlobalStats();
-  renderTrackSwitch();
   renderDocs();
-  renderGloss();
-  renderExams();
-  renderTrackView();
+  if (TRACK !== 'hub') {
+    renderRoadmap();
+    renderSchedule();
+    renderGloss();
+    renderExams();
+    renderChips();
+    renderSections();
+    applyFilter();
+    if (location.hash) {
+      var el = document.querySelector(location.hash);
+      if (el) setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+    }
+  }
 })();

@@ -797,3 +797,27 @@ footer .foot-note{text-align:center;font-size:12px;color:rgba(157,177,214,.7);ma
   .track-divider svg.line path,.track-divider .td-car,.scroll-hint .mouse::after{animation:none!important}
   .hero-copy>*,.page-head>*{opacity:1!important;transform:none!important;animation:none!important}
 }
+
+/* ================================================================
+ * v0.4 滚动驱动 3D：进度条 / [data-s3d] 翻开 / hero 滚出 / 小车跟滚
+ * ================================================================ */
+#scrollProg{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,#1c55c4,#3f8cff,#4fd6ff);box-shadow:0 0 10px rgba(79,214,255,.55)}
+[data-s3d]{
+  opacity:calc(.2 + .8 * var(--p,1));
+  transform:perspective(1000px) rotateX(calc((1 - var(--p,1)) * 14deg)) translateZ(calc((1 - var(--p,1)) * -60px));
+  transform-origin:50% 100%;
+}
+.hero .hero-inner{
+  transform:perspective(1200px) rotateX(calc(var(--hp,0) * 9deg)) translateY(calc(var(--hp,0) * -46px));
+  opacity:calc(1 - var(--hp,0) * .85);
+  transform-origin:50% 80%;
+}
+/* 分段切换器用 <a> 时的布局 */
+a.track-btn{display:flex}
+@media (prefers-reduced-motion:reduce){
+  [data-s3d]{opacity:1;transform:none}
+  .hero .hero-inner{transform:none;opacity:1}
+  .track-divider .td-car{animation:none;left:44%}
+  #scrollProg{display:none}
+}
