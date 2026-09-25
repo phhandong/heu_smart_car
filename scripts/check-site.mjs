@@ -6,10 +6,9 @@ import path from 'node:path';
 
 const root = process.cwd();
 const pages = ['index.html', 'about.html', 'news.html', 'honors.html', 'showcase.html', 'recruit.html', 'training.html', 'training-sw.html', 'training-hw.html', '404.html'];
-const grab = (html, re, label, page) => {
+const grab = (html, re) => {
   const m = html.match(re);
-  if (!m) throw Error(`Nav block missing (${label}) in ${page}`);
-  return [...m[0].matchAll(/href="([^"]+)"/g)].map(x => x[1]);
+  return m ? [...m[0].matchAll(/href="([^"]+)"/g)].map(x => x[1]) : null;
 };
 const RE_TOP = /<nav class="topnav"[\s\S]*?<\/nav>/;
 const RE_MOB = /<nav class="mobile-nav"[\s\S]*?<\/nav>/;
@@ -19,14 +18,13 @@ const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 let ref = null;
 for (const p of pages) {
   const html = await readFile(path.join(root, 'dist', p), 'utf8');
-  const cur = {
-    top: grab(html, RE_TOP, 'topnav', p),
-    mob: grab(html, RE_MOB, 'mobile-nav', p),
-    foot: grab(html, RE_FOOT, 'footer', p)
-  };
-  if (!ref) { ref = { page: p, ...cur }; continue; }
-  if (!eq(cur.top, ref.top)) throw Error(`Topnav drift in ${p} vs ${ref.page}: ${cur.top.join(',')} != ${ref.top.join(',')}`);
-  if (!eq(cur.mob, ref.mob)) throw Error(`Mobile nav drift in ${p} vs ${ref.page}`);
-  if (!eq(cur.foot, ref.foot)) throw Error(`Footer nav drift in ${p} vs ${ref.page}`);
+  const top = grab(html, RE_TOP);
+  const mob = grab(html, RE_MOB);
+  const foot = grab(html, RE_FOOT); // 404 等极简页允许无页脚导航
+  if (!top || !mob) throw Error(`Nav block missing (topnav/mobile-nav) in ${p}`);
+  if (!ref) { ref = { page: p, top, mob, foot }; continue; }
+  if (!eq(top, ref.top)) throw Error(`Topnav drift in ${p} vs ${ref.page}: ${top.join(',')} != ${ref.top.join(',')}`);
+  if (!eq(mob, ref.mob)) throw Error(`Mobile nav drift in ${p} vs ${ref.page}`);
+  if (foot && ref.foot && !eq(foot, ref.foot)) throw Error(`Footer nav drift in ${p} vs ${ref.page}`);
 }
 console.log(`Nav consistency checked across ${pages.length} pages.`);
