@@ -3,22 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="济海追风培训中心：软件与硬件双赛道入口、共享讲义中心与考核机制说明。">
-<meta property="og:title" content="培训中心 · 济海追风智能汽车实验室">
-<meta property="og:description" content="软硬件双赛道培训入口、讲义中心与考核机制。">
+<meta name="description" content="济海追风硬件培训：认识元器件、练焊接、画 PCB、找方向的四步路线，硬件学习资源库与培训日程。">
+<meta property="og:title" content="硬件培训 · 济海追风智能汽车实验室">
+<meta property="og:description" content="四步硬件入门路线、日程与硬件学习资源库。">
 <meta property="og:image" content="assets/img/club-logo.png">
-<title>培训中心 · 济海追风智能汽车实验室</title>
+<title>硬件培训 · 济海追风智能汽车实验室</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css">
-<script>
-/* 旧链接兼容：training.html?track=sw|hw → 对应赛道页 */
-(function () {
-  var m = location.search.match(/track=(sw|hw)/);
-  if (m) location.replace('training-' + m[1] + '.html' + location.hash);
-})();
-</script>
 </head>
-<body data-track="hub">
+<body data-track="hw">
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -54,58 +47,54 @@
 </header>
 
 <section class="page-head">
-  <div class="hero-badge"><i></i>软件 · 硬件 双赛道</div>
-  <h1>培训<em>中心</em></h1>
-  <p class="sub">选一条赛道开始：软件写代码调车，硬件焊板子造车。讲义、日程、考核与资源都在对应赛道页。</p>
-  <div class="hero-stats" id="globalStats" style="justify-content:center;margin:30px auto 0;width:fit-content"></div>
+  <div class="hero-badge"><i></i>HARDWARE · 动手入门</div>
+  <h1>硬件<em>培训</em></h1>
+  <p class="sub">四步走完硬件基本功：认识元器件、练好焊接、画出你的板子、找到你的方向。安全第一，先看规范再上电。</p>
 </section>
 
 <main class="wrap">
 
-  <!-- 双赛道入口 -->
-  <section class="sec rv">
-    <div class="sec-head">
-      <h2><small>TRACKS</small>选择你的赛道</h2>
-    </div>
-    <div class="join-grid" data-s3d>
-      <a class="exam-card tilt" href="training-sw.html" style="border-color:rgba(52,211,153,.45);display:block">
-        <span class="ex-session" style="color:#6ee7b7">SOFTWARE · CH32V307 + MounRiver II</span>
-        <h3>软件赛道 →</h3>
-        <ul>
-          <li>五次培训：嵌入式入门 → 菜单按键 → IMU 姿态 → 电机闭环 → 图像处理；</li>
-          <li>考核任务卡与验收口径、27 条术语速查；</li>
-          <li>31 条软件资源：课程、工具链、刷题、社区、AI 助教。</li>
-        </ul>
-      </a>
-      <a class="exam-card tilt" href="training-hw.html" style="border-color:rgba(79,214,255,.45);background:linear-gradient(180deg,rgba(79,214,255,.08),rgba(79,214,255,.02));display:block">
-        <span class="ex-session" style="color:#7cc4ff">HARDWARE · 动手入门</span>
-        <h3>硬件赛道 →</h3>
-        <ul>
-          <li>四步路线：认识元器件 → 练好焊接 → 画出你的板子 → 找到方向；</li>
-          <li>焊接安全规范与仪器使用支线；</li>
-          <li>39 条硬件资源：电路基础、焊接、PCB、仪器、成长，另有竞赛专区直通。</li>
-        </ul>
-      </a>
-    </div>
-  </section>
+  <!-- 赛道切换 -->
+  <div class="track-switch" role="group" aria-label="培训赛道切换">
+    <a class="track-btn" href="training-sw.html" style="--tc:#34d399">
+      <span class="tb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1.5v3M15 1.5v3M9 19.5v3M15 19.5v3M20.5 9h3M20.5 15h3M.5 9h3M.5 15h3"/></svg></span>
+      <span><b>软件赛道</b><span>C 语言 · 逐飞库 · 外设 · 闭环 · 图像</span></span>
+    </a>
+    <a class="track-btn on" href="training-hw.html" style="--tc:#4fd6ff" aria-current="page">
+      <span class="tb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="8" cy="9" r="1.7"/><circle cx="15.5" cy="14.8" r="1.7"/><path d="M8 10.7v3.6h5.5M15.5 13V8.2h-4.2"/></svg></span>
+      <span><b>硬件赛道</b><span>元器件 · 焊接 · PCB · 找方向</span></span>
+    </a>
+    <a class="track-btn" href="training.html" style="--tc:#94a3b8">
+      <span class="tb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg></span>
+      <span><b>培训首页</b><span>讲义中心与考核说明</span></span>
+    </a>
+  </div>
 
-  <!-- 讲义中心 -->
-  <section class="sec rv" id="docs-section" style="scroll-margin-top:90px">
-    <div class="sec-head">
-      <h2><small>HANDOUTS</small>讲义中心</h2>
-      <p class="tip">两条赛道共用；支持在线预览与下载，缺课可自学后参加考核。</p>
-    </div>
-    <div class="doc-grid" data-s3d id="docs"></div>
-  </section>
+  <!-- 学习路线 -->
+  <section class="sec rv" id="roadmap" style="scroll-margin-top:90px"></section>
 
-  <!-- 考核机制 -->
-  <section class="sec rv" style="padding-bottom:30px">
+  <!-- 培训日程 -->
+  <section class="sec rv" id="schedule" style="scroll-margin-top:90px"></section>
+
+  <!-- 资源库 -->
+  <section class="sec" id="library" style="scroll-margin-top:120px">
     <div class="sec-head">
-      <h2><small>EXAMS</small>考核机制</h2>
+      <h2><small>LIBRARY</small>硬件资源库</h2>
+      <p class="tip">按分类筛选或搜索；带「占位」角标的条目为待替换的搜索链接。</p>
     </div>
-    <div class="notice-card">
-      <h3>做出来，就算入门</h3>
-      <p style="font-size:14.5px;color:var(--sub);line-height:2">每次培训后发布考核任务（例如软件第一次的「呼吸灯」与「呼吸闪烁交替」），考核周期 1–2 周：<strong style="color:var(--txt)">一次培训周期内，随时在培训场地找学长验收</strong>，现场演示通过即计入培训进度。任务卡、验收口径与加分项见各赛道页「考核专区」；后续考核随讲义同步发布。</p>
+    <div class="toolbar">
+      <div class="chips" id="chips" role="group" aria-label="资源分类筛选"></div>
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="text" placeholder="搜索资源 / 关键词，按 / 键快速聚焦" aria-label="搜索资源">
+      </label>
+      <span class="count" id="trackProg"></span>
+      <span class="count" id="count"></span>
+    </div>
+    <div id="sections"></div>
+    <div class="empty" id="empty" hidden>
+      <b>没有找到相关内容</b>
+      换个关键词试试，或点击「全部」清除分类筛选。
     </div>
   </section>
 

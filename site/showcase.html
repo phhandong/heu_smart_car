@@ -27,7 +27,6 @@
       <a href="showcase.html" class="active">成果</a>
       <a href="recruit.html">招新</a>
       <a href="training.html">培训</a>
-      <a href="/wiki/">Wiki</a>
     </nav>
     <a class="top-cta" href="recruit.html#join">加入我们</a>
     <button class="menu-btn" id="menuBtn" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileNav">
@@ -55,32 +54,13 @@
 
 <main class="wrap">
 
-  <!-- 研究方向 -->
-  <section class="sec rv">
-    <div class="sec-head">
-      <h2><small>DIRECTIONS</small>研究方向</h2>
-      <p class="tip">以竞赛组别为载体的八个工程方向。</p>
-    </div>
-    <div class="team-grid">
-      <div class="team-card"><span class="tc-no">01</span><b>室外综合任务</b><span>飞跃雷区：目标识别、路径规划与搬运放置的整车集成。</span></div>
-      <div class="team-card"><span class="tc-no">02</span><b>爬壁结构与姿态控制</b><span>飞檐走壁：吸附爬壁机构与高速姿态稳定。</span></div>
-      <div class="team-card"><span class="tc-no">03</span><b>轮腿复合越障</b><span>轮腿穿越：变形结构通过性与平衡控制。</span></div>
-      <div class="team-card"><span class="tc-no">04</span><b>极速竞速</b><span>卡丁快跑：动力、操控与赛道速度的极限平衡。</span></div>
-      <div class="team-card"><span class="tc-no">05</span><b>搬运与精准放置</b><span>蚂蚁搬家：定位精度与作业稳定性。</span></div>
-      <div class="team-card"><span class="tc-no">06</span><b>端到端 AI 驾驶</b><span>人工智能模型：模型决策替代手写规则。</span></div>
-      <div class="team-card"><span class="tc-no">07</span><b>自平衡平台</b><span>独轮/单车：欠驱动系统的姿态闭环控制。</span></div>
-      <div class="team-card"><span class="tc-no">08</span><b>视觉感知与跟踪</b><span>人工智能视觉：目标识别、跟踪与伺服。</span></div>
-    </div>
-  </section>
-
-
   <!-- 竞赛速览 -->
   <section class="sec rv" id="race-quick">
     <div class="sec-head">
-      <h2><small>RACE 101</small>竞赛速览</h2>
+      <h2><small>RACE 101</small>竞赛速览<span class="idx">01</span></h2>
       <p class="tip">三步看懂比赛，再决定怎么上车。</p>
     </div>
-    <div class="team-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="team-grid" data-s3d style="grid-template-columns:repeat(3,1fr)">
       <a class="team-card tilt" href="#cat-race" style="display:block">
         <span class="tc-no">STEP 1</span><b>赛事总览</b>
         <span>全国大学生智能汽车竞赛：竞速类与综合创意类两大类；竞速类按缩微赛道、室内赛道、室外赛道三个子类设组；晋级路径为校内选拔 → 分赛区 → 全国赛。</span>
@@ -101,13 +81,43 @@
   <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
   <span class="td-flag"></span>
 </div>
+  <div id="showcaseCats" class="showcase-cats"></div>
+
+
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+<div class="track-divider" aria-hidden="true">
+  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
+  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
+  <span class="td-flag"></span>
+</div>
+  <!-- 研究方向 -->
+  <section class="sec rv">
+    <div class="sec-head">
+      <h2><small>DIRECTIONS</small>研究方向<span class="idx">03</span></h2>
+      <p class="tip">以竞赛组别为载体的八个工程方向。</p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card"><span class="tc-no">01</span><b>室外综合任务</b><span>飞跃雷区：目标识别、路径规划与搬运放置的整车集成。</span></div>
+      <div class="team-card"><span class="tc-no">02</span><b>爬壁结构与姿态控制</b><span>飞檐走壁：吸附爬壁机构与高速姿态稳定。</span></div>
+      <div class="team-card"><span class="tc-no">03</span><b>轮腿复合越障</b><span>轮腿穿越：变形结构通过性与平衡控制。</span></div>
+      <div class="team-card"><span class="tc-no">04</span><b>极速竞速</b><span>卡丁快跑：动力、操控与赛道速度的极限平衡。</span></div>
+      <div class="team-card"><span class="tc-no">05</span><b>搬运与精准放置</b><span>蚂蚁搬家：定位精度与作业稳定性。</span></div>
+      <div class="team-card"><span class="tc-no">06</span><b>端到端 AI 驾驶</b><span>人工智能模型：模型决策替代手写规则。</span></div>
+      <div class="team-card"><span class="tc-no">07</span><b>自平衡平台</b><span>独轮/单车：欠驱动系统的姿态闭环控制。</span></div>
+      <div class="team-card"><span class="tc-no">08</span><b>视觉感知与跟踪</b><span>人工智能视觉：目标识别、跟踪与伺服。</span></div>
+    </div>
+  </section>
   <!-- 技术报告 -->
   <section class="sec rv" id="reports">
     <div class="sec-head">
-      <h2><small>REPORTS</small>技术报告全文（第 21 届国赛）</h2>
+      <h2><small>REPORTS</small>技术报告全文（第 21 届国赛）<span class="idx">04</span></h2>
       <p class="tip">七支队伍的全国总决赛技术报告，含方案设计、算法推导与调试记录；支持在线预览与下载。</p>
     </div>
-    <div class="report-grid">
+    <div class="report-grid" data-s3d>
       <article class="report-card">
         <div class="rc-top"><span class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span><b>1 队 · 飞跃雷区</b></div>
         <span>室外综合任务整车方案：多核流水线、共享邮箱通信与任务调度。</span>
@@ -145,22 +155,13 @@
       </article>
     </div>
   </section>
-
-  <div id="showcaseCats" class="showcase-cats"></div>
-
-
-<div class="track-divider" aria-hidden="true">
-  <svg class="line" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d="M0 10 H1200"/></svg>
-  <span class="td-car"><svg viewBox="0 0 64 32"><path d="M6 22 L14 12 Q20 6 30 6 L44 6 Q52 6 56 12 L60 18 Q62 22 58 22 Z" fill="rgba(79,214,255,.85)"/><circle cx="18" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/><circle cx="46" cy="24" r="5" fill="rgba(10,20,40,.9)" stroke="rgba(148,190,255,.8)" stroke-width="2"/></svg></span>
-  <span class="td-flag"></span>
-</div>
   <!-- 自制视频内嵌 -->
   <section class="sec rv">
     <div class="sec-head">
-      <h2><small>VIDEOS</small>社团自制视频</h2>
+      <h2><small>VIDEOS</small>社团自制视频<span class="idx">05</span></h2>
       <p class="tip">B站官方号出品，站内直接看；更多实录见培训中心「比赛实录」。</p>
     </div>
-    <div class="embed-grid">
+    <div class="embed-grid" data-s3d>
       <div class="embed-card">
         <div class="em-frame"><iframe src="https://player.bilibili.com/player.html?bvid=BV1r9Lh6hEEQ&autoplay=0" title="沉浸式体验济海追风硬件的一天" loading="lazy" allowfullscreen referrerpolicy="no-referrer"></iframe></div>
         <div class="em-cap"><b>沉浸式体验济海追风硬件的一天</b><span>Vlog</span></div>
@@ -176,7 +177,6 @@
       <span class="go">去看实录 →</span>
     </a>
   </section>
-
   <!-- 开源 -->
   <section class="sec rv" style="padding-bottom:30px">
     <div class="sec-head">
@@ -188,7 +188,7 @@
         <span>19/20/21 届各组别工程代码归档：固件、驱动与控制算法，入队后的重要参考资料。</span>
         <span class="go">前往仓库 →</span>
       </a>
-      <a class="quick-card" href="training.html?track=sw#cat-hosting" style="--ac:#34d399">
+      <a class="quick-card" href="training-sw.html#cat-toolchain" style="--ac:#34d399">
         <b>学习路线里的代码托管指南</b>
         <span>GitHub / Gitee 怎么用、怎么找现成方案——培训中心「代码托管」分类。</span>
         <span class="go">去看指南 →</span>

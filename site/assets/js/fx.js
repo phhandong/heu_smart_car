@@ -232,6 +232,55 @@
     hero.classList.add('entered');
   }
 
+  /* ---------------- 滚动驱动 3D（进度依赖用户滑动） ---------------- */
+  function initScroll3D() {
+    /* 顶部滚动进度条 */
+    var bar = document.createElement('div');
+    bar.id = 'scrollProg';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+
+    var s3d = document.querySelectorAll('[data-s3d]');
+    var heroInner = document.querySelector('.hero .hero-inner');
+    var cars = document.querySelectorAll('.track-divider .td-car');
+    cars.forEach(function (c) { c.style.animation = 'none'; });
+    if (REDUCED) { bar.style.display = 'none'; return; }
+
+    var tick = false;
+    function apply() {
+      var y = window.scrollY;
+      var vh = window.innerHeight;
+      var max = document.documentElement.scrollHeight - vh;
+      bar.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
+      /* 元素级 3D 翻开：p=0 刚进视口 → p=1 到达阅读位 */
+      s3d.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.72)));
+        el.style.setProperty('--p', p.toFixed(3));
+      });
+      /* hero 滚出 3D */
+      if (heroInner) {
+        var hp = Math.min(1, y / (vh * 0.85));
+        heroInner.style.setProperty('--hp', hp.toFixed(3));
+      }
+      /* 分隔线小车跟随滚动行驶 */
+      cars.forEach(function (car) {
+        var sec = car.parentElement;
+        var r = sec.getBoundingClientRect();
+        var p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+        car.style.left = (-6 + p * 108) + '%';
+      });
+      tick = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!tick) { tick = true; requestAnimationFrame(apply); }
+    }, { passive: true });
+    window.addEventListener('resize', function () {
+      if (!tick) { tick = true; requestAnimationFrame(apply); }
+    }, { passive: true });
+    apply();
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     initTrackCanvas();
     initCounters();
@@ -241,5 +290,6 @@
     initStagger();
     initScrollState();
     initHeroEnter();
+    initScroll3D();
   });
 })();
