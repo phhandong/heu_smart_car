@@ -76,11 +76,13 @@ img{max-width:100%;display:block}
 }
 .menu-btn svg{width:20px;height:20px}
 .mobile-nav{
-  display:none;flex-direction:column;gap:4px;padding:10px 24px 16px;
-  border-top:1px solid var(--line);background:rgba(7,13,28,.96);
+  display:none;flex-direction:column;gap:2px;padding:8px 18px 14px;
+  border-top:1px solid var(--line);background:rgba(7,13,28,.97);
+  max-height:calc(100vh - 64px);overflow-y:auto;
 }
 .mobile-nav.open{display:flex}
-.mobile-nav a{padding:11px 14px;border-radius:10px;font-size:15px;color:var(--sub)}
+.mobile-nav a{padding:12px 14px;border-radius:10px;font-size:15px;color:var(--sub)}
+.mobile-nav a.active{color:#fff;background:rgba(93,158,255,.14);box-shadow:inset 2px 0 0 #3f8cff}
 .mobile-nav a.active,.mobile-nav a:hover{color:#fff;background:rgba(93,158,255,.16)}
 
 /* ============ 按钮 ============ */
@@ -804,7 +806,7 @@ footer .foot-note{text-align:center;font-size:12px;color:rgba(157,177,214,.7);ma
 #scrollProg{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
   background:linear-gradient(90deg,#1c55c4,#3f8cff,#4fd6ff);box-shadow:0 0 10px rgba(79,214,255,.55)}
 [data-s3d]{
-  opacity:calc(.2 + .8 * var(--p,1));
+  opacity:calc(.45 + .55 * var(--p,1));
   transform:perspective(1000px) rotateX(calc((1 - var(--p,1)) * 14deg)) translateZ(calc((1 - var(--p,1)) * -60px));
   transform-origin:50% 100%;
 }
@@ -821,3 +823,122 @@ a.track-btn{display:flex}
   .track-divider .td-car{animation:none;left:44%}
   #scrollProg{display:none}
 }
+
+/* ================================================================
+ * v0.5 培训批次增补：当前速览条 / 页内快速导航 / 讲义分组 /
+ * 考核归档态 / 移动端日程卡片 / 状态徽章
+ * ================================================================ */
+
+/* 当前培训速览（培训中心顶部） */
+.current-bar{
+  border:1px solid rgba(93,158,255,.32);border-radius:16px;padding:18px 20px 14px;
+  background:linear-gradient(180deg,rgba(63,140,255,.10),rgba(63,140,255,.03));
+}
+.cb-head{display:flex;align-items:center;gap:9px;font-size:14px;color:#cfe3ff;letter-spacing:1px;margin-bottom:12px}
+.cb-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px rgba(74,222,128,.8);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.cb-items{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cb-item{
+  display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:12px;
+  border:1px solid var(--line);background:var(--panel-hi);transition:.2s;
+}
+.cb-item:hover{transform:translateY(-2px);border-color:var(--cac);box-shadow:0 12px 26px -14px var(--cac)}
+.cb-tag{font:800 10.5px Consolas,monospace;letter-spacing:1px;color:var(--cac);border:1px solid var(--cac);border-radius:7px;padding:3px 7px;flex-shrink:0}
+.cb-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cb-body b{font-size:14.5px}
+.cb-body span{font-size:12px;color:var(--sub)}
+.cb-go{margin-left:auto;font-size:12px;color:#7cc4ff;white-space:nowrap;flex-shrink:0}
+.cb-note{margin:12px 2px 2px;font-size:12px;color:var(--sub)}
+
+/* 页内快速导航（赛道页，吸顶于顶栏之下） */
+.sub-nav{
+  position:sticky;top:64px;z-index:38;display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;
+  padding:10px 2px;margin:16px 0 4px;scrollbar-width:none;
+  background:linear-gradient(180deg,rgba(7,13,28,.92),rgba(7,13,28,.85));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(148,190,255,.12);
+}
+.sub-nav::-webkit-scrollbar{display:none}
+.sub-nav a{
+  flex-shrink:0;padding:7px 14px;border-radius:999px;font-size:12.5px;color:var(--sub);
+  border:1px solid var(--line);background:var(--panel);transition:.2s;
+}
+.sub-nav a:hover{color:#fff;border-color:rgba(93,158,255,.55)}
+.sub-nav a.out{color:#7cc4ff;border-color:rgba(124,196,255,.4)}
+
+/* 讲义中心：按赛道分组 + 卡片新元素 */
+.doc-group + .doc-group{margin-top:28px}
+.doc-group-head{display:flex;align-items:baseline;gap:10px;margin:18px 2px 10px}
+.doc-group-head b{font-size:15px;color:#cfe3ff;letter-spacing:1px}
+.doc-group-head span{font-size:12px;color:var(--sub)}
+.doc-card .dc-tag{
+  flex-grow:0;align-self:flex-start;font:700 11px Consolas,monospace;letter-spacing:1px;color:#6ee7b7;
+  border:1px solid rgba(52,211,153,.4);border-radius:999px;padding:3px 9px;line-height:1.6;
+}
+.doc-card .dc-meta{color:#7cc4ff;font-size:12px}
+.doc-actions .rec{color:#ffce7a;border:1px solid rgba(255,159,67,.4)}
+.doc-actions .rec:hover{color:#fff;border-color:rgba(255,159,67,.8)}
+
+/* 状态徽章：进行中 */
+.tag-status.now{color:#6ee7b7;border:1px solid rgba(52,211,153,.45);background:rgba(52,211,153,.12)}
+
+/* 考核卡：归档态 */
+.exam-card.archived{opacity:.78}
+.exam-card.archived::before{background:linear-gradient(90deg,rgba(148,163,184,.75),rgba(148,163,184,.12))}
+.exam-card .ex-done{
+  font-style:normal;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:10.5px;
+  border:1px solid rgba(148,163,184,.45);color:#a8b8c8;letter-spacing:1px;
+}
+
+/* 移动端：日程/成绩表格 → 卡片视图（data-label 标注字段名） */
+@media (max-width:640px){
+  .sched-wrap{overflow:visible;border:none;background:none}
+  .sched,.sched tbody{display:block}
+  .sched thead{display:none}
+  .sched tr{
+    display:block;border:1px solid var(--line);border-radius:14px;
+    background:var(--panel);padding:14px 16px;margin-bottom:12px;
+  }
+  .sched tr:hover td{background:none}
+  .sched td{display:flex;gap:12px;border:none;padding:4px 0;font-size:13.5px;line-height:1.75}
+  .sched td::before{
+    content:attr(data-label);flex:0 0 4.6em;color:var(--sub);
+    font-size:12px;padding-top:3px;letter-spacing:1px;
+  }
+  .cb-items{grid-template-columns:1fr}
+}
+
+/* 日程表：场次列不折行 */
+.sched td:first-child b{white-space:nowrap}
+
+/* 考核安排（软件页）：概览条 + 信息卡网格 */
+.plan-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 16px}
+.ps-item{display:flex;flex-direction:column;gap:3px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.ps-item span{font-size:11.5px;color:var(--sub);letter-spacing:2px}
+.ps-item b{font-size:13.5px;line-height:1.6}
+.ps-item em{font-style:normal;font-size:12px;color:var(--sub)}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.plan-card{padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.plan-card>b{display:block;font-size:14.5px;color:#bfe3ff;margin-bottom:10px;letter-spacing:1px}
+.plan-card .plan-sub{display:block;font-size:13px;color:#bfe3ff;margin:14px 0 8px}
+.plan-card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.plan-card li{font-size:12.5px;color:var(--sub);line-height:1.75;padding-left:16px;position:relative}
+.plan-card li::before{content:"▸";position:absolute;left:0;color:#6ee7b7}
+.plan-text{font-size:13px;color:var(--sub);line-height:1.8;margin:0}
+.plan-note{font-size:12.5px;color:var(--sub);line-height:1.75;margin:10px 0 0}
+.plan-rows{margin:2px 0 4px}
+.plan-row{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px dashed rgba(148,190,255,.14);font-size:12.5px}
+.plan-row:last-child{border-bottom:none}
+.plan-row span{color:var(--sub)}
+.plan-row b{color:var(--txt);font-weight:600;text-align:right}
+@media (max-width:900px){
+  .plan-strip,.plan-grid{grid-template-columns:1fr}
+}
+
+/* 考核卡：验收要点 */
+.exam-card .ex-checks{border-left:2px solid rgba(52,211,153,.45);margin:2px 0 12px;padding:2px 0 2px 12px}
+.exam-card .ex-checks b{font-size:12px;color:#6ee7b7;letter-spacing:1px;display:block;margin-bottom:6px}
+.exam-card .ex-checks ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.exam-card .ex-checks li{font-size:12.5px;color:var(--sub);line-height:1.7;padding-left:16px;position:relative}
+.exam-card .ex-checks li::before{content:"✓";position:absolute;left:0;color:#34d399;font-size:11px;top:1px}
+.plan-row span{white-space:nowrap}

@@ -7,8 +7,8 @@ const root = process.cwd();
 const source = path.join(root, 'content', 'wiki');
 const output = path.join(root, 'dist');
 const sections = [
-  { id: 'recruitment', name: '招新进度', kicker: '01 / JOIN', desc: '了解当前进度，以及加入前可以做的准备。' },
-  { id: 'hardware', name: '硬件公告', kicker: '02 / BUILD', desc: '培训安排、学习工具与硬件相关通知。' },
+  { id: 'recruitment', name: '招新进度', kicker: '01 / JOIN', desc: '了解当前招新阶段、培训安排与报名方式。' },
+  { id: 'hardware', name: '硬件公告', kicker: '02 / BUILD', desc: '学习环境、工具准备与硬件相关通知。' },
   { id: 'lab', name: '实验室须知', kicker: '03 / LAB', desc: '安全、设备使用和每日离室检查。' }
 ];
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);

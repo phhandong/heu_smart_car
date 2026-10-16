@@ -8,15 +8,25 @@
   var menuBtn = document.getElementById('menuBtn');
   var mobileNav = document.getElementById('mobileNav');
   if (menuBtn && mobileNav) {
+    var closeMenu = function () {
+      mobileNav.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+    };
     menuBtn.addEventListener('click', function () {
       var open = mobileNav.classList.toggle('open');
       menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     mobileNav.addEventListener('click', function (e) {
-      if (e.target.closest('a')) {
-        mobileNav.classList.remove('open');
-        menuBtn.setAttribute('aria-expanded', 'false');
-      }
+      if (e.target.closest('a')) closeMenu();
+    });
+    /* 点击菜单外部或按 Esc 关闭 */
+    document.addEventListener('click', function (e) {
+      if (!mobileNav.classList.contains('open')) return;
+      if (e.target.closest('#mobileNav') || e.target.closest('#menuBtn')) return;
+      closeMenu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mobileNav.classList.contains('open')) closeMenu();
     });
   }
 

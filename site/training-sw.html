@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="济海追风软件培训：CH32V307 + MounRiver II，五次培训路线、日程、考核任务、术语速查与软件学习资源库。">
+<meta name="description" content="济海追风软件培训：CH32V307 + MounRiver II，四次培训路线、日程、考核任务、术语速查与软件学习资源库。">
 <meta property="og:title" content="软件培训 · 济海追风智能汽车实验室">
-<meta property="og:description" content="五次培训路线、日程、考核任务、术语速查与软件学习资源库。">
+<meta property="og:description" content="四次培训路线、日程、考核任务、术语速查与软件学习资源库。">
 <meta property="og:image" content="assets/img/club-logo.png">
 <title>软件培训 · 济海追风智能汽车实验室</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
@@ -41,7 +41,7 @@
     <a href="honors.html">获奖荣誉</a>
     <a href="showcase.html">成果沉淀</a>
     <a href="recruit.html">招新宣传</a>
-    <a href="training.html">培训中心</a>
+    <a href="training.html" class="active">培训中心</a>
     <a href="/wiki/">社团 Wiki</a>
     <a href="recruit.html#join">加入我们</a>
   </nav>
@@ -50,7 +50,7 @@
 <section class="page-head">
   <div class="hero-badge"><i></i>SOFTWARE · CH32V307 + MounRiver II</div>
   <h1>软件<em>培训</em></h1>
-  <p class="sub">五次培训层层递进：从「AI 时代为什么学编程」到嵌入式图像处理。每次培训配考核任务，做出来就算入门。</p>
+  <p class="sub">四次培训层层递进：从「AI 时代为什么学编程」到嵌入式图像处理。每次培训配考核任务，做出来就算入门。</p>
 </section>
 
 <main class="wrap">
@@ -71,24 +71,44 @@
     </a>
   </div>
 
+  <!-- 页内快速导航 -->
+  <nav class="sub-nav" aria-label="页内快速导航">
+    <a href="#roadmap">学习路线</a>
+    <a href="#schedule">日程与材料</a>
+    <a href="#exam-plan">考核安排</a>
+    <a href="#exams">考核专区</a>
+    <a href="#gloss">术语速查</a>
+    <a href="#library">资源库</a>
+    <a class="out" href="training.html#docs-section">讲义与回放 ↗</a>
+  </nav>
+
   <!-- 学习路线 -->
-  <section class="sec rv" id="roadmap" style="scroll-margin-top:90px"></section>
+  <section class="sec rv" id="roadmap" style="scroll-margin-top:118px"></section>
 
   <!-- 培训日程 -->
-  <section class="sec rv" id="schedule" style="scroll-margin-top:90px"></section>
+  <section class="sec rv" id="schedule" style="scroll-margin-top:118px"></section>
+
+  <!-- 考核安排（数据驱动，见 training-data.js 的 EXAM_ROUND） -->
+  <section class="sec rv" id="exam-plan" style="scroll-margin-top:118px">
+    <div class="sec-head">
+      <h2><small>EXAM PLAN</small>考核安排</h2>
+      <p class="tip">软件第二次培训 · 开放期 10 月 15–27 日；与招新群公告一致，如有调整以群通知为准。</p>
+    </div>
+    <div id="examPlan"></div>
+  </section>
 
   <!-- 考核专区 -->
-  <section class="sec rv" id="exams" style="scroll-margin-top:90px">
+  <section class="sec rv" id="exams" style="scroll-margin-top:118px">
     <div class="sec-head">
       <h2><small>EXAMS</small>考核专区</h2>
-      <p class="tip">一次培训周期内，随时在培训场地找学长验收。</p>
+      <p class="tip">在考核开放时段内到场，找值班学长验收。</p>
     </div>
     <div class="exam-grid" data-s3d id="examGrid"></div>
-    <p class="exam-note">后续各次培训的考核任务随讲义同步发布；口径以讲义与招新群通知为准。</p>
+    <p class="exam-note">第一次考核已收官；第二次开放期 10 月 15–27 日，安排见上方「考核安排」。</p>
   </section>
 
   <!-- 术语速查 -->
-  <section class="sec rv" id="gloss" style="scroll-margin-top:90px">
+  <section class="sec rv" id="gloss" style="scroll-margin-top:118px">
     <div class="sec-head">
       <h2><small>GLOSSARY</small>术语速查</h2>
       <p class="tip">讲义里的名词解释汇总，卡住时回来查一眼。</p>
@@ -104,10 +124,10 @@
   </section>
 
   <!-- 资源库 -->
-  <section class="sec" id="library" style="scroll-margin-top:120px">
+  <section class="sec" id="library" style="scroll-margin-top:150px">
     <div class="sec-head">
       <h2><small>LIBRARY</small>软件资源库</h2>
-      <p class="tip">按分类筛选或搜索；学习进度打卡保存在你的浏览器本地。</p>
+      <p class="tip">按分类筛选或搜索；卡片右上角对勾可标记「已学」，进度只保存在你的浏览器本地。</p>
     </div>
     <div class="toolbar">
       <div class="chips" id="chips" role="group" aria-label="资源分类筛选"></div>
@@ -157,13 +177,13 @@
     </nav>
     <nav class="fg-col" aria-label="关注我们">
       <b>关注我们</b>
-      <a href="https://search.bilibili.com/all?keyword=%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">B站官方号</a>
+      <a href="https://space.bilibili.com/3706956032247893" target="_blank" rel="noopener">B站官方号</a>
       <a href="https://www.douyin.com/search/%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">抖音「HEU济海追风」</a>
       <a href="https://gitee.com/WL2002/ji_hai_zhui_feng" target="_blank" rel="noopener">Gitee 公共仓库</a>
     </nav>
   </div>
   <!-- 部署期填写 ICP 备案号后移除 hidden -->
-  <p class="foot-note"><span id="icp" hidden></span>本站视频与部分图片来自网络公开教程与社团自制资料，仅用于学习交流；外链跳转至第三方平台，本站不收集、不存储任何个人信息。<br>最近更新：2026-09-25 · © 2026 哈尔滨工程大学济海追风智能汽车实验室</p>
+  <p class="foot-note"><span id="icp" hidden></span>本站视频与部分图片来自网络公开教程与社团自制资料，仅用于学习交流；外链跳转至第三方平台，本站不收集、不存储任何个人信息。<br>最近更新：2026-10-16 · © 2026 哈尔滨工程大学济海追风智能汽车实验室</p>
 </footer>
 
 <button id="toTop" title="回到顶部" aria-label="回到顶部">

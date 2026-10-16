@@ -1,0 +1,2047 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>济海追风第二次硬件培训 · 授课修订版</title>
+<style>
+/* ============ 主题变量：暖白朱红 ============ */
+:root{
+  --bg:#F5F1E8; --panel:#FFFDF8; --fg:#292722; --sub:#69665E;
+  --accent:#B63B2E;      /* 朱红：主强调 / 导通电流路径 */
+  --clay:#C77850;        /* 陶土橙：关断续流路径 / 次强调 */
+  --ocher:#874339;       /* 赭红：警示 / 发热 / 深强调 */
+  --apricot:#EED9C5;     /* 浅杏：辅助底色 / 硬阴影 */
+  --gold:#B18A46;        /* 赭金：波形 / 次级图示 */
+  --line:#D8D1C4;        /* 分隔与描边 */
+  --title-size:clamp(1.6rem,4.1vw,4rem);
+  --h2-size:clamp(1.2rem,2.6vw,2.1rem);
+  --h3-size:clamp(.95rem,1.6vw,1.3rem);
+  --body-size:clamp(.8rem,1.35vw,1.05rem);
+  --small-size:clamp(.7rem,1.02vw,.92rem);
+  --tiny-size:clamp(.62rem,.9vw,.8rem);
+  --slide-pad:clamp(1rem,3.2vw,3.4rem);
+  --gap:clamp(.55rem,1.6vw,1.4rem);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font-family:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;font-size:var(--body-size);line-height:1.55}
+#deck{position:fixed;inset:0}
+
+/* ============ 幻灯片框架 ============ */
+.slide{position:absolute;inset:0;width:100%;height:100%;display:flex;flex-direction:column;padding:var(--slide-pad);overflow:hidden;background:var(--bg);visibility:hidden;opacity:0;transform:translateX(26px);transition:opacity .3s ease,transform .3s ease,visibility 0s linear .3s}
+.slide.active{visibility:visible;opacity:1;transform:none;transition:opacity .3s ease,transform .3s ease}
+.slide.back{transform:translateX(-26px)}
+.slide::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:clamp(2rem,4vw,4rem) clamp(2rem,4vw,4rem);opacity:.11}
+.slide>*{position:relative;z-index:1}
+
+/* 进场动效（reduced-motion 下自动关闭） */
+.rv{opacity:0;transform:translateY(12px)}
+.slide.active .rv{opacity:1;transform:none;transition:opacity .45s ease var(--d,0s),transform .45s ease var(--d,0s)}
+
+/* ============ 页眉 / 页脚 ============ */
+.masthead{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:clamp(.5rem,1.2vh,1rem);gap:clamp(.5rem,1vw,1rem);flex:none}
+.brand{display:flex;gap:clamp(.45rem,.9vw,.9rem);align-items:center;font-size:var(--small-size);letter-spacing:.08em;font-weight:700}
+.mark{background:var(--accent);color:var(--bg);display:grid;place-items:center;width:clamp(1.7rem,2.8vw,2.7rem);height:clamp(1.7rem,2.8vw,2.7rem);font-size:clamp(.95rem,1.4vw,1.4rem);flex:none}
+.edition{color:var(--sub);font-size:var(--tiny-size);letter-spacing:.14em;font-family:Consolas,monospace}
+.slide-content{flex:1;min-height:0;max-height:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:var(--gap);padding:clamp(.7rem,1.8vh,1.6rem) 0}
+.footer{display:flex;justify-content:space-between;align-items:center;gap:.6rem;border-top:1px solid var(--line);padding-top:clamp(.45rem,1vh,.8rem);font-size:var(--tiny-size);color:var(--sub);flex:none}
+.footer .page{font-family:Consolas,monospace;color:var(--accent);font-weight:700}
+.ft-note{color:var(--sub);letter-spacing:.06em}
+
+/* 章节色：开场/BUCK/考核=朱红，导入与PCB=陶土橙，LDO=赭金，手册=赭红 */
+.slide[data-ch="0"]{--chc:var(--accent)}
+.slide[data-ch="1"]{--chc:var(--clay)}
+.slide[data-ch="2"]{--chc:var(--accent)}
+.slide[data-ch="3"]{--chc:var(--gold)}
+.slide[data-ch="4"]{--chc:var(--ocher)}
+.slide[data-ch="5"]{--chc:var(--clay)}
+.slide[data-ch="6"]{--chc:var(--accent)}
+
+/* ============ 标题与文字 ============ */
+.eyebrow{font-size:var(--small-size);font-weight:700;color:var(--chc,var(--accent));letter-spacing:.16em;display:flex;align-items:center;gap:clamp(.5rem,1vw,1rem)}
+.eyebrow::before{content:'';width:clamp(1.2rem,2.6vw,2.6rem);height:2px;background:var(--chc,var(--accent));flex:none}
+h1{font-size:var(--title-size);line-height:1.18;letter-spacing:-.03em;margin:clamp(.5rem,1.5vh,1.1rem) 0;font-weight:800}
+h1 span{color:var(--accent)}
+.page-title{font-size:var(--h2-size);font-weight:800;letter-spacing:-.02em;margin:0 0 .25em;line-height:1.25}
+.page-title small{display:block;font-size:var(--small-size);font-weight:500;color:var(--sub);letter-spacing:.02em;margin-top:.2em}
+.lead{color:var(--sub);max-width:62ch;margin:0;font-size:var(--body-size)}
+.lead b,.lead strong{color:var(--fg);font-weight:700}
+.note{font-size:var(--tiny-size);color:var(--sub);margin:0;line-height:1.5}
+.src{font-size:var(--tiny-size);color:var(--sub);margin:0}
+.src a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--clay);word-break:break-all}
+b, strong { font-weight: 700 }
+.acc{color:var(--accent)} .cly{color:var(--clay)} .och{color:var(--ocher)} .gld{color:var(--gold)} .mono{font-family:Consolas,"Courier New",monospace}
+
+/* ============ 布局 ============ */
+.cols{display:grid;gap:var(--gap);min-height:0}
+.c2{grid-template-columns:1fr 1fr}
+.c2w{grid-template-columns:1.35fr 1fr}
+.c2n{grid-template-columns:1fr 1.35fr}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.row{display:flex;gap:var(--gap);align-items:stretch;min-height:0}
+
+/* ============ 卡片 / 面板 ============ */
+.card{background:var(--panel);border:1px solid var(--line);padding:clamp(.55rem,1.4vh,1.05rem) clamp(.7rem,1.4vw,1.2rem);min-width:0}
+.card.shadow, .panel{box-shadow:clamp(.28rem,.6vw,.55rem) clamp(.28rem,.6vw,.55rem) 0 var(--apricot)}
+.card h3{margin:0 0 .3em;font-size:var(--h3-size);font-weight:800;letter-spacing:-.01em}
+.card h3 .n{color:var(--accent);font-family:Consolas,monospace;margin-right:.35em}
+.card p{margin:0 0 .35em;font-size:var(--small-size);line-height:1.6}
+.card p:last-child{margin-bottom:0}
+.card ul{margin:0;padding-left:1.2em;font-size:var(--small-size);line-height:1.65}
+.card ul li{margin:.15em 0}
+.panel{background:var(--panel);border:1px solid var(--line);padding:clamp(.6rem,1.5vh,1.1rem) clamp(.8rem,1.5vw,1.3rem)}
+.panel-cap{display:flex;justify-content:space-between;gap:.6rem;font-size:var(--tiny-size);color:var(--sub);margin-bottom:.3em}
+.panel-cap strong{color:var(--fg);font-weight:700}
+.panel-foot{border-top:1px solid var(--line);padding-top:.45em;font-size:var(--tiny-size);color:var(--sub);margin-top:.4em}
+.panel-foot b{color:var(--accent);font-weight:700}
+
+/* ============ 徽章 / 标签 / 提示框 ============ */
+.badge{display:inline-block;background:var(--accent);color:var(--bg);font-size:var(--tiny-size);font-weight:700;padding:.12em .55em;letter-spacing:.05em;white-space:nowrap}
+.badge.o{background:var(--ocher)} .badge.c{background:var(--clay)} .badge.g{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+.tag{border:1px solid var(--line);background:var(--panel);font-size:var(--tiny-size);padding:.14em .6em;white-space:nowrap;color:var(--sub)}
+.tags{display:flex;gap:.45rem;flex-wrap:wrap}
+.callout{border-left:4px solid var(--accent);background:var(--panel);padding:.5em .8em;font-size:var(--small-size);line-height:1.6}
+.callout.warn{border-left-color:var(--ocher)}
+.callout.gold{border-left-color:var(--gold)}
+.callout.clay{border-left-color:var(--clay)}
+.callout b{font-weight:700}
+.ph{border:2px dashed var(--clay);background:rgba(199,120,80,.08);color:var(--ocher);padding:.7em .9em;font-size:var(--small-size);text-align:center;line-height:1.6}
+.ph b{font-weight:800;letter-spacing:.05em}
+
+/* ============ 表格 ============ */
+.tbl{width:100%;border-collapse:collapse;background:var(--panel);font-size:var(--small-size)}
+.tbl th,.tbl td{border:1px solid var(--line);padding:.32em .55em;text-align:left;vertical-align:top;line-height:1.5}
+.tbl th{background:var(--apricot);font-weight:700;white-space:nowrap}
+.tbl td.mono,.tbl th.mono{font-family:Consolas,monospace}
+.tbl .ok{color:var(--accent);font-weight:700}
+.tbl tr.hl td{background:rgba(238,217,197,.4)}
+
+/* ============ 步骤 / 列表 ============ */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:clamp(.4rem,1vh,.8rem)}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:.6em;align-items:start;font-size:var(--small-size);line-height:1.55}
+.step-n{width:1.7em;height:1.7em;flex:none;display:grid;place-items:center;background:var(--accent);color:var(--bg);font-family:Consolas,monospace;font-weight:700;font-size:var(--small-size);margin-top:.1em}
+.steps li b{font-weight:700}
+.dotlist{margin:0;padding-left:1.25em;font-size:var(--small-size);line-height:1.7}
+.dotlist li{margin:.12em 0}
+.dotlist li::marker{color:var(--accent)}
+
+/* ============ 互动控件 ============ */
+.ia{background:var(--panel);border:1px solid var(--line);box-shadow:clamp(.28rem,.6vw,.55rem) clamp(.28rem,.6vw,.55rem) 0 var(--apricot);padding:clamp(.6rem,1.4vh,1rem) clamp(.8rem,1.5vw,1.2rem)}
+.ia-bar{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-size:var(--small-size);font-weight:700;background:var(--panel);border:1px solid var(--line);color:var(--fg);padding:.42em 1.05em;cursor:pointer;box-shadow:.2rem .2rem 0 var(--apricot);letter-spacing:.03em}
+.btn:hover{border-color:var(--accent)}
+.btn:active{transform:translate(1px,1px);box-shadow:.1rem .1rem 0 var(--apricot)}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn[aria-pressed="true"].cstyle{background:var(--clay);border-color:var(--clay)}
+input[type=range]{accent-color:var(--accent);width:100%;height:1.7em;cursor:pointer}
+.kvs{display:flex;gap:clamp(.8rem,2vw,2rem);flex-wrap:wrap}
+.kv{min-width:6.5em}
+.kv .k{font-size:var(--tiny-size);color:var(--sub);letter-spacing:.06em}
+.kv .v{font-family:Consolas,monospace;font-size:clamp(1.15rem,2.1vw,1.8rem);font-weight:700;color:var(--accent);line-height:1.2}
+.kv .v small{font-size:.55em;color:var(--sub);font-weight:400}
+.kv .v.c{color:var(--clay)} .kv .v.o{color:var(--ocher)} .kv .v.g{color:var(--gold)}
+.ia-note{font-size:var(--tiny-size);color:var(--sub);line-height:1.55;margin:.4em 0 0}
+.ia-note b{color:var(--fg)}
+
+/* 功率条（LDO 互动） */
+.meter{position:relative;height:1.5rem;background:var(--bg);border:1px solid var(--line)}
+.meter-fill{position:absolute;inset:0 auto 0 0;width:0%;background:linear-gradient(90deg,var(--clay),var(--accent));transition:width .15s ease}
+.meter-tick{position:absolute;top:-.3rem;bottom:-.3rem;width:2px;background:var(--ocher)}
+.meter-tick i{position:absolute;top:-1.25em;left:50%;transform:translateX(-50%);font-style:normal;font-size:var(--tiny-size);color:var(--ocher);white-space:nowrap;font-weight:700}
+.meter-scale{display:flex;justify-content:space-between;font-family:Consolas,monospace;font-size:var(--tiny-size);color:var(--sub)}
+
+/* ============ SVG 通用 ============ */
+svg{display:block;width:100%;height:auto}
+.slide-content svg{max-height:38vh}
+svg text{font-family:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC",sans-serif}
+svg .mono{font-family:Consolas,"Courier New",monospace}
+.wire{stroke:var(--fg);stroke-width:2;fill:none}
+.wire-dim{stroke:var(--line);stroke-width:2;fill:none}
+.node{fill:var(--fg)}
+.lbl{fill:var(--fg);font-size:15px}
+.lbl2{fill:var(--sub);font-size:13px}
+.lbl3{fill:var(--sub);font-size:12px}
+.on-path{stroke:var(--accent);stroke-width:4.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.off-path{stroke:var(--clay);stroke-width:4.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow{stroke-dasharray:9 9;animation:flowmove 1.1s linear infinite}
+@keyframes flowmove{to{stroke-dashoffset:-36}}
+.axis{stroke:var(--sub);stroke-width:1.5;fill:none}
+.gridln{stroke:var(--line);stroke-width:1;fill:none;stroke-dasharray:3 5}
+.wav{stroke:var(--gold);stroke-width:2.5;fill:none;stroke-linejoin:round}
+.avg{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:7 6}
+.badge-c{fill:var(--accent)} .badge-t{fill:var(--bg);font-size:13px;font-weight:700}
+.dim-el{opacity:.35;transition:opacity .3s ease}
+.statebox{stroke:var(--line);stroke-width:1.5;fill:var(--panel)}
+
+/* ============ HUD / 目录 / 进度 ============ */
+#progress{position:fixed;top:0;left:0;height:4px;background:var(--accent);width:0;z-index:90;transition:width .25s ease}
+#hud{position:fixed;right:clamp(.6rem,1.8vw,1.3rem);bottom:clamp(.6rem,1.8vw,1.3rem);display:flex;gap:.45rem;align-items:center;z-index:80}
+.hud-btn{width:2.5rem;height:2.5rem;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);cursor:pointer;box-shadow:.18rem .18rem 0 var(--apricot);padding:0}
+.hud-btn:hover{border-color:var(--accent)}
+.hud-btn:active{transform:translate(1px,1px);box-shadow:.08rem .08rem 0 var(--apricot)}
+.hud-btn svg{width:1.15rem;height:1.15rem;stroke:var(--fg);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#hud-pg{font-family:Consolas,monospace;font-weight:700;color:var(--accent);background:var(--panel);border:1px solid var(--line);box-shadow:.18rem .18rem 0 var(--apricot);padding:.42rem .7rem;font-size:var(--small-size)}
+#hint{position:fixed;left:50%;transform:translateX(-50%);bottom:clamp(.5rem,1.5vw,1rem);font-size:var(--tiny-size);color:var(--sub);z-index:70;letter-spacing:.04em;white-space:nowrap}
+#hint b{color:var(--accent);font-family:Consolas,monospace}
+/* ============ 批注层：投影时画圈标注（会话内有效） ============ */
+#ink{position:fixed;inset:0;width:100vw;height:100vh;z-index:60;pointer-events:none;touch-action:none}
+body.ink-on #ink{pointer-events:auto;cursor:crosshair}
+#ink path,#ink circle{stroke-linecap:round;stroke-linejoin:round;fill:none}
+#ink-bar{position:fixed;left:clamp(.8rem,3vw,3.5rem);bottom:clamp(2.9rem,6vh,4.4rem);z-index:85;display:none;gap:.4rem;align-items:center;flex-wrap:wrap;max-width:min(92vw,44rem);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.4rem .55rem;box-shadow:0 4px 18px rgba(41,39,34,.2)}
+body.ink-on #ink-bar{display:flex}
+.ink-dot{width:1.55rem;height:1.55rem;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0;flex:none}
+.ink-dot[aria-pressed="true"]{border-color:var(--fg);transform:scale(1.15)}
+.ink-tb{font:inherit;font-size:var(--tiny-size);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:.28em .6em;cursor:pointer;color:var(--fg);white-space:nowrap}
+.ink-tb:hover{border-color:var(--accent);color:var(--accent)}
+.ink-tb[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.ink-tb.danger{border-color:var(--ocher);color:var(--ocher)}
+.ink-tb.danger:hover{background:var(--ocher);color:var(--bg)}
+.ink-sep{width:1px;align-self:stretch;background:var(--line);margin:0 .1rem;flex:none}
+body.ink-on{user-select:none;-webkit-user-select:none}
+html.reading #ink,html.reading #ink-bar{display:none!important}
+
+#toc{position:fixed;inset:0;background:rgba(41,39,34,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:clamp(.8rem,3vw,3rem)}
+#toc.open{display:flex}
+#toc-box{background:var(--bg);border:1px solid var(--line);box-shadow:.5rem .5rem 0 rgba(135,67,57,.45);max-width:56rem;width:100%;max-height:min(88vh,46rem);overflow:auto;padding:clamp(.8rem,2vw,1.6rem)}
+#toc-box h2{margin:0 0 .6em;font-size:var(--h2-size);letter-spacing:-.02em}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:clamp(.5rem,1.4vw,1rem)}
+.toc-ch{background:var(--panel);border:1px solid var(--line);padding:.55rem .7rem}
+.toc-ch h3{margin:0 0 .3em;font-size:var(--small-size);display:flex;justify-content:space-between;align-items:center;gap:.5em}
+.toc-ch h3 .t{font-family:Consolas,monospace;color:var(--clay);font-weight:400;font-size:var(--tiny-size)}
+.toc-ch button{display:block;width:100%;text-align:left;font:inherit;font-size:var(--small-size);background:none;border:none;border-bottom:1px dashed var(--line);padding:.28em .25em;cursor:pointer;color:var(--fg)}
+.toc-ch button:hover{color:var(--accent)}
+.toc-ch button.cur{color:var(--accent);font-weight:700}
+.toc-ch button .pn{font-family:Consolas,monospace;color:var(--sub);font-size:var(--tiny-size);margin-right:.5em}
+#toc-close{position:absolute;top:clamp(.8rem,2vw,1.6rem);right:clamp(.8rem,2vw,1.6rem)}
+
+/* ============ 响应式（短视口 / 窄屏） ============ */
+@media(max-height:760px){
+  :root{--slide-pad:clamp(.8rem,2.6vw,2.2rem);--gap:clamp(.4rem,1.2vw,1rem)}
+  .slide-content{padding:clamp(.4rem,1.2vh,.9rem) 0}
+}
+@media(max-height:660px){
+  :root{--body-size:clamp(.74rem,1.25vw,.95rem);--small-size:clamp(.66rem,.95vw,.85rem)}
+  #hint{display:none}
+}
+@media(max-height:540px){
+  .masthead{padding-bottom:.3rem}
+  .footer{padding-top:.3rem}
+}
+@media(max-width:860px){
+  .c2,.c2w,.c2n,.c3,.c4{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .c2,.c2w,.c2n,.c3,.c4{grid-template-columns:1fr}
+  .edition{display:none}
+  #hint{display:none}
+  .row{flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.15s!important}
+  .flow{animation:none}
+  .rv{opacity:1;transform:none}
+  .slide{transform:none}
+}
+
+/* 授课修订：保留原主题，图示与控制分区，投影页不出现内部滚动。 */
+:root{--body-size:clamp(1rem,1.4vw,1.65rem);--small-size:clamp(.88rem,1.14vw,1.35rem);--tiny-size:clamp(.75rem,.96vw,1.12rem);--h2-size:clamp(1.55rem,2.65vw,3.1rem);--h3-size:clamp(1.08rem,1.6vw,1.85rem);--slide-pad:clamp(1.1rem,3vw,3.5rem);--gap:clamp(.65rem,1.3vw,1.5rem);--sub:#5b5952;--clay:#aa5835;--gold:#886421}
+body{line-height:1.5}
+.slide{height:100vh;height:100dvh;padding-bottom:clamp(3.8rem,6vh,4.8rem);transition:none;transform:none!important}
+.slide:not(.active){visibility:hidden;opacity:0;pointer-events:none}
+.slide.active{transition:opacity .18s ease}
+.slide::before{opacity:.07}
+.slide-content{justify-content:center;gap:var(--gap);padding:clamp(.5rem,1.3vh,1.1rem) 0}
+.cols{align-items:center;flex-shrink:0}
+.cols>.card{align-self:stretch}
+.c2w{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.card,.panel,.ia{border-radius:8px}
+.card.shadow,.panel,.ia{box-shadow:4px 5px 0 rgba(199,120,80,.14)}
+.card p,.card ul{line-height:1.55}
+.page-title{max-width:100%;text-wrap:balance;flex-shrink:0}
+.panel-cap{align-items:center;min-height:1.5em;gap:.7rem;flex-wrap:wrap}
+.panel-cap>span:not(.mono){color:var(--sub)}
+.panel-foot{line-height:1.45;padding-top:.6em;margin-top:.45em}
+.teaching-svg{overflow:visible;max-height:43vh!important}
+.slide[data-title="统一测量条件"] .teaching-svg{max-height:24vh!important}
+.slide-content svg{flex:none}
+.figure-actions{margin:.45em 0;gap:.5em}
+.figure-actions .note{flex:1;min-width:7em}
+.zoom-btn{margin-left:auto;font:inherit;font-size:var(--tiny-size);border:1px solid var(--line);background:var(--bg);color:var(--sub);border-radius:4px;padding:.15em .55em;cursor:zoom-in;white-space:nowrap}
+.zoom-btn:hover{color:var(--accent);border-color:var(--accent)}
+.flow{animation-duration:2.4s;animation-play-state:paused;stroke-dasharray:7 12}
+.slide.running .flow{animation-play-state:running}
+.signal-flow{stroke-dasharray:7 6}
+.slide.active .spectrum-bar{transform-origin:center bottom;animation:spectrum-in .6s ease both}
+@keyframes spectrum-in{from{opacity:.1;transform:translateY(9px)}to{opacity:1;transform:none}}
+.rv{opacity:1;transform:none}
+.slide.active .rv{transition:none;animation:enter-content .28s ease both;animation-delay:var(--d,0s)}
+@keyframes enter-content{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.footer{position:absolute;left:var(--slide-pad);bottom:1.3rem;border:0;padding:0;font-size:var(--tiny-size);max-width:30%;line-height:1.3}
+#hud{bottom:.8rem;right:var(--slide-pad);gap:.45rem;background:var(--bg);padding:.3rem;border-radius:8px}
+.hud-btn,#hud-pg{border-radius:5px;box-shadow:none}
+.hud-text{width:auto;padding:0 .7rem;font:inherit;font-size:var(--small-size);color:var(--sub)}
+#hint{bottom:1.25rem;margin:0;font-size:clamp(.65rem,.85vw,1rem)}
+.btn{border-radius:5px;box-shadow:none;padding:.42em .8em;line-height:1.3}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+button:disabled{opacity:.38;cursor:default}
+.meter-caption{font-size:var(--small-size);color:var(--ocher);font-weight:700}
+.meter{height:1.25rem;border-radius:4px;overflow:hidden}
+.meter-fill{background:var(--accent);opacity:.8}
+.meter-tick{top:0;bottom:0}
+.ia-scale{display:none}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.toc-heading{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.7rem}
+.toc-heading h2{margin:0!important}
+#toc-close{position:static}
+#toc-box{border-radius:12px;max-width:74rem;max-height:88dvh}
+.toc-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.toc-ch{border-radius:6px}
+.toc-ch button{padding:.4em .1em;line-height:1.4}
+#figure-dialog{width:min(96vw,1800px);height:92dvh;max-height:92dvh;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--fg);padding:clamp(1rem,2vw,2rem);overflow:hidden}
+#figure-dialog::backdrop{background:rgba(41,39,34,.72)}
+.figure-top{display:flex;align-items:center;justify-content:space-between;font-weight:700;gap:1rem;margin-bottom:1rem}
+#figure-dialog[open]{display:flex;flex-direction:column}
+#figure-canvas{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+#figure-canvas>svg{width:100%;height:100%;max-height:100%!important;overflow:visible}
+#figure-controls{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;padding-top:.6rem;flex:none}
+#figure-controls .ia-bar{justify-content:center}
+#figure-controls input{max-width:20rem}
+#figure-controls label{align-self:center;font-size:var(--small-size)}
+#figure-dialog.running .flow{animation-play-state:running}
+@media(min-width:1600px) and (min-height:900px){.slide-content{gap:1.4rem}.panel,.ia,.card{padding:1.1rem 1.4rem}.teaching-svg{max-height:45vh!important}}
+@media(max-height:800px) and (min-width:901px){:root{--gap:.65rem;--slide-pad:1.6rem;--small-size:clamp(.86rem,1.08vw,1rem);--body-size:clamp(.96rem,1.35vw,1.25rem);--tiny-size:clamp(.72rem,.9vw,.9rem)}.masthead{padding-bottom:.4rem}.slide-content{padding:.5rem 0}.card,.panel,.ia{padding:.6rem .8rem}.teaching-svg{max-height:42vh!important}.footer{bottom:1.3rem}.slide{padding-bottom:3.6rem}.eyebrow{font-size:var(--tiny-size)}.page-title{font-size:clamp(1.5rem,2.6vw,2.3rem)}.card ul{line-height:1.48}}
+@media(max-width:1100px){#hint{display:none}}
+/* 阅读模式使用整页自然滚动，适合手机和课后复习；投影模式仍然逐页一屏。 */
+html.reading,html.reading body{height:auto;min-height:100%;overflow:auto;scroll-behavior:smooth}
+.reading body{padding-bottom:4.5rem}
+.reading #deck{position:static;max-width:1200px;margin:auto}
+.reading .slide{position:relative;inset:auto;display:flex;height:auto;min-height:0;visibility:visible;opacity:1;pointer-events:auto;padding:2rem;overflow:visible;border-bottom:2px solid var(--line);margin-bottom:1rem}
+.reading .slide-content{overflow:visible;max-height:none;display:flex;flex:none;padding:1.5rem 0;gap:1.1rem}
+.reading .slide .rv{animation:none;opacity:1;transform:none}
+.reading .footer{position:static;max-width:100%;margin-top:.5rem}
+.reading .teaching-svg,.reading .slide-content svg{max-height:none!important}
+.reading .masthead{margin-top:.5rem}
+.reading #hud{bottom:.5rem;left:50%;right:auto;transform:translateX(-50%);width:max-content;box-shadow:0 0 0 1px var(--line),0 4px 20px #29272222}
+.reading #hint{display:none}
+.reading .brand{font-size:.8rem}
+.reading .page-title{font-size:clamp(1.5rem,3vw,2rem)}
+@media(max-width:900px){.reading .c2,.reading .c2w,.reading .c2n,.reading .c3,.reading .c4{grid-template-columns:1fr}.reading .cols{gap:1rem}.reading .slide{padding:1.2rem}.reading .card,.reading .panel,.reading .ia{padding:1rem}.reading .card p,.reading .card ul,.reading .tbl,.reading .callout{font-size:1rem;line-height:1.65}.reading .note,.reading .panel-foot{font-size:.9rem}.reading .edition{display:none}.reading h1{font-size:clamp(2rem,7vw,3.2rem)}.reading .row{flex-direction:column}.reading .tbl{table-layout:fixed;overflow-wrap:anywhere;font-size:.87rem}.reading .tbl th{white-space:normal}.toc-grid{grid-template-columns:1fr}.reading #hud{gap:.3rem;padding:.3rem}.reading .hud-btn{width:2.1rem;height:2.1rem}.reading .hud-text{width:auto}.reading #hud-pg{padding:.25rem .5rem}.reading .teaching-svg{min-height:0}.reading .card.shadow{box-shadow:none}}
+@media(max-height:500px){#figure-dialog{height:96dvh;max-height:96dvh;padding:.6rem}.figure-top{margin-bottom:.3rem}.figure-top .btn{padding:.2rem .5rem}#figure-controls{padding-top:.2rem}.btn{font-size:.8rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1!important;transform:none!important}html.reading{scroll-behavior:auto}}
+
+
+/* 傅里叶：离散谐波与时域相加对照，保留图示放大入口。 */
+.fourier-legend{display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-size:var(--tiny-size);color:var(--sub);margin-top:.4rem}
+.fourier-panel .teaching-svg{max-height:36vh!important}
+.fourier-panel .figure-actions{gap:.3rem}
+.fourier-panel .btn{padding:.35em .55em}
+.reading .fourier-panel .teaching-svg{max-height:none!important}
+
+/* 大标题与章节封面：保持正文阅读尺度，突出授课层级。 */
+:root{--h2-size:clamp(1.75rem,3.2vw,3.8rem)}
+.eyebrow{font-size:clamp(1.4rem,2.2vw,2.6rem);line-height:1.3;letter-spacing:.045em;flex-wrap:wrap;flex-shrink:0}
+.eyebrow::before{width:clamp(1.5rem,3vw,3.5rem);height:4px}
+.cover-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(2rem,4vw,5rem);align-items:center}
+.cover-kicker{font-size:clamp(1rem,1.6vw,1.8rem);font-weight:700;color:var(--accent);letter-spacing:.12em}
+.cover-title{font-size:clamp(2.9rem,5.6vw,7rem);line-height:1.12;letter-spacing:-.04em;margin:.3em 0}
+.cover-title span{color:var(--accent)}
+.cover-subtitle{font-size:clamp(1.25rem,2vw,2.4rem);font-weight:700;margin:0 0 .7em}
+.cover-intro{font-size:clamp(1rem,1.5vw,1.8rem);line-height:1.7;color:var(--sub);max-width:27em;margin:0}
+.cover-visual{padding:clamp(1rem,2.3vw,2.7rem);background:#292b27;color:#faf5eb;border-radius:14px;position:relative;overflow:hidden;box-shadow:10px 10px 0 #d8bba6}
+.cover-visual svg{display:block;width:100%;height:auto;max-height:49vh!important}
+.cover-visual-head{display:flex;justify-content:space-between;font-size:var(--small-size);color:#dacfc0;padding-bottom:.8em;border-bottom:1px solid #69695f;gap:1rem}
+.cover-bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:clamp(.6rem,2vh,1.8rem);padding-top:1rem;border-top:1px solid var(--line);font-size:var(--small-size);color:var(--sub)}
+.cover-bottom strong{color:var(--accent)}
+.chapter-cover .slide-content{gap:clamp(1rem,2.5vh,2rem)}
+.chapter-hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:clamp(1rem,4vw,5rem);align-items:center}
+.chapter-heading{font-size:clamp(3rem,6.2vw,7.8rem);line-height:1.1;letter-spacing:-.045em;margin:.15em 0 .28em}
+.chapter-heading span{color:var(--chc)}
+.chapter-lead{font-size:clamp(1.15rem,1.75vw,2rem);line-height:1.65;max-width:25em;color:var(--sub);margin:0}
+.chapter-art{position:relative;padding:clamp(.5rem,1vw,1.2rem);color:var(--chc);border-left:1px solid var(--line)}
+.chapter-number{font-family:Consolas,monospace;font-size:clamp(5rem,12vw,14rem);font-weight:700;line-height:1;letter-spacing:-.08em;color:var(--chc);opacity:.2;text-align:right}
+.chapter-art svg{display:block;width:100%;height:auto;max-height:26vh!important;margin-top:-1.4rem;overflow:visible}
+.chapter-topics{display:flex;flex-wrap:wrap;gap:.8em;border-top:1px solid var(--line);padding-top:1.1em;margin-top:.5em;font-size:clamp(1rem,1.4vw,1.7rem);color:var(--sub)}
+.chapter-topics span{padding-right:1.2em;border-right:1px solid var(--line)}
+.chapter-topics span:last-child{border:0}
+@media(max-height:800px) and (min-width:901px){.page-title{font-size:clamp(1.7rem,3.1vw,2.8rem)}.eyebrow{font-size:clamp(1.4rem,2.2vw,2rem)}.cover-bottom{padding-top:.7rem}.cover-title{font-size:clamp(2.9rem,5.5vw,5.2rem)}}
+@media(max-width:900px){.cover-grid,.chapter-hero{grid-template-columns:1fr}.chapter-art{border-left:0;border-top:1px solid var(--line)}.chapter-number{font-size:5rem}.chapter-art svg{max-height:220px!important}.cover-title{font-size:clamp(2.5rem,8vw,5.5rem)}.chapter-heading{font-size:clamp(2.6rem,9vw,5.5rem)}.cover-bottom{align-items:flex-start;flex-direction:column}.cover-visual svg{max-height:360px!important}}
+@media(prefers-reduced-motion:reduce){.cover-visual,.chapter-art{animation:none!important}}
+
+/* 首页：纸感底色、朱红章节印记与电路网格，装饰不参与正文布局。 */
+.main-cover{background:radial-gradient(ellipse at 12% 90%,#ead8c4 0,transparent 48%),linear-gradient(115deg,#fffaf1 0%,#f5f1e8 62%,#e8ddcd 100%)}
+.main-cover::before{background-size:32px 32px;opacity:.16;mask-image:linear-gradient(110deg,transparent 22%,#000 100%)}
+.main-cover::after{content:'';position:absolute;width:52vw;height:52vw;right:-22vw;top:-24vw;border:1px solid #b18a4660;border-radius:50%;box-shadow:0 0 0 3.5vw #b18a460b,0 0 0 7vw #b18a4608;pointer-events:none}
+.reading .slide.main-cover{overflow:hidden}
+.main-cover .masthead{border-bottom:2px solid #292722;padding-bottom:clamp(.5rem,1.2vh,1rem)}
+.cover-emblem{display:grid;place-items:center;width:2em;height:2em;background:var(--accent);color:#fffaf1;font-family:Consolas,monospace;letter-spacing:0;font-size:1.2em}
+.cover-kicker{display:flex;align-items:center;gap:.8em}
+.cover-kicker::before{content:'';display:block;width:2em;height:3px;background:var(--accent)}
+.cover-title{font-weight:800;letter-spacing:.015em;line-height:1.22}
+.cover-title span{display:block;position:relative;margin-top:.08em;padding-bottom:.2em}
+.cover-title span::after{content:'';position:absolute;left:0;bottom:0;width:22%;height:5px;background:var(--accent)}
+.cover-subtitle{letter-spacing:.1em;margin-top:.9em}
+.cover-visual{border:1px solid #7c8170;border-radius:3px 28px 3px 3px;background-color:#252f2c;background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:22px 22px;box-shadow:10px 10px 0 #c7af8d,0 18px 40px #29272218}
+.cover-visual-head{color:#efe1c9;letter-spacing:.08em;border-bottom-color:#c7af8d66}
+.cover-visual-head strong::before{content:'';display:inline-block;width:.5em;height:.5em;background:#edb08a;border-radius:50%;margin-right:.65em;box-shadow:0 0 0 4px #edb08a18}
+.cover-bottom{border-top:1px solid #b8a58c}
+.cover-bottom strong{display:inline-block;color:#fffaf1;background:var(--accent);padding:.35em .75em;letter-spacing:.05em}
+@media(max-width:900px){.eyebrow{font-size:clamp(1.35rem,3.5vw,1.9rem)}.main-cover::after{width:90vw;height:90vw;right:-40vw;top:-45vw}.cover-visual{box-shadow:6px 6px 0 #c7af8d}.cover-subtitle{letter-spacing:.04em}}
+
+</style>
+</head>
+<body>
+<div id="progress" aria-hidden="true"></div>
+
+<!-- 底部操作栏 -->
+<nav id="hud" aria-label="课件导航"><button class="hud-btn hud-text" id="btn-reading" title="阅读模式 (R)" aria-pressed="false">阅读</button>
+  <button class="hud-btn" id="btn-toc" title="目录 (G)" aria-label="打开目录">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+  </button>
+  <button class="hud-btn" id="btn-ink" title="批注 (P)——画圈标注重点" aria-label="批注模式" aria-pressed="false">
+    <svg viewBox="0 0 24 24"><path d="M4 20l1.2-4.5L16 4.7a1.8 1.8 0 0 1 2.6 0l.7.7a1.8 1.8 0 0 1 0 2.6L8.5 18.8 4 20z"/><path d="M14.5 6.2l3.3 3.3"/></svg>
+  </button>
+  <button class="hud-btn" id="btn-prev" title="上一页 (←)" aria-label="上一页">
+    <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <span id="hud-pg" aria-live="polite">01 / 43</span>
+  <button class="hud-btn" id="btn-next" title="下一页 (→)" aria-label="下一页">
+    <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+  <button class="hud-btn" id="btn-fs" title="全屏 (F)" aria-label="全屏切换">
+    <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+</nav>
+<p id="hint"><b>←/→</b> 翻页 &nbsp;·&nbsp; <b>G</b> 目录 &nbsp;·&nbsp; <b>F</b> 全屏 &nbsp;·&nbsp; <b>R</b> 阅读 &nbsp;·&nbsp; <b>P</b> 批注 &nbsp;·&nbsp; <b>Esc</b> 关闭</p>
+
+<!-- 批注工具条 + 画布 -->
+<div id="ink-bar" role="toolbar" aria-label="批注工具">
+  <button class="ink-dot" data-ink-color="accent" aria-pressed="true" aria-label="朱红画笔" title="朱红"></button>
+  <button class="ink-dot" data-ink-color="clay" aria-pressed="false" aria-label="陶土橙画笔" title="陶土橙"></button>
+  <button class="ink-dot" data-ink-color="gold" aria-pressed="false" aria-label="赭金画笔" title="赭金"></button>
+  <button class="ink-dot" data-ink-color="blue" aria-pressed="false" aria-label="靛蓝画笔" title="靛蓝（高对比）"></button>
+  <button class="ink-dot" data-ink-color="green" aria-pressed="false" aria-label="墨绿画笔" title="墨绿（高对比）"></button>
+  <button class="ink-dot" data-ink-color="black" aria-pressed="false" aria-label="炭黑画笔" title="炭黑（高对比）"></button>
+  <span class="ink-sep"></span>
+  <button class="ink-tb" id="ink-thin" aria-pressed="true">细</button>
+  <button class="ink-tb" id="ink-bold" aria-pressed="false">粗</button>
+  <span class="ink-sep"></span>
+  <button class="ink-tb" id="ink-undo">撤销</button>
+  <button class="ink-tb" id="ink-clear">清空本页</button>
+  <button class="ink-tb danger" id="ink-clear-all">清空全部</button>
+  <button class="ink-tb" id="ink-vis" aria-pressed="false">隐藏</button>
+  <button class="ink-tb" id="ink-exit">退出</button>
+</div>
+<svg id="ink" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+<!-- 章节目录浮层 -->
+<div id="toc" role="dialog" aria-modal="true" aria-label="章节目录">
+  <div id="toc-box">
+    <div class="toc-heading"><h2>目录 · 章节跳转</h2><button class="btn" id="toc-close">关闭 ×</button></div>
+    <div class="toc-grid" id="toc-grid"></div>
+    <p class="note" style="margin-top:.8rem">提示：互动页上的滑块和按钮可以放心操作，不会触发翻页；方向键在滑块聚焦时只会调节数值。</p>
+  </div>
+</div>
+
+<dialog id="figure-dialog"><div class="figure-top"><span id="figure-title">图示放大</span><button class="btn" id="figure-close">关闭 ×</button></div><div id="figure-canvas"></div><div id="figure-controls"></div></dialog><main id="deck">
+
+<!-- ================= P1 封面 ================= -->
+<section class="slide main-cover" data-ch="0" data-title="封面：稳压电源，从原理到实物">
+  <header class="masthead"><div class="brand"><span class="cover-emblem" aria-hidden="true">02</span><span>济海追风 / 硬件培训</span></div><span class="edition">SESSION 02 · POWER DESIGN</span></header>
+  <div class="slide-content">
+    <div class="cover-grid">
+      <div class="rv">
+        <div class="cover-kicker">第二次硬件培训</div>
+        <h1 class="cover-title">稳压电源<span>从原理到实物</span></h1>
+        <p class="cover-subtitle">BUCK 降压 · LDO 稳压</p>
+        <p class="cover-intro">看懂能量如何流动，读懂芯片手册，<br>亲手做出一块可以测量验证的电源板。</p>
+      </div>
+      <div class="cover-visual rv" style="--d:.12s">
+        <div class="cover-visual-head"><strong>本次制作目标</strong><span class="mono">POWER FLOW</span></div>
+        <svg viewBox="0 0 480 480" role="img" aria-label="12V经BUCK降到5V，再经LDO稳压为3.3V">
+          <g fill="none" stroke="#686a60" stroke-width="1"><path d="M30 30V400M450 30V400M30 70H450M30 215H450M30 360H450"/><circle cx="30" cy="70" r="4"/><circle cx="450" cy="360" r="4"/></g>
+          <path d="M172 90V136M172 193V210M172 270V308M172 351V367" fill="none" stroke="#edb08a" stroke-width="3"/>
+          <path d="M166 129l6 7 6-7M166 203l6 7 6-7M166 295l6 7 6-7M166 360l6 7 6-7" fill="none" stroke="#edb08a" stroke-width="3"/>
+          <g font-family="Consolas,monospace" font-weight="700" fill="#fff9ef"><text x="72" y="89" font-size="67">12V</text><text x="100" y="267" font-size="67">5V</text><text x="60" y="422" font-size="67" fill="#edb08a">3.3V</text></g>
+          <rect x="105" y="140" width="134" height="53" rx="6" fill="#edb08a"/><text x="172" y="175" text-anchor="middle" font-size="25" font-weight="700" fill="#292b27">BUCK</text>
+          <rect x="105" y="308" width="134" height="43" rx="6" fill="#cbb274"/><text x="172" y="337" text-anchor="middle" font-size="24" font-weight="700" fill="#292b27">LDO</text>
+          <g fill="#dad3c5" font-size="19"><text x="280" y="81">直流输入</text><text x="280" y="166">高效降压</text><text x="280" y="253">中间电源</text><text x="280" y="334">线性稳压</text><text x="280" y="407">目标输出</text></g>
+          <text x="240" y="462" text-anchor="middle" font-size="16" fill="#aaa99c">原理 → 选型 → 画板 → 焊接 → 测量</text>
+        </svg>
+      </div>
+    </div>
+    <div class="cover-bottom rv" style="--d:.18s"><span><strong>一块电源板，贯穿整堂课</strong></span><span>理解原理 / 独立设计 / 实测验证</span></div>
+  </div>
+  <footer class="footer"><span class="ch-label">开场</span></footer>
+</section>
+
+<!-- ================= P3 硬件工程师的四件事 ================= -->
+<section class="slide" data-ch="0" data-title="硬件工程师的四件事">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">OPENING · THE JOB</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">一块电路板的诞生</div>
+    <h2 class="page-title rv" style="--d:.05s">硬件工程师的四件事<small>本次培训恰好完整走一遍——本节课重点在后三步</small></h2>
+    <div class="cols c4">
+      <div class="card shadow rv" style="--d:.08s">
+        <h3><span class="n">1</span>原理图绘制</h3>
+        <p>照着芯片手册的<b>典型应用电路</b>搭骨架：芯片 + 外围电阻电容电感。</p>
+        <p class="note">本次：XL1410 + AMS1117 两级</p>
+      </div>
+      <div class="card shadow rv" style="--d:.14s">
+        <h3><span class="n">2</span>选型与采购</h3>
+        <p>看懂手册关键参数，选对电感、电容、二极管，从正规渠道下单。</p>
+        <p class="note">本次：自行购买全套物料</p>
+      </div>
+      <div class="card shadow rv" style="--d:.2s">
+        <h3><span class="n">3</span>PCB 布局布线</h3>
+        <p>回路面积、去耦摆放、反馈走线、线宽载流与散热铺铜。</p>
+        <p class="note">本次：布局布线属于考核内容</p>
+      </div>
+      <div class="card shadow rv" style="--d:.26s">
+        <h3><span class="n">4</span>焊接与调试</h3>
+        <p>焊台安全规范、限流上电、测量电压与纹波、定位返修。</p>
+        <p class="note">下次培训实操（先看安全准则）</p>
+      </div>
+    </div>
+    <div class="callout gold rv" style="--d:.3s"><b>前置知识回顾：</b>欧姆定律、串联分压、电容/电感的基本特性（第一次培训已覆盖焊接安全与基础）。今天的公式不会超过这三样，请放心。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">开场</span></footer>
+</section>
+
+<!-- ================= P4 目录 ================= -->
+<section class="slide" data-ch="0" data-title="目录：课程地图">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">OPENING · ROADMAP</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">课程地图</div>
+    <h2 class="page-title rv" style="--d:.05s">今天讲六件事，落在一块板上</h2>
+    <div class="cols c3">
+      <div class="card rv" style="--d:.08s">
+        <h3><span class="n">一</span>为什么需要稳压</h3>
+        <p>12V 能直接接吗 · 四种电能转换 · 电阻分压的教训</p>
+      </div>
+      <div class="card rv" style="--d:.12s;border-color:var(--accent)">
+        <h3><span class="n">二</span>BUCK 原理 <span class="badge o">★ 全课重点</span></h3>
+        <p>拓扑与电流路径 · 续流二极管 · PWM 与滤波 · 反馈闭环</p>
+        <p class="note">互动 ×2：电流路径 / 占空比</p>
+      </div>
+      <div class="card rv" style="--d:.16s">
+        <h3><span class="n">三</span>LDO 原理</h3>
+        <p>采样—比较—调整 · 压差 · 效率与发热 · BUCK vs LDO</p>
+        <p class="note">互动 ×1：负载电流与发热</p>
+      </div>
+      <div class="card rv" style="--d:.2s">
+        <h3><span class="n">四</span>手册与选型</h3>
+        <p>XL1410 / AMS1117 翻手册实战 · 电感 / 电容 / 二极管 · 采购渠道</p>
+      </div>
+      <div class="card rv" style="--d:.24s">
+        <h3><span class="n">五</span>PCB 与 EDA</h3>
+        <p>四条布局铁律 · 嘉立创 EDA 现场演示六步 · 焊接安全预告</p>
+      </div>
+      <div class="card rv" style="--d:.28s">
+        <h3><span class="n">六</span>测试与考核</h3>
+        <p>制作要求 · 电气指标 · 统一测量条件 · 独立完成与验收要求</p>
+      </div>
+    </div>
+    <p class="note rv" style="--d:.32s">第 1–3 节讲"为什么"，第 4–5 节讲"怎么做"，第 6 节布置任务。拓展内容（傅里叶、品牌速览、电感挖空）了解即可，不是考核重点。</p>
+  </div>
+  <footer class="footer"><span class="ch-label">开场</span></footer>
+</section>
+
+<!-- ================= P5 电源管理 ============ -->
+<section class="slide chapter-cover" data-ch="1" data-title="章节 01：为什么需要稳压">
+      <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">CHAPTER 01 / 06</span></header>
+      <div class="slide-content">
+        <div class="eyebrow rv">第一部分 · 为什么需要稳压</div>
+        <div class="chapter-hero">
+          <div class="rv"><h1 class="chapter-heading">为什么<br><span>需要稳压</span></h1><p class="chapter-lead">从“12V 能直接接单片机吗”出发，理解稳压的必要性。</p></div>
+          <div class="chapter-art rv" style="--d:.1s"><div class="chapter-number" aria-hidden="true">01</div><svg viewBox="0 0 350 270" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M25 65H95L120 155L155 25L190 120L225 75H325"/><path d="M25 195H325" stroke-opacity=".25"/><path d="M25 175H325" stroke-width="5"/><text x="175" y="235" fill="currentColor" stroke="none" text-anchor="middle" font-size="20">把供电稳定下来</text></g></svg></div>
+        </div>
+        <div class="chapter-topics rv" style="--d:.18s"><span>直接接入的后果</span><span>电能转换</span><span>电阻分压的局限</span></div>
+      </div>
+      <footer class="footer"><span class="ch-label">为什么需要稳压</span></footer>
+    </section>
+    <section class="slide" data-ch="1" data-title="为什么需要稳压：12V 能直接接单片机吗">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 01 · THE QUESTION</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第一部分 · 从一个问题开始</div>
+    <h2 class="page-title rv" style="--d:.05s">单片机要 3.3V，实验室电源给 12V——<br>直接接上去，会怎样？</h2>
+    <div class="cols c2">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>直接连接（错误接法）</strong><span class="mono och">DO NOT</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 360" class="teaching-svg" role="img" aria-label="错误接法：12V电源正极直接连到要求3.3V的单片机VDD供电引脚，负极连到VSS地引脚。VDD承受过压，可能永久损坏。">
+          <text x="117" y="39" text-anchor="middle" font-size="21" font-weight="700" fill="var(--fg)">直流电源</text>
+          <text x="565" y="39" text-anchor="middle" font-size="21" font-weight="700" fill="var(--fg)">单片机</text>
+          <rect x="30" y="76" width="175" height="184" rx="10" fill="var(--bg)" stroke="var(--line)" stroke-width="2.5"/>
+          <text x="117" y="115" text-anchor="middle" font-size="25" font-weight="700" fill="var(--fg)">12V 输出</text>
+          <text x="182" y="157" text-anchor="end" font-size="19" fill="var(--accent)">＋ 正极</text>
+          <text x="182" y="232" text-anchor="end" font-size="19" fill="var(--sub)">− 负极</text>
+          <rect x="455" y="76" width="220" height="184" rx="10" fill="var(--panel)" stroke="var(--ocher)" stroke-width="2.5"/>
+          <text x="565" y="111" text-anchor="middle" font-size="22" font-weight="700" fill="var(--fg)">要求 3.3V 供电</text>
+          <text x="471" y="157" font-size="20" font-weight="700" fill="var(--accent)">VDD</text>
+          <text x="471" y="232" font-size="19" fill="var(--sub)">VSS / GND</text>
+          <path d="M205 150H455" fill="none" stroke="var(--accent)" stroke-width="4"/>
+          <path d="M380 143L389 150L380 157" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M205 225H455" fill="none" stroke="var(--fg)" stroke-width="3"/>
+          <g fill="var(--accent)"><circle cx="205" cy="150" r="4.5"/><circle cx="455" cy="150" r="5"/></g>
+          <g fill="var(--fg)"><circle cx="205" cy="225" r="4"/><circle cx="455" cy="225" r="4"/></g>
+          <text x="330" y="107" text-anchor="middle" font-size="22" font-weight="700" fill="var(--accent)">送入的却是 12V</text>
+          <text x="330" y="135" text-anchor="middle" font-size="17" fill="var(--accent)">中间没有降压电路</text>
+          <text x="330" y="252" text-anchor="middle" font-size="16" fill="var(--sub)">两端共地</text>
+          <rect x="30" y="291" width="645" height="49" rx="6" fill="var(--apricot)"/>
+          <text x="352" y="322" text-anchor="middle" font-size="21" font-weight="700" fill="var(--ocher)">12V 直接加到 3.3V 供电引脚 → 过压，可能永久损坏</text>
+        </svg>
+        <div class="panel-foot">问题在 <b>VDD 供电电压过高</b>。应先把 12V 降为 3.3V，再给单片机供电。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="callout warn"><b>① 先看供电要求。</b>这里的单片机要求 3.3V，不能把 12V 直接接到 VDD。具体允许范围看所选型号手册。</div>
+        <div class="callout warn"><b>② 过压可能损坏芯片。</b>损坏后还可能出现异常大电流和发热；电源限流不能代替降压稳压。</div>
+        <div class="callout"><b>③ 所以需要"稳压电路"：</b>电压在允许范围内、供电电流满足负载、输出纹波足够低。</div>
+        <p class="lead">本次目标：把 12V 转换为稳定的 <span class="mono acc">5V</span> 和 <span class="mono acc">3.3V</span>。</p>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">为什么需要稳压</span></footer>
+</section>
+
+<section class="slide" data-ch="1" data-title="四种电能转换：本课聚焦 DC-DC">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 01 · WHY REGULATION</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第一部分 · 找到本课的位置</div>
+    <h2 class="page-title rv" style="--d:.05s">四种电能转换，本课聚焦 DC → DC</h2>
+    <div class="cols c2n">
+      <div class="rv" style="--d:.1s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <p class="lead">先看<b>输入和输出是交流还是直流</b>，就能分清这四类转换。我们已经有 12V 直流输入，接下来只讨论板上的降压稳压。</p>
+        <div class="card shadow"><h3>本次电源板的转换链</h3>
+          <p class="mono acc" style="font-size:1.35em;font-weight:700">12V → BUCK → 5V → LDO → 3.3V</p>
+          <p>BUCK 先把电压高效降到 5V；LDO 再得到 3.3V。两级电路分别在后面的章节展开。</p>
+        </div>
+        <div class="callout"><b>接着想：</b>既然只需要降低电压，能不能直接用两个电阻分压？</div>
+        <p class="note">缩写：AC = Alternating Current（交流），DC = Direct Current（直流）。电网是交流，电池和你的板子是直流。</p>
+      </div>
+      <div class="rv" style="--d:.15s;display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-content:center">
+        <div class="card"><h3>AC → AC</h3><p>变压器变压。电网 220V 变成设备所需交流电压。</p></div>
+        <div class="card"><h3>AC → DC</h3><p>整流 + 稳压。充电器、适配器都是它。</p><p class="note">你的 12V 适配器就是 AC-DC</p></div>
+        <div class="card"><h3>DC → AC</h3><p>逆变。UPS、光伏并网把直流变回交流。</p><p class="note">本课用不到，知道即可</p></div>
+        <div class="card" style="border-color:var(--accent)"><h3>DC → DC <span class="badge">本课主角</span></h3><p><b>直流变换直流</b>：把 12V 变成 5V、3.3V——今天的主角 BUCK 就是 DC-DC 降压。</p></div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">为什么需要稳压</span></footer>
+</section>
+
+<!-- ================= P6 分压的教训 ============ -->
+<section class="slide" data-ch="1" data-title="电阻分压为什么不行">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 01 · WHY REGULATION</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第一部分 · 一个"大聪明"方案</div>
+    <h2 class="page-title rv" style="--d:.05s">用两个电阻分压得到 3.3V，行不行？<small>先自己想 10 秒钟，再看下面的分析</small></h2>
+    <div class="cols c2">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>电阻分压 + 接上负载</strong><span>负载一接，电压就塌</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="可切换负载的电阻分压器：负载与下臂电阻并联" class="teaching-svg" ><path d="M150 60V92 M150 144V220 M150 272V312 M150 60H440 M150 312H580" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="139" y="92" width="22" height="52" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><rect x="139" y="220" width="22" height="52" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><circle cx="150" cy="183" r="4" fill="var(--fg)"/><path d="M340 312v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M150 183H350 M392 183H580V220 M580 272V312" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="569" y="220" width="22" height="52" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><path d="M350 183L388 165" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" id="divider-switch"/><text x="150" y="40" font-size="23" fill="var(--fg)" text-anchor="middle" >12V</text><text x="115" y="123" font-size="19" fill="var(--fg)" text-anchor="end" >8.7kΩ</text><text x="115" y="252" font-size="19" fill="var(--fg)" text-anchor="end" >3.3kΩ</text><text x="605" y="247" font-size="18" fill="var(--fg)" text-anchor="start" >RL = 1kΩ</text><text x="400" y="155" font-size="17" fill="var(--sub)" text-anchor="middle" >接入负载</text><text x="174" y="172" font-size="20" fill="var(--accent)" text-anchor="start" >Vx</text><rect x="330" y="45" width="365" height="65" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="352" y="87" font-size="27" fill="var(--accent)" text-anchor="start" id="divider-value">空载 3.30V</text><text x="370" y="370" font-size="20" fill="var(--sub)" text-anchor="middle" >负载与下臂并联 → 分压比改变</text></svg>
+        <div class="ia-bar figure-actions"><button class="btn" id="divider-toggle" aria-pressed="false">接入 1kΩ 负载</button><span class="note">先预测电压，再点击验证</span></div><div class="panel-foot">负载并进 R2（R2∥RL ≈ 0.77kΩ），分压比立刻改变——<b>输出电压随负载塌陷</b>。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="callout warn"><b>① 带载能力差。</b>负载一接上去，等效电阻改变，分压点电压就变——电源的输出电压不能依赖负载。</div>
+        <div class="callout warn"><b>② 效率极低。</b>全部负载电流都要串过 R1，压差乘电流的功率全部变成电阻上的热量。</div>
+        <div class="callout warn"><b>③ 没有反馈。</b>输入波动、负载变化时毫无还手之力，"稳"字无从谈起。</div>
+        <div class="callout"><b>正确方向：</b>用 <b>开关 + 储能元件（电感/电容）+ 反馈</b>——需要"斩波"和"蓄能"，而不是用电阻硬扛。这就是 BUCK。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">为什么需要稳压</span></footer>
+</section>
+
+<!-- ================= P7 BUCK 拓扑 ============ -->
+<section class="slide chapter-cover" data-ch="2" data-title="章节 02：BUCK 降压原理">
+      <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">CHAPTER 02 / 06</span></header>
+      <div class="slide-content">
+        <div class="eyebrow rv">第二部分 · BUCK 降压原理</div>
+        <div class="chapter-hero">
+          <div class="rv"><h1 class="chapter-heading">BUCK<br><span>降压原理</span></h1><p class="chapter-lead">用开关、电感和电容，把能量有节奏地送到输出。</p></div>
+          <div class="chapter-art rv" style="--d:.1s"><div class="chapter-number" aria-hidden="true">02</div><svg viewBox="0 0 350 270" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M25 105V40H85V105H145V40H205V105H265V40H325"/><path d="M25 200L75 140L135 200L195 140L255 200L325 140" stroke-opacity=".55"/><text x="175" y="235" fill="currentColor" stroke="none" text-anchor="middle" font-size="20">开关 · 储能 · 续流</text></g></svg></div>
+        </div>
+        <div class="chapter-topics rv" style="--d:.18s"><span>续流路径</span><span>PWM 与滤波</span><span>反馈闭环</span></div>
+      </div>
+      <footer class="footer"><span class="ch-label">BUCK 降压原理</span></footer>
+    </section>
+    <section class="slide" data-ch="2" data-title="BUCK 拓扑：五大组成">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · BUCK 原理（全课重点）</div>
+    <h2 class="page-title rv" style="--d:.05s">BUCK 拓扑：五个部件，各司其职</h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>异步 BUCK 基本拓扑</strong><span class="mono">BUCK TOPOLOGY</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 395" role="img" aria-label="异步BUCK：二极管阳极接地、阴极接SW，输出电容与负载并联" class="teaching-svg" ><path d="M80 95H235 M325 95H430 M530 95H660V160 M660 226V280H80V203 M80 147V95" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><circle cx="80" cy="175" r="28" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><text x="80" y="164" font-size="22" fill="var(--fg)" text-anchor="middle" >+</text><text x="80" y="194" font-size="22" fill="var(--fg)" text-anchor="middle" >−</text><path d="M165 95V193 M150 193h30 M150 205h30 M165 205V280" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M575 95V193 M560 193h30 M560 205h30 M575 205V280" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="649" y="160" width="22" height="66" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><path d="M430 95a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M375 95V185 M375 221V280 M358 185H392 M358 221L375 185L392 221Z" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><circle cx="375" cy="95" r="4" fill="var(--fg)"/><circle cx="575" cy="95" r="4" fill="var(--fg)"/><circle cx="375" cy="280" r="4" fill="var(--fg)"/><circle cx="575" cy="280" r="4" fill="var(--fg)"/><path d="M275 280v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="57" y="64" font-size="22" fill="var(--fg)" text-anchor="start" >12V</text><text x="260" y="59" font-size="18" fill="var(--fg)" text-anchor="middle" >S 开关</text><text x="375" y="73" font-size="18" fill="var(--fg)" text-anchor="middle" >SW</text><text x="480" y="64" font-size="19" fill="var(--fg)" text-anchor="middle" >L 电感</text><text x="650" y="64" font-size="23" fill="var(--accent)" text-anchor="middle" >5V</text><text x="185" y="204" font-size="17" fill="var(--fg)" text-anchor="start" >CIN</text><text x="546" y="204" font-size="17" fill="var(--fg)" text-anchor="end" >COUT</text><text x="684" y="198" font-size="19" fill="var(--fg)" text-anchor="start" >负载</text><text x="333" y="211" font-size="21" fill="var(--fg)" text-anchor="end" >D</text><text x="396" y="206" font-size="16" fill="var(--sub)" text-anchor="start" >K</text><text x="396" y="231" font-size="16" fill="var(--sub)" text-anchor="start" >A</text><path d="M235 95L319 65" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M660 95H725V134 M725 178V208 M725 252V280H660" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="714" y="134" width="22" height="44" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><rect x="714" y="208" width="22" height="44" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><circle cx="725" cy="193" r="4" fill="var(--fg)"/><path d="M725 193H767V335H280V291Q268 280 280 269V110" fill="none" stroke="var(--clay)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 5"/><text x="483" y="365" font-size="19" fill="var(--clay)" text-anchor="middle" >FB 采样 → 控制开关</text><text x="280" y="128" font-size="16" fill="var(--sub)" text-anchor="middle" >PWM 控制</text></svg>
+        <div class="panel-foot">记住：<b>电容两端电压不能突变，电感之中电流不能突变</b>——后面所有分析都建立在这两句上。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.3rem,.8vh,.55rem);justify-content:center">
+        <div class="card"><h3><span class="n">1</span>开关管（芯片内）</h3><p>按 PWM 高速通断，把 12V"斩"成方波——占空比决定平均电压。</p></div>
+        <div class="card"><h3><span class="n">2</span>续流通路：异步 vs 同步</h3><p><b>异步</b>（XL1410 / TPS5450）：二极管续流——简单便宜，多一份 VF 损耗；<b>同步</b>（TPS563200）：MOS 下管代替二极管——效率更高、控制更复杂。本课以异步为例。</p></div>
+        <div class="card"><h3><span class="n">3</span>电感 L</h3><p>电流不能突变 → 把"一勺一勺"的能量摊成平滑的电流。</p></div>
+        <div class="card"><h3><span class="n">4</span>输入/输出电容</h3><p>电压不能突变 → 稳住两端电压，吸收纹波电流。</p></div>
+        <div class="card"><h3><span class="n">5</span>反馈支路</h3><p>采样输出电压回送 FB 脚，闭环调节——稳压的"手"。</p></div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P8 互动：电流路径 ============ -->
+<section class="slide" data-ch="2" data-title="互动：导通与关断的电流路径">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK · INTERACTIVE</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 互动 ①</div>
+    <h2 class="page-title rv" style="--d:.05s">开关一开一关，电流各走哪条路？<small>切换下面的状态，跟着彩色路径读一遍电路</small></h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>BUCK 电流路径</strong><span id="bk-state" class="mono" style="color:var(--accent);font-weight:700">导通阶段 T<sub>on</sub></span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 465" role="img" aria-label="异步BUCK：二极管阳极接地、阴极接SW，输出电容与负载并联" class="teaching-svg" ><path d="M80 95H235 M325 95H430 M530 95H660V160 M660 226V280H80V203 M80 147V95" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><circle cx="80" cy="175" r="28" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><text x="80" y="164" font-size="22" fill="var(--fg)" text-anchor="middle" >+</text><text x="80" y="194" font-size="22" fill="var(--fg)" text-anchor="middle" >−</text><path d="M165 95V193 M150 193h30 M150 205h30 M165 205V280" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M575 95V193 M560 193h30 M560 205h30 M575 205V280" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="649" y="160" width="22" height="66" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><path d="M430 95a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M375 95V185 M375 221V280 M358 185H392 M358 221L375 185L392 221Z" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><circle cx="375" cy="95" r="4" fill="var(--fg)"/><circle cx="575" cy="95" r="4" fill="var(--fg)"/><circle cx="375" cy="280" r="4" fill="var(--fg)"/><circle cx="575" cy="280" r="4" fill="var(--fg)"/><path d="M275 280v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="57" y="64" font-size="22" fill="var(--fg)" text-anchor="start" >12V</text><text x="260" y="59" font-size="18" fill="var(--fg)" text-anchor="middle" >S 开关</text><text x="375" y="73" font-size="18" fill="var(--fg)" text-anchor="middle" >SW</text><text x="480" y="64" font-size="19" fill="var(--fg)" text-anchor="middle" >L 电感</text><text x="650" y="64" font-size="23" fill="var(--accent)" text-anchor="middle" >5V</text><text x="185" y="204" font-size="17" fill="var(--fg)" text-anchor="start" >CIN</text><text x="546" y="204" font-size="17" fill="var(--fg)" text-anchor="end" >COUT</text><text x="684" y="198" font-size="19" fill="var(--fg)" text-anchor="start" >负载</text><text x="333" y="211" font-size="21" fill="var(--fg)" text-anchor="end" >D</text><text x="396" y="206" font-size="16" fill="var(--sub)" text-anchor="start" >K</text><text x="396" y="231" font-size="16" fill="var(--sub)" text-anchor="start" >A</text><g id="bk-switch-on"><path d="M235 95H325" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" /></g><g id="bk-switch-off"><path d="M235 95L319 63" fill="none" stroke="var(--fg)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /></g><g id="g-on"><path d="M80 95H430a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0H660V160 M660 226V280H80V203 M80 147V95" fill="none" stroke="var(--accent)" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" class="flow"/></g><g id="g-off"><path d="M375 221V185V95H430a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0H660V160 M660 226V280H375V221" fill="none" stroke="var(--clay)" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" class="flow"/></g><path d="M447 135H510m-8-6 8 6-8 6" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><text x="480" y="162" font-size="17" fill="var(--accent)" text-anchor="middle" >iL 始终向右</text><path d="M550 232V256m-6-8 6 8 6-8" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" id="cap-arrow"/><text x="575" y="327" font-size="18" fill="var(--sub)" text-anchor="middle" id="cap-state">电容补电流差额</text><path d="M85 365V425H705" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M90 410L340 365L690 410" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><path d="M90 387.5H690" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 5"/><text x="62" y="374" font-size="18" fill="var(--fg)" text-anchor="end" >iL</text><text x="60" y="421" font-size="16" fill="var(--sub)" text-anchor="end" >0</text><text x="215" y="447" font-size="16" fill="var(--accent)" text-anchor="middle" >导通：上升</text><text x="515" y="447" font-size="16" fill="var(--clay)" text-anchor="middle" >关断：下降</text><line id="bk-cursor" x1="90" x2="90" y1="350" y2="425" stroke="var(--accent)" stroke-dasharray="4 4"/><circle id="bk-dot" cx="90" cy="410" r="6" fill="var(--accent)"/></svg>
+        <div class="panel-foot" id="bk-foot">路径：<b>12V → 开关管 → 电感 → 电容/负载 → 地 → 回电源</b>；电感电流线性上升（储能）。</div>
+      </div>
+      <div class="ia rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.5rem,1.2vh,.9rem)">
+        <div class="ia-bar" role="group" aria-label="切换开关状态">
+          <button class="btn" id="bk-btn-on" aria-pressed="true">导通 T<sub>on</sub></button>
+          <button class="btn cstyle" id="bk-btn-off" aria-pressed="false">关断 T<sub>off</sub></button>
+        </div>
+        <div class="ia-bar"><button class="btn" id="bk-play" aria-pressed="false">▶ 连续播放</button><button class="btn" id="bk-step">下一阶段</button><button class="btn" id="bk-reset">复位</button></div><label class="note" for="bk-phase">周期位置（教学慢放）</label><input id="bk-phase" type="range" min="0" max="1000" value="0" aria-label="逐步查看BUCK开关周期"><div class="card" id="bk-desc" style="box-shadow:none"><p id="bk-desc-p">开关管导通：电源经开关、电感给负载供电并给电感<b>储能</b>，同时给输出电容充电。二极管此时承受反压、<b>截止</b>。电感电流线性<b>上升</b>。</p></div>
+        <div class="card" style="box-shadow:none">
+          <h3 style="font-size:var(--body-size)">两个阶段的电感电流</h3>
+          <p class="mono" style="font-size:var(--small-size)">T<sub>on</sub>：ΔI<sub>L</sub> = (V<sub>IN</sub> − V<sub>OUT</sub>) · T<sub>on</sub> / L <span class="acc">↑ 上升</span></p>
+          <p class="mono" style="font-size:var(--small-size)">T<sub>off</sub>：ΔI<sub>L</sub> = −V<sub>OUT</sub> · T<sub>off</sub> / L <span class="cly">↓ 下降</span></p>
+          <p class="note">理想 CCM，忽略压降。开关导通≠电容一定充电：iC = iL − I负载。</p>
+        </div>
+        <div class="tags"><span class="tag"><b class="acc">━</b> 导通电流路径</span><span class="tag"><b class="cly">━</b> 关断续流路径</span><span class="tag">虚线 = 电流方向</span><span class="tag">慢放不代表实际频率</span></div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P9 续流二极管 ============ -->
+<section class="slide" data-ch="2" data-title="续流二极管：为什么必须有">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 必考概念</div>
+    <h2 class="page-title rv" style="--d:.05s">续流二极管：关断瞬间的"救命回路"<small>如果不加它，会发生什么？</small></h2>
+    <div class="cols c2">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>有无续流通路：SW 电压对比（定性）</strong><span>V = L·di/dt</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="SW关断时向负压方向过冲，有二极管则约钳位到负VF；曲线为定性示意" class="teaching-svg" ><path d="M75 35V322 M75 175H710" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M80 80H295V185H698" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><path d="M295 80V297L322 218L347 249L377 208L410 215L445 204H698" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><path d="M295 38V323" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 5"/><text x="66" y="85" font-size="18" fill="var(--sub)" text-anchor="end" >12V</text><text x="66" y="180" font-size="18" fill="var(--sub)" text-anchor="end" >0V</text><text x="83" y="28" font-size="20" fill="var(--fg)" text-anchor="start" >VSW</text><text x="150" y="66" font-size="20" fill="var(--fg)" text-anchor="middle" >开关导通</text><text x="490" y="68" font-size="20" fill="var(--fg)" text-anchor="middle" >开关关断</text><text x="480" y="140" font-size="21" fill="var(--gold)" text-anchor="start" >有 D：钳位到约 −VF</text><text x="443" y="265" font-size="21" fill="var(--accent)" text-anchor="start" >无续流通路：负向过冲</text><text x="390" y="361" font-size="20" fill="var(--sub)" text-anchor="middle" >高侧管承压 ≈ VIN − VSW；SW 越负，承压越大</text><text x="697" y="166" font-size="18" fill="var(--sub)" text-anchor="start" >t</text></svg>
+        <div class="panel-foot">尖峰直接打在<b>开关管两端</b>——超过耐压就击穿，俗称"炸管"。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="callout warn"><b>① 电感电流不能突变。</b>开关管关断的一瞬间，电感里的电流还在流动，必须找地方走。</div>
+        <div class="callout warn"><b>② SW 被拉向负电压。</b>电感试图维持原电流；没有续流通路时，寄生参数和器件钳位决定过冲幅度。</div>
+        <div class="callout warn"><b>③ 结果：</b>尖峰打在开关管 D-S 两端 → 过压击穿损坏。</div>
+        <div class="callout" style="font-size:var(--body-size)"><b>一句话结论：必须给关断时的电感电流留一个回路</b>——这就是续流二极管 D 存在的全部意义。开关关断期间，D 正偏导通，电感电流经它继续流向负载。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P10 能量三步 ============ -->
+<section class="slide" data-ch="2" data-title="能量视角：三步理解 BUCK">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 能量视角</div>
+    <h2 class="page-title rv" style="--d:.05s">三步看懂：BUCK 怎么把 12V 变成 5V</h2>
+    <div class="cols c3">
+      <div class="card shadow rv" style="--d:.08s">
+        <h3><span class="n">①</span>开关斩波</h3>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 130" role="img" aria-label="开关电压" class="teaching-svg" ><path d="M25 28V108H225" fill="none" stroke="var(--sub)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" /><path d="M25.00 36.00 L25.83 36.00 L26.67 36.00 L27.50 36.00 L28.33 36.00 L29.17 36.00 L30.00 36.00 L30.83 36.00 L31.67 36.00 L32.50 36.00 L33.33 36.00 L34.17 36.00 L35.00 36.00 L35.83 36.00 L36.67 36.00 L37.50 36.00 L38.33 36.00 L39.17 36.00 L40.00 36.00 L40.83 36.00 L41.67 36.00 L42.50 36.00 L43.33 36.00 L44.17 36.00 L45.00 36.00 L45.83 36.00 L46.67 36.00 L47.50 36.00 L48.33 36.00 L49.17 36.00 L50.00 36.00 L50.83 36.00 L51.67 36.00 L52.50 36.00 L53.33 94.00 L54.17 94.00 L55.00 94.00 L55.83 94.00 L56.67 94.00 L57.50 94.00 L58.33 94.00 L59.17 94.00 L60.00 94.00 L60.83 94.00 L61.67 94.00 L62.50 94.00 L63.33 94.00 L64.17 94.00 L65.00 94.00 L65.83 94.00 L66.67 94.00 L67.50 94.00 L68.33 94.00 L69.17 94.00 L70.00 94.00 L70.83 94.00 L71.67 94.00 L72.50 94.00 L73.33 94.00 L74.17 94.00 L75.00 94.00 L75.83 94.00 L76.67 94.00 L77.50 94.00 L78.33 94.00 L79.17 94.00 L80.00 94.00 L80.83 94.00 L81.67 94.00 L82.50 94.00 L83.33 94.00 L84.17 94.00 L85.00 94.00 L85.83 94.00 L86.67 94.00 L87.50 94.00 L88.33 94.00 L89.17 94.00 L90.00 94.00 L90.83 94.00 L91.67 36.00 L92.50 36.00 L93.33 36.00 L94.17 36.00 L95.00 36.00 L95.83 36.00 L96.67 36.00 L97.50 36.00 L98.33 36.00 L99.17 36.00 L100.00 36.00 L100.83 36.00 L101.67 36.00 L102.50 36.00 L103.33 36.00 L104.17 36.00 L105.00 36.00 L105.83 36.00 L106.67 36.00 L107.50 36.00 L108.33 36.00 L109.17 36.00 L110.00 36.00 L110.83 36.00 L111.67 36.00 L112.50 36.00 L113.33 36.00 L114.17 36.00 L115.00 36.00 L115.83 36.00 L116.67 36.00 L117.50 36.00 L118.33 36.00 L119.17 36.00 L120.00 94.00 L120.83 94.00 L121.67 94.00 L122.50 94.00 L123.33 94.00 L124.17 94.00 L125.00 94.00 L125.83 94.00 L126.67 94.00 L127.50 94.00 L128.33 94.00 L129.17 94.00 L130.00 94.00 L130.83 94.00 L131.67 94.00 L132.50 94.00 L133.33 94.00 L134.17 94.00 L135.00 94.00 L135.83 94.00 L136.67 94.00 L137.50 94.00 L138.33 94.00 L139.17 94.00 L140.00 94.00 L140.83 94.00 L141.67 94.00 L142.50 94.00 L143.33 94.00 L144.17 94.00 L145.00 94.00 L145.83 94.00 L146.67 94.00 L147.50 94.00 L148.33 94.00 L149.17 94.00 L150.00 94.00 L150.83 94.00 L151.67 94.00 L152.50 94.00 L153.33 94.00 L154.17 94.00 L155.00 94.00 L155.83 94.00 L156.67 94.00 L157.50 94.00 L158.33 36.00 L159.17 36.00 L160.00 36.00 L160.83 36.00 L161.67 36.00 L162.50 36.00 L163.33 36.00 L164.17 36.00 L165.00 36.00 L165.83 36.00 L166.67 36.00 L167.50 36.00 L168.33 36.00 L169.17 36.00 L170.00 36.00 L170.83 36.00 L171.67 36.00 L172.50 36.00 L173.33 36.00 L174.17 36.00 L175.00 36.00 L175.83 36.00 L176.67 36.00 L177.50 36.00 L178.33 36.00 L179.17 36.00 L180.00 36.00 L180.83 36.00 L181.67 36.00 L182.50 36.00 L183.33 36.00 L184.17 36.00 L185.00 36.00 L185.83 36.00 L186.67 94.00 L187.50 94.00 L188.33 94.00 L189.17 94.00 L190.00 94.00 L190.83 94.00 L191.67 94.00 L192.50 94.00 L193.33 94.00 L194.17 94.00 L195.00 94.00 L195.83 94.00 L196.67 94.00 L197.50 94.00 L198.33 94.00 L199.17 94.00 L200.00 94.00 L200.83 94.00 L201.67 94.00 L202.50 94.00 L203.33 94.00 L204.17 94.00 L205.00 94.00 L205.83 94.00 L206.67 94.00 L207.50 94.00 L208.33 94.00 L209.17 94.00 L210.00 94.00 L210.83 94.00 L211.67 94.00 L212.50 94.00 L213.33 94.00 L214.17 94.00 L215.00 94.00 L215.83 94.00 L216.67 94.00 L217.50 94.00 L218.33 94.00 L219.17 94.00 L220.00 94.00 L220.83 94.00 L221.67 94.00 L222.50 94.00 L223.33 94.00 L224.17 94.00 L225.00 36.00" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="25" y="20" font-size="13" fill="var(--fg)" text-anchor="start" >VSW</text><text x="223" y="123" font-size="12" fill="var(--sub)" text-anchor="start" >t</text></svg>
+        <p>开关按 PWM 高速通断，把 12V"斩"成一串 0↔12V 方波。方波的<b>平均值 = D×Vin</b>——占空比决定"总共给多少"。</p>
+      </div>
+      <div class="card shadow rv" style="--d:.14s">
+        <h3><span class="n">②</span>电感稳流</h3>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 130" role="img" aria-label="电感连续三角波电流" class="teaching-svg" ><path d="M25 28V108H225" fill="none" stroke="var(--sub)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" /><path d="M25.00 86.00 L25.83 84.68 L26.67 83.36 L27.50 82.04 L28.33 80.72 L29.17 79.40 L30.00 78.08 L30.83 76.76 L31.67 75.44 L32.50 74.12 L33.33 72.80 L34.17 71.48 L35.00 70.16 L35.83 68.84 L36.67 67.52 L37.50 66.20 L38.33 64.88 L39.17 63.56 L40.00 62.24 L40.83 60.92 L41.67 59.60 L42.50 58.28 L43.33 56.96 L44.17 55.64 L45.00 54.32 L45.83 53.00 L46.67 51.68 L47.50 50.36 L48.33 49.04 L49.17 47.72 L50.00 46.40 L50.83 45.08 L51.67 43.76 L52.50 42.44 L53.33 42.63 L54.17 43.57 L55.00 44.51 L55.83 45.46 L56.67 46.40 L57.50 47.34 L58.33 48.29 L59.17 49.23 L60.00 50.17 L60.83 51.11 L61.67 52.06 L62.50 53.00 L63.33 53.94 L64.17 54.89 L65.00 55.83 L65.83 56.77 L66.67 57.71 L67.50 58.66 L68.33 59.60 L69.17 60.54 L70.00 61.49 L70.83 62.43 L71.67 63.37 L72.50 64.31 L73.33 65.26 L74.17 66.20 L75.00 67.14 L75.83 68.09 L76.67 69.03 L77.50 69.97 L78.33 70.91 L79.17 71.86 L80.00 72.80 L80.83 73.74 L81.67 74.69 L82.50 75.63 L83.33 76.57 L84.17 77.51 L85.00 78.46 L85.83 79.40 L86.67 80.34 L87.50 81.29 L88.33 82.23 L89.17 83.17 L90.00 84.11 L90.83 85.06 L91.67 86.00 L92.50 84.68 L93.33 83.36 L94.17 82.04 L95.00 80.72 L95.83 79.40 L96.67 78.08 L97.50 76.76 L98.33 75.44 L99.17 74.12 L100.00 72.80 L100.83 71.48 L101.67 70.16 L102.50 68.84 L103.33 67.52 L104.17 66.20 L105.00 64.88 L105.83 63.56 L106.67 62.24 L107.50 60.92 L108.33 59.60 L109.17 58.28 L110.00 56.96 L110.83 55.64 L111.67 54.32 L112.50 53.00 L113.33 51.68 L114.17 50.36 L115.00 49.04 L115.83 47.72 L116.67 46.40 L117.50 45.08 L118.33 43.76 L119.17 42.44 L120.00 42.63 L120.83 43.57 L121.67 44.51 L122.50 45.46 L123.33 46.40 L124.17 47.34 L125.00 48.29 L125.83 49.23 L126.67 50.17 L127.50 51.11 L128.33 52.06 L129.17 53.00 L130.00 53.94 L130.83 54.89 L131.67 55.83 L132.50 56.77 L133.33 57.71 L134.17 58.66 L135.00 59.60 L135.83 60.54 L136.67 61.49 L137.50 62.43 L138.33 63.37 L139.17 64.31 L140.00 65.26 L140.83 66.20 L141.67 67.14 L142.50 68.09 L143.33 69.03 L144.17 69.97 L145.00 70.91 L145.83 71.86 L146.67 72.80 L147.50 73.74 L148.33 74.69 L149.17 75.63 L150.00 76.57 L150.83 77.51 L151.67 78.46 L152.50 79.40 L153.33 80.34 L154.17 81.29 L155.00 82.23 L155.83 83.17 L156.67 84.11 L157.50 85.06 L158.33 86.00 L159.17 84.68 L160.00 83.36 L160.83 82.04 L161.67 80.72 L162.50 79.40 L163.33 78.08 L164.17 76.76 L165.00 75.44 L165.83 74.12 L166.67 72.80 L167.50 71.48 L168.33 70.16 L169.17 68.84 L170.00 67.52 L170.83 66.20 L171.67 64.88 L172.50 63.56 L173.33 62.24 L174.17 60.92 L175.00 59.60 L175.83 58.28 L176.67 56.96 L177.50 55.64 L178.33 54.32 L179.17 53.00 L180.00 51.68 L180.83 50.36 L181.67 49.04 L182.50 47.72 L183.33 46.40 L184.17 45.08 L185.00 43.76 L185.83 42.44 L186.67 42.63 L187.50 43.57 L188.33 44.51 L189.17 45.46 L190.00 46.40 L190.83 47.34 L191.67 48.29 L192.50 49.23 L193.33 50.17 L194.17 51.11 L195.00 52.06 L195.83 53.00 L196.67 53.94 L197.50 54.89 L198.33 55.83 L199.17 56.77 L200.00 57.71 L200.83 58.66 L201.67 59.60 L202.50 60.54 L203.33 61.49 L204.17 62.43 L205.00 63.37 L205.83 64.31 L206.67 65.26 L207.50 66.20 L208.33 67.14 L209.17 68.09 L210.00 69.03 L210.83 69.97 L211.67 70.91 L212.50 71.86 L213.33 72.80 L214.17 73.74 L215.00 74.69 L215.83 75.63 L216.67 76.57 L217.50 77.51 L218.33 78.46 L219.17 79.40 L220.00 80.34 L220.83 81.29 L221.67 82.23 L222.50 83.17 L223.33 84.11 L224.17 85.06 L225.00 86.00" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="25" y="20" font-size="13" fill="var(--fg)" text-anchor="start" >iL</text><text x="223" y="123" font-size="12" fill="var(--sub)" text-anchor="start" >t</text></svg>
+        <p>电感像<b>水流惯性</b>：电流只能缓升缓降。导通时它"拖住"电流不让猛涨（多余电压变成磁场存起来）；关断时放出储能，让电流<b>沿原方向继续流</b>。于是负载得到的是连续的三角波电流，而不是一闪一断的脉冲。</p>
+      </div>
+      <div class="card shadow rv" style="--d:.2s">
+        <h3><span class="n">③</span>电容平压</h3>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 130" role="img" aria-label="输出电压稳态纹波，纵轴放大" class="teaching-svg" ><path d="M25 28V108H225" fill="none" stroke="var(--sub)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" /><path d="M25.00 69.78 L25.83 70.99 L26.67 72.13 L27.50 73.19 L28.33 74.18 L29.17 75.09 L30.00 75.93 L30.83 76.69 L31.67 77.38 L32.50 77.99 L33.33 78.53 L34.17 78.99 L35.00 79.38 L35.83 79.69 L36.67 79.93 L37.50 80.09 L38.33 80.18 L39.17 80.19 L40.00 80.13 L40.83 79.99 L41.67 79.78 L42.50 79.49 L43.33 79.13 L44.17 78.69 L45.00 78.18 L45.83 77.59 L46.67 76.93 L47.50 76.19 L48.33 75.38 L49.17 74.49 L50.00 73.53 L50.83 72.49 L51.67 71.38 L52.50 70.19 L53.33 68.96 L54.17 67.77 L55.00 66.63 L55.83 65.55 L56.67 64.53 L57.50 63.55 L58.33 62.63 L59.17 61.77 L60.00 60.96 L60.83 60.20 L61.67 59.49 L62.50 58.84 L63.33 58.24 L64.17 57.70 L65.00 57.21 L65.83 56.77 L66.67 56.38 L67.50 56.05 L68.33 55.78 L69.17 55.55 L70.00 55.38 L70.83 55.27 L71.67 55.21 L72.50 55.20 L73.33 55.24 L74.17 55.34 L75.00 55.49 L75.83 55.70 L76.67 55.96 L77.50 56.27 L78.33 56.63 L79.17 57.05 L80.00 57.53 L80.83 58.05 L81.67 58.63 L82.50 59.27 L83.33 59.96 L84.17 60.70 L85.00 61.49 L85.83 62.34 L86.67 63.24 L87.50 64.20 L88.33 65.21 L89.17 66.27 L90.00 67.38 L90.83 68.55 L91.67 69.78 L92.50 70.99 L93.33 72.13 L94.17 73.19 L95.00 74.18 L95.83 75.09 L96.67 75.93 L97.50 76.69 L98.33 77.38 L99.17 77.99 L100.00 78.53 L100.83 78.99 L101.67 79.38 L102.50 79.69 L103.33 79.93 L104.17 80.09 L105.00 80.18 L105.83 80.19 L106.67 80.13 L107.50 79.99 L108.33 79.78 L109.17 79.49 L110.00 79.13 L110.83 78.69 L111.67 78.18 L112.50 77.59 L113.33 76.93 L114.17 76.19 L115.00 75.38 L115.83 74.49 L116.67 73.53 L117.50 72.49 L118.33 71.38 L119.17 70.19 L120.00 68.96 L120.83 67.77 L121.67 66.63 L122.50 65.55 L123.33 64.53 L124.17 63.55 L125.00 62.63 L125.83 61.77 L126.67 60.96 L127.50 60.20 L128.33 59.49 L129.17 58.84 L130.00 58.24 L130.83 57.70 L131.67 57.21 L132.50 56.77 L133.33 56.38 L134.17 56.05 L135.00 55.78 L135.83 55.55 L136.67 55.38 L137.50 55.27 L138.33 55.21 L139.17 55.20 L140.00 55.24 L140.83 55.34 L141.67 55.49 L142.50 55.70 L143.33 55.96 L144.17 56.27 L145.00 56.63 L145.83 57.05 L146.67 57.53 L147.50 58.05 L148.33 58.63 L149.17 59.27 L150.00 59.96 L150.83 60.70 L151.67 61.49 L152.50 62.34 L153.33 63.24 L154.17 64.20 L155.00 65.21 L155.83 66.27 L156.67 67.38 L157.50 68.55 L158.33 69.78 L159.17 70.99 L160.00 72.13 L160.83 73.19 L161.67 74.18 L162.50 75.09 L163.33 75.93 L164.17 76.69 L165.00 77.38 L165.83 77.99 L166.67 78.53 L167.50 78.99 L168.33 79.38 L169.17 79.69 L170.00 79.93 L170.83 80.09 L171.67 80.18 L172.50 80.19 L173.33 80.13 L174.17 79.99 L175.00 79.78 L175.83 79.49 L176.67 79.13 L177.50 78.69 L178.33 78.18 L179.17 77.59 L180.00 76.93 L180.83 76.19 L181.67 75.38 L182.50 74.49 L183.33 73.53 L184.17 72.49 L185.00 71.38 L185.83 70.19 L186.67 68.96 L187.50 67.77 L188.33 66.63 L189.17 65.55 L190.00 64.53 L190.83 63.55 L191.67 62.63 L192.50 61.77 L193.33 60.96 L194.17 60.20 L195.00 59.49 L195.83 58.84 L196.67 58.24 L197.50 57.70 L198.33 57.21 L199.17 56.77 L200.00 56.38 L200.83 56.05 L201.67 55.78 L202.50 55.55 L203.33 55.38 L204.17 55.27 L205.00 55.21 L205.83 55.20 L206.67 55.24 L207.50 55.34 L208.33 55.49 L209.17 55.70 L210.00 55.96 L210.83 56.27 L211.67 56.63 L212.50 57.05 L213.33 57.53 L214.17 58.05 L215.00 58.63 L215.83 59.27 L216.67 59.96 L217.50 60.70 L218.33 61.49 L219.17 62.34 L220.00 63.24 L220.83 64.20 L221.67 65.21 L222.50 66.27 L223.33 67.38 L224.17 68.55 L225.00 69.78" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="25" y="20" font-size="13" fill="var(--fg)" text-anchor="start" >Vout（纹波放大）</text><text x="223" y="123" font-size="12" fill="var(--sub)" text-anchor="start" >t</text></svg>
+        <p>电容像<b>蓄水池</b>：电压只能缓升缓降。iL 大于负载需要时，多余的电流给电容充电、电压微升；iL 小于负载时电容放电补上、电压微降。一充一放恰好相抵，输出只剩<b>小幅纹波</b>叠在直流上。</p>
+      </div>
+    </div>
+    <div class="callout gold rv" style="--d:.26s"><b>合起来：</b>开关定"给多少"（平均电压），电感定"给得多连续"（电流不断流），电容定"电压多平"（纹波大小）——方波进，平滑直流出，没有任何超纲知识。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P11 互动：占空比 ============ -->
+<section class="slide" data-ch="2" data-title="互动：占空比与平均输出">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK · INTERACTIVE</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 互动 ②</div>
+    <h2 class="page-title rv" style="--d:.05s">拖动占空比：方波的平均值跟着变<small>理想模型下的 PWM 与输出电压关系（V<sub>IN</sub> 固定 12V）</small></h2>
+    <div class="cols c2w">
+      <div class="ia rv" style="--d:.1s">
+        <div class="panel-cap"><strong>SW 节点电压波形</strong><span class="mono">PWM &amp; AVERAGE</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 452" role="img" aria-label="占空比、三角波电感电流和由电容电流积分得到的输出纹波" class="teaching-svg" id="pwm-svg"><text x="82" y="43" font-size="18" fill="var(--fg)" text-anchor="start" >SW 电压</text><path d="M80 62V140H705" fill="none" stroke="var(--sub)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" /><text x="68" y="69" font-size="15" fill="var(--sub)" text-anchor="end" >12V</text><text x="68" y="142" font-size="15" fill="var(--sub)" text-anchor="end" >0V</text><path d="M80 101H700" fill="none" stroke="var(--line)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 5"/><text x="82" y="171" font-size="18" fill="var(--fg)" text-anchor="start" >电感电流 iL</text><path d="M80 190V268H705" fill="none" stroke="var(--sub)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" /><text x="68" y="197" font-size="15" fill="var(--sub)" text-anchor="end" >1A</text><text x="68" y="270" font-size="15" fill="var(--sub)" text-anchor="end" >0A</text><path d="M80 229H700" fill="none" stroke="var(--line)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 5"/><text x="82" y="299" font-size="18" fill="var(--fg)" text-anchor="start" >输出纹波（纵轴放大）</text><path d="M80 318V396H705" fill="none" stroke="var(--sub)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" /><text x="68" y="325" font-size="15" fill="var(--sub)" text-anchor="end" >+Δv</text><text x="68" y="398" font-size="15" fill="var(--sub)" text-anchor="end" >−Δv</text><path d="M80 357H700" fill="none" stroke="var(--line)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 5"/><path id="pwm-line" class="wav"/><path id="pwm-current" class="wav"/><path id="pwm-voltage" class="wav"/><path id="pwm-avg" class="avg"/><text x="700" y="29" font-size="20" fill="var(--accent)" text-anchor="end" id="pwm-avg-lbl">平均 5.00V</text><line id="pwm-cursor" x1="80" x2="80" y1="52" y2="410" stroke="var(--accent)" stroke-dasharray="4 5"/><text x="392" y="434" font-size="17" fill="var(--sub)" text-anchor="middle" >三条波形的时间轴对齐 · 拖动滑块比较稳态</text></svg>
+      </div>
+      <div class="ia rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.5rem,1.2vh,.9rem)">
+        <div>
+          <label for="duty" style="font-size:var(--small-size);font-weight:700">占空比 D：<span id="duty-v" class="mono acc">42%</span></label>
+          <input type="range" id="duty" min="5" max="95" step="0.1" value="41.7" aria-label="调节占空比">
+        </div>
+        <div class="ia-bar"><button class="btn" id="pwm-play" aria-pressed="false">▶ 时间游标</button><button class="btn" data-duty="25">25%</button><button class="btn" data-duty="41.6666667">5V 工作点</button><button class="btn" data-duty="60">60%</button></div><div class="kvs">
+          <div class="kv"><div class="k">输入电压</div><div class="v">12<small>V</small></div></div>
+          <div class="kv"><div class="k">理想输出 D×Vin</div><div class="v" id="vout-v">5.0<small>V</small></div></div>
+          <div class="kv"><div class="k">目标 5V 需要</div><div class="v g">D≈41.7<small>%</small></div></div>
+        </div>
+        <div class="card" style="box-shadow:none">
+          <p class="mono" style="font-size:var(--small-size)">V<sub>OUT</sub> = D × V<sub>IN</sub></p>
+          <p class="note">上图比较不同占空比的<b>稳态</b>，不是电压瞬间跳变。模型：L=100µH、C=100µF、50kHz、负载电流≈0.5A，忽略 ESR。</p>
+        </div>
+        <div class="callout gold"><b>理想模型的适用条件：</b>忽略器件压降、处于连续导通（CCM）且已进入稳态。轻载跳脉冲、断续导通及动态过程要按实际芯片分析。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P12 滤波视角 ============ -->
+<section class="slide" data-ch="2" data-title="滤波视角：LC 二阶低通">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 滤波视角</div>
+    <h2 class="page-title rv" style="--d:.05s">同一件事的另一种说法：LC 低通滤波器</h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>方波进，直流出</strong><span class="mono">LC LOW-PASS</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" role="img" aria-label="LC低通：电感串联，输出电容并联接地" class="teaching-svg" ><path d="M35 130h20v-55h30v55h30v-55h30v55h30" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><text x="100" y="42" font-size="21" fill="var(--fg)" text-anchor="middle" >SW 方波</text><path d="M196 110H237m-8-6 8 6-8 6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M260 95H285 M385 95H467 M260 218H467" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M285 95a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M440 95V148 M425 148h30 M425 160h30 M440 160V218" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="335" y="60" font-size="19" fill="var(--accent)" text-anchor="middle" >L 串联</text><text x="421" y="186" font-size="17" fill="var(--accent)" text-anchor="end" >C 并联</text><path d="M330 218v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M492 110H524m-8-6 8 6-8 6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M548 111Q560 104 572 111T596 111T620 111T644 111T668 111T692 111" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><text x="624" y="65" font-size="20" fill="var(--fg)" text-anchor="middle" >直流 + 小纹波</text><text x="380" y="289" font-size="22" fill="var(--fg)" text-anchor="middle" >电感限制电流变化；电容承接电流差额</text><text x="380" y="327" font-size="19" fill="var(--sub)" text-anchor="middle" >直流分量（0Hz）在通带内原样通过，开关谐波被成倍压低</text></svg>
+        <div class="panel-foot">LC 固有频率 <b>f<sub>0</sub> = 1/(2π√(LC))</b> 通常远低于开关频率；实际响应还取决于负载、ESR 和控制环路。<b>下一页</b>解释：方波里为什么"含直流"。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="panel shadow">
+          <div class="panel-cap"><strong>低通特性</strong><span>幅度 vs 频率</span></div>
+          <svg viewBox="0 0 360 190">
+            <path d="M40 30v130h290" class="axis"/>
+            <path d="M40 60h90c50 0 60 55 90 90" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <path d="M130 30v130" class="gridln"/>
+            <text x="130" y="176" font-size="11" fill="var(--accent)" text-anchor="middle" class="mono">f0</text>
+            <path d="M290 30v130" class="gridln"/>
+            <text x="290" y="176" font-size="11" fill="var(--sub)" text-anchor="middle" class="mono">fSW</text>
+            <text x="290" y="70" font-size="11" fill="var(--sub)" text-anchor="middle">开关频率被</text>
+            <text x="290" y="84" font-size="11" fill="var(--sub)" text-anchor="middle">大幅衰减</text>
+            <text x="70" y="48" font-size="11" fill="var(--sub)">低频≈直通</text>
+          </svg>
+          <div class="panel-foot">频率越高，分到的电压越小——开关谐波正好是最该被滤掉的部分。</div>
+        </div>
+        <p class="lead"><b>为什么"滤掉高频"剩的就是直流？</b>方波里频率最低的成分是<b>直流分量（0Hz）</b>，落在通带内原样通过；开关谐波都在阻带、被成倍衰减。<b>下一页</b>用傅里叶回答另一半问题：方波里为什么有直流。</p>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P13 傅里叶拓展 ============ -->
+<section class="slide" data-ch="2" data-title="拓展：方波的傅里叶分解">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK · EXTENSION</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 拓展 <span class="badge g" style="margin-left:.4em">了解即可 · 非考核重点</span></div>
+    <h2 class="page-title rv" style="--d:.05s">正弦波逐项相加，为什么越来越像方波？</h2>
+    <div class="cols c2n">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>方波的频谱成分</strong><span class="mono">FOURIER</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="仅50%占空比时除直流外只有奇次谐波，柱高按傅里叶幅度比例绘制" class="teaching-svg" ><path d="M60 43V302H700" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="118" y="142" width="54" height="160" rx="5" fill="var(--accent)" stroke="var(--line)" stroke-width="2" class="spectrum-bar"/><text x="145" y="332" font-size="19" fill="var(--sub)" text-anchor="middle" >直流</text><rect x="263" y="98" width="54" height="204" rx="5" fill="var(--gold)" stroke="var(--line)" stroke-width="2" class="spectrum-bar"/><text x="290" y="332" font-size="19" fill="var(--sub)" text-anchor="middle" >基波 f</text><rect x="408" y="234" width="54" height="68" rx="5" fill="var(--gold)" stroke="var(--line)" stroke-width="2" class="spectrum-bar"/><text x="435" y="332" font-size="19" fill="var(--sub)" text-anchor="middle" >3f</text><rect x="553" y="261.2" width="54" height="40.8" rx="5" fill="var(--gold)" stroke="var(--line)" stroke-width="2" class="spectrum-bar"/><text x="580" y="332" font-size="19" fill="var(--sub)" text-anchor="middle" >5f</text><text x="390" y="29" font-size="21" fill="var(--fg)" text-anchor="middle" >50% 占空比示例 · 单边幅度</text><text x="145" y="125" font-size="17" fill="var(--accent)" text-anchor="middle" >Vin / 2</text><text x="290" y="83" font-size="17" fill="var(--gold)" text-anchor="middle" >2Vin / π</text><text x="390" y="373" font-size="21" fill="var(--accent)" text-anchor="middle" >D ≠ 50% 时，一般也有偶次谐波</text></svg>
+        <div class="panel-foot"><b>把两页接起来：</b>方波 = 直流 + 谐波（本页）→ LC 衰减谐波（上一页的曲线）→ 输出 ≈ 直流（平均值）+ 残余纹波。右图先看经典 ±1 方波：对应 0～12V、50% 占空比时 <b>v(x) = 6 + 6s(x)</b>，其中的 6V 就是直流分量。</div>
+      </div>
+      <div class="panel fourier-panel rv" style="--d:.15s">
+        <div class="panel-cap"><strong>经典方波与奇次谐波叠加</strong><span>周期 T = 2π，幅值 ±1</span></div>
+        <div class="ia-bar figure-actions" role="group" aria-label="选择叠加到的最高谐波次数">
+          <button class="btn" data-harmonic="1" aria-pressed="false">基波</button>
+          <button class="btn" data-harmonic="3" aria-pressed="false">到 3 次</button>
+          <button class="btn" data-harmonic="5" aria-pressed="true">到 5 次</button>
+          <button class="btn" data-harmonic="9" aria-pressed="false">到 9 次</button>
+          <button class="btn" data-harmonic="19" aria-pressed="false">到 19 次</button>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" id="fourier-svg" class="teaching-svg" viewBox="0 0 760 450" role="img" aria-label="上图为各奇次正弦谐波，下图对比它们的叠加曲线与理想正负1方波">
+          <text x="70" y="25" font-size="20" fill="var(--fg)">① 各次谐波：频率越高，幅度越小</text>
+          <path d="M70 52V195 M70 122H720 M70 225V420 M70 322H720" fill="none" stroke="var(--sub)" stroke-width="1.4"/>
+          <g fill="var(--sub)" font-size="16" text-anchor="end"><text x="58" y="72">+1</text><text x="58" y="127">0</text><text x="58" y="181">−1</text><text x="58" y="263">+1</text><text x="58" y="327">0</text><text x="58" y="391">−1</text></g>
+          <path d="M70 258H720 M70 386H720" fill="none" stroke="var(--line)" stroke-dasharray="4 5"/>
+          <g font-size="16" text-anchor="end"><text x="414" y="46" fill="var(--gold)">基波</text><text x="505" y="46" fill="var(--clay)">3次</text><text x="590" y="46" fill="#477582">5次</text><text x="718" y="46" fill="var(--sub)">更高次</text></g><g id="fourier-components" fill="none" stroke-width="2.2"></g>
+          <text x="70" y="217" font-size="20" fill="var(--fg)">② 相加结果：逼近理想方波</text>
+          <path d="M70 258H232.5V386H395V258H557.5V386H720" fill="none" stroke="var(--sub)" stroke-width="2.4" stroke-dasharray="7 6"/>
+          <path id="fourier-sum" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round"/>
+          <g fill="var(--sub)" font-size="17" text-anchor="middle"><text x="70" y="444">0</text><text x="232.5" y="444">π</text><text x="395" y="444">2π</text><text x="557.5" y="444">3π</text><text x="720" y="444">4π</text></g>
+          <text x="730" y="327" font-size="16" fill="var(--sub)">x</text>
+        </svg>
+        <div class="fourier-legend"><span style="color:var(--accent)">━ 叠加曲线</span><span>┄ 理想方波</span><span id="fourier-status" aria-live="polite">1 + 3 + 5 次，共 3 项</span></div>
+        <div class="panel-foot"><span class="mono">s<sub>N</sub>(x) = 4/π [sin x + sin(3x)/3 + … + sin(Nx)/N]</span><br>只取奇数 N；跳变处趋近中点 0，边缘振铃是<b>吉布斯现象</b>。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P14 反馈稳压 ============ -->
+<section class="slide" data-ch="2" data-title="反馈稳压：采样—比较—调整">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 02 · BUCK</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第二部分 · 闭环（承上启下）</div>
+    <h2 class="page-title rv" style="--d:.05s">BUCK 为什么"稳"？——反馈闭环</h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>闭环框图</strong><span class="mono">FEEDBACK LOOP</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="闭环反馈：输出采样送回误差比较器，再调节功率级" class="teaching-svg" ><rect x="50" y="95" width="135" height="66" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="117.5" y="136" font-size="19" fill="var(--fg)" text-anchor="middle" >比较 / 放大</text><rect x="225" y="95" width="120" height="66" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="285.0" y="136" font-size="19" fill="var(--fg)" text-anchor="middle" >控制器</text><rect x="385" y="95" width="130" height="66" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="450.0" y="136" font-size="19" fill="var(--fg)" text-anchor="middle" >开关功率级</text><rect x="555" y="95" width="135" height="66" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="622.5" y="136" font-size="19" fill="var(--fg)" text-anchor="middle" >LC 滤波</text><path d="M185 128H225m-8-6 8 6-8 6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M345 128H385m-8-6 8 6-8 6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M515 128H555m-8-6 8 6-8 6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="485" y="268" width="180" height="58" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-width="2" /><text x="575" y="304" font-size="19" fill="var(--fg)" text-anchor="middle" >输出分压采样</text><path d="M690 128H725V297H665 M485 297H118V161" fill="none" stroke="var(--clay)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" class="signal-flow"/><path d="M118 58V95m-6-8 6 8 6-8" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="118" y="40" font-size="18" fill="var(--gold)" text-anchor="middle" >VREF 基准</text><circle cx="725" cy="207" r="4" fill="var(--accent)"/><text x="705" y="211" font-size="22" fill="var(--accent)" text-anchor="end" >Vout</text><text x="292" y="284" font-size="19" fill="var(--clay)" text-anchor="middle" >VFB 反馈</text><text x="370" y="372" font-size="20" fill="var(--fg)" text-anchor="middle" >输出偏低 → 控制器增加供能 → 输出回到设定值</text></svg>
+        <div class="ia-bar figure-actions"><button class="btn" id="feedback-step">① 输出偏低</button><span id="feedback-status" class="note" aria-live="polite">点击逐步走一遍负反馈</span></div><div class="panel-foot">以 XL1410 为例：内部基准 <b>VREF = 1.222V</b>，正常闭环稳压时 FB 脚约为 1.222V，输出电压由分压比锁定。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="card shadow"><h3>开环 vs 闭环</h3><p>只按 D×Vin 开环输出，输入波动、负载变化时输出会漂。加上反馈后，芯片<b>持续</b>地微调占空比，把输出"钉"在设定值。</p></div>
+        <div class="card shadow"><h3>采样 · 比较 · 调整</h3><p>这套思想不只属于 BUCK——下一节的 LDO 用的是<b>完全相同的三步</b>，只是"执行器"从开关换成了连续可调的晶体管。</p></div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">BUCK 原理</span></footer>
+</section>
+
+<!-- ================= P15 LDO 三大模块 ============ -->
+<section class="slide chapter-cover" data-ch="3" data-title="章节 03：LDO 线性稳压">
+      <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">CHAPTER 03 / 06</span></header>
+      <div class="slide-content">
+        <div class="eyebrow rv">第三部分 · LDO 线性稳压</div>
+        <div class="chapter-hero">
+          <div class="rv"><h1 class="chapter-heading">LDO<br><span>线性稳压</span></h1><p class="chapter-lead">看懂压差、损耗与散热，理解 5V 如何变成 3.3V。</p></div>
+          <div class="chapter-art rv" style="--d:.1s"><div class="chapter-number" aria-hidden="true">03</div><svg viewBox="0 0 350 270" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M25 50H325M25 165H325" stroke-opacity=".2"/><path d="M25 80H130L220 150H325" stroke-width="5"/><path d="M170 50V175" stroke-dasharray="5 8"/><text x="175" y="235" fill="currentColor" stroke="none" text-anchor="middle" font-size="20">压差 · 损耗 · 散热</text></g></svg></div>
+        </div>
+        <div class="chapter-topics rv" style="--d:.18s"><span>压差约束</span><span>热损耗</span><span>两级稳压</span></div>
+      </div>
+      <footer class="footer"><span class="ch-label">LDO 线性稳压</span></footer>
+    </section>
+    <section class="slide" data-ch="3" data-title="LDO 三大模块">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 03 · LDO</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第三部分 · LDO 线性稳压</div>
+    <h2 class="page-title rv" style="--d:.05s">LDO：一个会自动调压的"串联变阻器"</h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>LDO 通用框图（示意）</strong><span class="mono">LDO BLOCKS</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="LDO通用框图，串联调整管由误差放大器控制，采样和基准分别输入比较器" class="teaching-svg" ><path d="M55 85H135 M315 85H650V148 M650 198V220 M650 270V325H55" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="135" y="51" width="180" height="68" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="225" y="80" font-size="22" fill="var(--fg)" text-anchor="middle" >① 调整管</text><text x="225" y="104" font-size="16" fill="var(--sub)" text-anchor="middle" >串联在供电路径</text><text x="55" y="58" font-size="23" fill="var(--fg)" text-anchor="start" >5V</text><text x="635" y="57" font-size="23" fill="var(--accent)" text-anchor="middle" >3.3V</text><circle cx="650" cy="85" r="4" fill="var(--accent)"/><rect x="639" y="148" width="22" height="50" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><rect x="639" y="220" width="22" height="50" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><circle cx="650" cy="209" r="4" fill="var(--fg)"/><path d="M575 325v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="682" y="178" font-size="18" fill="var(--fg)" text-anchor="start" >R1</text><text x="682" y="251" font-size="18" fill="var(--fg)" text-anchor="start" >R2</text><rect x="295" y="177" width="190" height="68" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" /><text x="390" y="204" font-size="21" fill="var(--fg)" text-anchor="middle" >③ 误差放大</text><text x="390" y="229" font-size="16" fill="var(--sub)" text-anchor="middle" >比较 VFB 与 VREF</text><path d="M650 209H485m8-6-8 6 8 6 M295 211H225V119m-6 8 6-8 6 8" fill="none" stroke="var(--clay)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" class="signal-flow"/><path d="M390 297V245m-6 8 6-8 6 8" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="390" y="318" font-size="19" fill="var(--gold)" text-anchor="middle" >VREF 基准</text><text x="560" y="188" font-size="19" fill="var(--clay)" text-anchor="middle" >② 采样</text><text x="180" y="239" font-size="17" fill="var(--clay)" text-anchor="middle" >控制压降</text><text x="380" y="376" font-size="21" fill="var(--sub)" text-anchor="middle" >调整管连续调节，不做高速开关</text></svg>
+        <div class="panel-foot">注意：这是<b>通用示意</b>。调整管用什么管子（双极 / PMOS / NMOS）<b>因型号而异</b>——AMS1117 内部结构与本图不同，以它的手册原理图为准。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.4rem,1vh,.7rem);justify-content:center">
+        <div class="card"><h3><span class="n">①</span>晶体管调整电路</h3><p>串联在输入输出之间，像<b>自动调节的滑动变阻器</b>：需要多少压降就降多少。</p></div>
+        <div class="card"><h3><span class="n">②</span>分压取样电路</h3><p>R1/R2 按比例把输出电压"缩"给比较器看——就是 BUCK 里那条 FB 支路。</p></div>
+        <div class="card"><h3><span class="n">③</span>误差放大电路</h3><p>拿采样值和内部基准比较，差多少就指挥调整管补多少。</p></div>
+        <div class="callout"><b>点题：</b>采样、比较、调整——和 BUCK 反馈<b>同一个思想</b>；区别只在执行器：BUCK 用"开关"，LDO 用"连续调节"。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">LDO 原理</span></footer>
+</section>
+
+<!-- ================= P16 压差 ============ -->
+<section class="slide" data-ch="3" data-title="压差 Dropout：LDO 的硬约束">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 03 · LDO</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第三部分 · 关键参数</div>
+    <h2 class="page-title rv" style="--d:.05s">压差（Dropout）：想稳压，先留够"过路费"</h2>
+    <div class="cols c2">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>AMS1117-3.3：Vout 随 Vin 变化</strong><span class="mono">DROPOUT</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="固定1.1V压差的示意模型：Vout约等于输入减压差，达到3.3V后稳压；不是保证曲线" class="teaching-svg" ><path d="M80 45V290H705" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M80 166.5L416 75.5H700" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><path d="M80 75.5H700 M416 48V290" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 5"/><text x="64" y="82" font-size="18" fill="var(--sub)" text-anchor="end" >3.3V</text><text x="80" y="26" font-size="20" fill="var(--fg)" text-anchor="start" >Vout</text><text x="680" y="340" font-size="20" fill="var(--fg)" text-anchor="start" >Vin</text><path d="M80 290v7" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><text x="80" y="322" font-size="18" fill="var(--sub)" text-anchor="middle" >3.0V</text><path d="M416 290v7" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><text x="416" y="322" font-size="18" fill="var(--sub)" text-anchor="middle" >4.4V</text><path d="M560 290v7" fill="none" stroke="var(--sub)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><text x="560" y="322" font-size="18" fill="var(--sub)" text-anchor="middle" >5.0V</text><circle cx="416" cy="75.5" r="4" fill="var(--ocher)"/><circle cx="560" cy="75.5" r="4" fill="var(--accent)"/><text x="240" y="206" font-size="22" fill="var(--clay)" text-anchor="middle" >压差不足区</text><text x="560" y="152" font-size="22" fill="var(--accent)" text-anchor="middle" >稳压区</text><text x="395" y="376" font-size="18" fill="var(--sub)" text-anchor="middle" >固定压差 1.1V 的简化示意；实际值随电流、温度和版本变化</text></svg>
+        <div class="panel-foot">本板 Vin = <b>5V</b>，距 3.3V 有 1.7V 余量，稳压区工作 ✓</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="callout"><b>定义：</b>压差 = 维持稳压所需的<b>最小</b>（Vin − Vout）。低于它，调整管"开到最大"也补不回来，输出开始跟随输入下跌。</div>
+        <div class="card shadow"><h3>AMS1117 的压差有多大？</h3>
+          <ul>
+            <li>常见手册标注：额定电流下<b>典型约 1.1V、最大约 1.3V</b>，电流越小压差越小</li>
+            <li><b>不同厂家、不同版本有差异</b>——以你实际买到的那颗的手册为准</li>
+            <li>按手册规定的电流与温度留足压差；图中 4.4V 仅作典型示意</li>
+          </ul>
+        </div>
+        <div class="callout clay"><b>反过来想：</b>如果直接 12V→3.3V 用 LDO，压差 8.7V 完全"够"，但代价是什么？下一页拖一下滑块就明白。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">LDO 原理</span></footer>
+</section>
+
+<!-- ================= P17 互动：LDO 发热 ============ -->
+<section class="slide" data-ch="3" data-title="互动：LDO 负载电流与发热">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 03 · LDO · INTERACTIVE</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第三部分 · 互动 ③</div>
+    <h2 class="page-title rv" style="--d:.05s">拖动负载电流：压差损耗全都变成热<small>AMS1117-3.3 · 输入 5V · 输出 3.3V</small></h2>
+    <div class="cols c2w">
+      <div class="ia rv" style="--d:.1s;display:flex;flex-direction:column;gap:clamp(.55rem,1.3vh,1rem)">
+        <div class="panel-cap"><strong>调整管上的功率损耗</strong><span class="mono">P = (Vin−Vout) × Iout</span></div>
+        <div class="meter-caption">考核工作点：500mA → 约 0.85W 损耗</div><div class="meter" aria-hidden="true">
+          <div class="meter-fill" id="ldo-fill"></div>
+          <div class="meter-tick" style="left:53.1%"><i class="sr-only">0.85W</i></div>
+        </div>
+        <div class="meter-scale"><span>0W</span><span>0.4</span><span>0.8</span><span>1.2</span><span>1.6W</span></div>
+        <div class="kvs">
+          <div class="kv"><div class="k">负载电流</div><div class="v" id="ldo-i">500<small>mA</small></div></div>
+          <div class="kv"><div class="k">压差 (5−3.3V)</div><div class="v c">1.7<small>V</small></div></div>
+          <div class="kv"><div class="k">损耗功率</div><div class="v o" id="ldo-p">0.85<small>W</small></div></div>
+          <div class="kv"><div class="k">效率 ≈ Vout/Vin</div><div class="v g">66<small>%</small></div></div>
+        </div>
+        <svg viewBox="0 0 560 96" role="img" aria-label="5伏经LDO降压至3.3伏，压差乘电流在芯片内发热" style="max-height:15vh">
+          <path d="M30 48h80 M210 48h260" stroke="var(--fg)" stroke-width="2.5" fill="none"/>
+          <rect x="110" y="20" width="100" height="56" fill="var(--apricot)" stroke="var(--gold)" stroke-width="1.5"/>
+          <text x="160" y="44" text-anchor="middle" font-size="14" font-weight="700">AMS1117</text>
+          <text x="160" y="62" text-anchor="middle" font-size="11" fill="var(--sub)">调整管发热</text>
+          <text x="30" y="30" font-size="13" class="mono" font-weight="700">5V</text>
+          <text x="290" y="30" font-size="13" class="mono acc" font-weight="700">3.3V</text>
+          <path d="m282 48 8-5v10z" fill="var(--accent)"/>
+          <text x="296" y="72" font-size="11.5" fill="var(--accent)" class="mono" id="ldo-i2">I = 500mA</text>
+          <rect x="470" y="26" width="60" height="44" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="4"/>
+          <text x="500" y="53" text-anchor="middle" font-size="12" fill="var(--accent)">负载</text>
+          <g stroke="var(--ocher)" stroke-width="2.5" fill="none"><path d="M160 18c0-8 8-8 8 0s8 8 8 0"/><path d="M138 16c3-6 7-6 9-2"/></g>
+          <text x="176" y="14" font-size="11.5" fill="var(--ocher)" font-weight="700" id="ldo-heat">发热 0.85W</text>
+        </svg>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.5rem,1.2vh,.9rem);justify-content:center">
+        <div class="ia">
+          <label for="ldo-r" style="font-size:var(--small-size);font-weight:700">负载电流 I<sub>out</sub>：<span id="ldo-r-v" class="mono och">500 mA</span></label>
+          <input type="range" id="ldo-r" min="0" max="800" step="10" value="500" aria-label="调节LDO负载电流">
+          <div class="ia-bar"><button class="btn" data-current="100">100mA</button><button class="btn" data-current="500">500mA 考核点</button><button class="btn" data-current="800">800mA 算损耗</button></div><div class="ia-scale meter-scale" style="margin-top:.15rem"><span>0</span><span>200</span><span>400</span><span id="ldo-mark" style="color:var(--ocher);font-weight:700">500(考核)</span><span>800mA</span></div>
+        </div>
+        <div class="card" style="box-shadow:none"><h3 style="font-size:var(--body-size)">读数怎么来的</h3>
+          <p class="mono" style="font-size:var(--small-size)">P = (5V − 3.3V) × 0.5A = <b class="och">0.85 W</b></p>
+          <p class="note">大二 3.3V/500mA 考核工况下，仅 LDO 一级就要持续散掉 0.85W——需要通过封装和 PCB 向环境散热。</p>
+        </div>
+        <div class="callout warn"><b>发热去哪了：</b>温升 ΔT ≈ P × θ<sub>JA</sub>。θ<sub>JA</sub> 取决于封装和<b>你铺的铜面积</b>（以手册热特性为准）。铺铜不够 → 芯片过热 → 进热保护、掉压。</div>
+        <div class="callout gold"><b>两个重要观念：</b>① 忽略静态电流时，LDO 效率 ≈ Vout/Vin，本例约 66%；② <b>标称电流 ≠ 持续输出能力</b>——能不能长期跑，由散热决定。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">LDO 原理</span></footer>
+</section>
+
+<!-- ================= P18 BUCK vs LDO ============ -->
+<section class="slide" data-ch="3" data-title="BUCK vs LDO：怎么选">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 03 · LDO</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第三部分 · 选型决策</div>
+    <h2 class="page-title rv" style="--d:.05s">BUCK vs LDO：没有好坏，只有场合</h2>
+    <table class="tbl rv" style="--d:.1s">
+      <thead><tr><th style="width:14%">维度</th><th style="width:43%">BUCK（开关稳压）</th><th style="width:43%">LDO（线性稳压）</th></tr></thead>
+      <tbody>
+        <tr><td>工作方式</td><td>开关斩波 + LC 滤波（"断续地给"）</td><td>调整管连续调节（压差损耗变热）</td></tr>
+        <tr><td>效率</td><td class="ok">高，典型可达九成上下（看手册效率曲线）</td><td>≈ Vout/Vin，本例 66%；压差越大越亏</td></tr>
+        <tr><td>纹波噪声</td><td>有开关纹波，好坏取决于设计与布局</td><td class="ok">无自身开关纹波；抑制前级噪声的能力随频率变化</td></tr>
+        <tr><td>外围电路</td><td>电感 + 电容；异步型还需续流二极管</td><td class="ok">少：输入输出电容即可，便于集成</td></tr>
+        <tr><td>发热</td><td class="ok">小</td><td>大：压差 × 电流全部变成热</td></tr>
+        <tr><td>大压差大电流</td><td class="ok">首选</td><td>通常不合适，先核算压差损耗和散热</td></tr>
+      </tbody>
+    </table>
+    <div class="callout rv" style="--d:.18s;font-size:var(--body-size)"><b>本次任务为什么两个都用：</b>12V→5V 压差 7V、电流 2A，交给<b class="acc">BUCK</b> 承担主要降压；5V→3.3V 压差只有 1.7V、电流 0.5A，用 <b class="gld">LDO</b>（AMS1117-3.3）得到另一档稳压输出——<b>前级高效降压，后级提供 3.3V</b>，这就是电源架构的基本功。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">LDO 原理</span></footer>
+</section>
+
+<!-- ================= P19 选型七参数 ============ -->
+<section class="slide chapter-cover" data-ch="4" data-title="章节 04：手册与器件选型">
+      <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">CHAPTER 04 / 06</span></header>
+      <div class="slide-content">
+        <div class="eyebrow rv">第四部分 · 手册与器件选型</div>
+        <div class="chapter-hero">
+          <div class="rv"><h1 class="chapter-heading">手册与<br><span>器件选型</span></h1><p class="chapter-lead">围绕芯片手册，查清参数、引脚与外围器件。</p></div>
+          <div class="chapter-art rv" style="--d:.1s"><div class="chapter-number" aria-hidden="true">04</div><svg viewBox="0 0 350 270" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="55" y="30" width="190" height="160" rx="8"/><path d="M85 70H215M85 100H170M85 130H205M85 160H150"/><circle cx="255" cy="155" r="38"/><path d="M281 183L318 217" stroke-width="6"/><text x="175" y="252" fill="currentColor" stroke="none" text-anchor="middle" font-size="20">参数 · 引脚 · 封装</text></g></svg></div>
+        </div>
+        <div class="chapter-topics rv" style="--d:.18s"><span>芯片手册</span><span>电感与电容</span><span>采购核对</span></div>
+      </div>
+      <footer class="footer"><span class="ch-label">手册与器件选型</span></footer>
+    </section>
+    <section class="slide" data-ch="4" data-title="电源芯片选型：7 个关键参数">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · DATASHEET</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 手册与选型</div>
+    <h2 class="page-title rv" style="--d:.05s">选电源芯片，先看这 7 个参数<small>前 4 项是本次选型必看，后 3 项知道概念即可</small></h2>
+    <div class="cols c4">
+      <div class="card shadow rv" style="--d:.06s;border-color:var(--accent)"><h3><span class="n">1</span>电压范围与精度 <span class="badge">必看</span></h3><p>输入范围罩得住吗？输出能设到目标值吗？精度够不够你的 ±5% 门槛？</p></div>
+      <div class="card shadow rv" style="--d:.1s;border-color:var(--accent)"><h3><span class="n">2</span>最大输出电流 <span class="badge">必看</span></h3><p>留裕量选：5V 要 2A，芯片就得 ≥2A（还要看散热）。</p></div>
+      <div class="card shadow rv" style="--d:.14s;border-color:var(--accent)"><h3><span class="n">3</span>效率 <span class="badge">必看</span></h3><p>决定发热与能耗。看手册<b>效率曲线</b>，别只看首页典型值。</p></div>
+      <div class="card shadow rv" style="--d:.18s;border-color:var(--accent)"><h3><span class="n">4</span>纹波与噪声 <span class="badge">必看</span></h3><p>直接对应考核指标。注意测试条件（频率、带宽）是否和你一致。</p></div>
+      <div class="card rv" style="--d:.22s"><h3><span class="n">5</span>保护功能</h3><p class="note">限流、过温、过压——炸板与返修之间隔着的护城河。</p></div>
+      <div class="card rv" style="--d:.26s"><h3><span class="n">6</span>动态响应</h3><p class="note">负载电流突跳时，输出电压多久稳住（单片机突发工况相关）。</p></div>
+      <div class="card rv" style="--d:.3s"><h3><span class="n">7</span>软启动</h3><p class="note">限制上电冲击电流，防止输入电源被"拽塌"。</p></div>
+      <div class="card rv" style="--d:.34s;background:var(--apricot);border-color:var(--apricot)"><h3>选型顺序</h3><p><b>先电压电流</b>筛掉不能用的 → <b>再效率纹波</b>挑好的 → 最后看保护、价格和好不好买。</p></div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P20 品牌与采购 ============ -->
+<section class="slide" data-ch="4" data-title="品牌与采购：认准正规渠道">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · SOURCING</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 采购 <span class="badge g" style="margin-left:.4em">速览</span></div>
+    <h2 class="page-title rv" style="--d:.05s">买芯片：认准正规渠道，看清型号后缀</h2>
+    <div class="cols c3">
+      <div class="card shadow rv" style="--d:.08s">
+        <h3>常见品牌</h3>
+        <div class="tags" style="margin:.3em 0 .5em">
+          <span class="tag">TI 德州仪器</span><span class="tag">ADI</span><span class="tag">MPS</span><span class="tag">芯龙 XLSEMI</span><span class="tag">矽力杰</span><span class="tag">圣邦微</span><span class="tag">微盟</span>
+        </div>
+        <p class="note">本课主角 XL1410 / AMS1117 都是多厂家都在做的"国民芯片"——<b>同名不同厂，参数可能有差</b>。</p>
+      </div>
+      <div class="card shadow rv" style="--d:.14s">
+        <h3>靠谱渠道</h3>
+        <ul>
+          <li><b>立创商城 / 嘉立创</b>：料全、附手册、发货快，新生首选</li>
+          <li><b>官方代理</b>（原厂授权分销）：正规项目的选择</li>
+          <li>淘宝散卖家：<b>谨慎</b>，注意甄别</li>
+        </ul>
+      </div>
+      <div class="card shadow rv" style="--d:.2s;border-color:var(--ocher)">
+        <h3>避坑清单</h3>
+        <ul>
+          <li>别贪便宜买<b>打磨片、散新、拆机片</b>——参数没保障</li>
+          <li>看清<b>后缀与封装</b>：型号相同、后缀不同可能是不同版本/包装</li>
+          <li>按 BOM 采购，易损件（芯片、二极管）多备 1~2 颗</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout gold rv" style="--d:.26s"><b>买之前做一件事：</b>到立创商城或厂家官网<b>下载这颗芯片的 PDF 手册</b>，核对是哪个厂家的版本——第四节接下来就教你怎么翻它。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P21 XL1410 关键参数 ============ -->
+<section class="slide" data-ch="4" data-title="翻手册①：XL1410 关键参数">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · DATASHEET</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 翻手册实战 ①</div>
+    <h2 class="page-title rv">XL1410：先查参数，再判断能不能用</h2>
+    <div class="cols c2w">
+      <div class="rv" style="display:flex;flex-direction:column;gap:var(--gap)">
+        <h3 style="margin:0">01 · 对照任务，读关键参数</h3>
+        <table class="tbl shadow">
+          <thead><tr><th>参数</th><th>Rev 1.6 标注</th><th>本次设计怎么看</th></tr></thead>
+          <tbody>
+            <tr><td>输入范围</td><td class="mono acc"><b>3.6 ~ 28V</b></td><td>覆盖 12V 输入</td></tr>
+            <tr><td>输出电流</td><td class="mono acc"><b>2A</b></td><td>芯片标称能力，整板仍需验证</td></tr>
+            <tr><td>反馈基准</td><td class="mono acc"><b>1.222V</b></td><td>用于计算反馈电阻（下一页）</td></tr>
+            <tr><td>电路类型</td><td>异步降压 BUCK</td><td>需外接肖特基续流二极管</td></tr>
+            <tr><td>继续查阅</td><td>频率 · 封装 · 引脚</td><td>用于选电感、核对焊盘</td></tr>
+          </tbody>
+        </table>
+        <div class="callout"><b>先问三件事：</b>输入电压是否覆盖？电流能力是否满足？反馈形式是什么？</div>
+      </div>
+      <div class="card shadow rv" style="border-top:3px solid var(--clay);display:flex;flex-direction:column;gap:var(--gap)">
+        <h3 style="margin:0">02 · 现场演示：找到这份手册</h3>
+        <div>
+          <p style="margin:0"><b>半导小芯</b> · 芯片资料查询</p>
+          <p class="src" style="margin-top:.35em"><a href="https://www.semiee.com/" target="_blank" rel="noopener" style="font-size:var(--body-size);font-weight:700">www.semiee.com ↗</a></p>
+        </div>
+        <ol style="margin:0;padding-left:1.5em;line-height:1.8">
+          <li>输入型号 <b class="mono">XL1410</b></li>
+          <li>核对<b>厂家与完整型号</b></li>
+          <li>打开手册，找左侧关键参数</li>
+        </ol>
+        <p class="note">也可检索品牌、丝印等信息。找到资料后，继续核对版本、封装和引脚。</p>
+        <p class="src"><a href="https://www.xlsemi.com/datasheet/XL1410-EN.pdf" target="_blank" rel="noopener">打开 XL1410 厂家手册 ↗</a></p>
+      </div>
+    </div>
+    <div class="callout warn rv"><b>读数有依据：</b>本页按厂家 Rev 1.6 手册标注，设计时核对对应版本。大一只验空载，不能据此认定整板已具备 2A 带载能力。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P22 XL1410 典型应用与计算 ============ -->
+<section class="slide" data-ch="4" data-title="翻手册②：典型应用与反馈电阻计算">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · DATASHEET</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 翻手册实战 ②（现场一起算）</div>
+    <h2 class="page-title rv" style="--d:.05s">Typical Application：可以直接抄的骨架<small>先认清连接，再按对应芯片手册补齐全部外围元件</small></h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>XL1410 典型应用电路（结构示意）</strong><span class="mono">5V / 2A</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 410" role="img" aria-label="XL1410结构示意，反馈上臂6.2k下臂2k，FB接分压中点，输入输出电容接地" class="teaching-svg" ><path d="M50 85H180 M355 85H430 M530 85H700 M50 325H700 M260 255V325" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M115 85V187 M100 187h30 M100 199h30 M115 199V325" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="180" y="50" width="175" height="205" rx="5" fill="var(--apricot)" stroke="var(--fg)" stroke-width="2" /><text x="268" y="131" font-size="25" fill="var(--fg)" text-anchor="middle" >XL1410</text><text x="194" y="82" font-size="16" fill="var(--fg)" text-anchor="start" >2 VIN</text><text x="342" y="82" font-size="16" fill="var(--fg)" text-anchor="end" >3 SW</text><text x="342" y="237" font-size="16" fill="var(--fg)" text-anchor="end" >5 FB</text><text x="260" y="278" font-size="16" fill="var(--fg)" text-anchor="middle" >4 GND</text><text x="195" y="204" font-size="16" fill="var(--sub)" text-anchor="start" >7 EN</text><text x="268" y="158" font-size="16" fill="var(--sub)" text-anchor="middle" >内部开关与控制</text><path d="M390 85V191 M390 229V325 M374 191H406 M374 229L390 191L406 229Z" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M430 85a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M558 85V187 M543 187h30 M543 199h30 M558 199V325" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="664" y="125" width="22" height="49" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><rect x="664" y="235" width="22" height="49" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><path d="M675 85V125 M675 174V235 M675 284V325" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M675 203H645V290H566Q558 278 550 290H398Q390 278 382 290H370V230H355" fill="none" stroke="var(--clay)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><circle cx="390" cy="85" r="4" fill="var(--fg)"/><circle cx="558" cy="85" r="4" fill="var(--fg)"/><circle cx="675" cy="203" r="4" fill="var(--clay)"/><path d="M465 325v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="50" y="56" font-size="23" fill="var(--fg)" text-anchor="start" >12V</text><text x="612" y="56" font-size="24" fill="var(--accent)" text-anchor="middle" >5V</text><text x="85" y="191" font-size="17" fill="var(--fg)" text-anchor="end" >CIN</text><text x="536" y="194" font-size="17" fill="var(--fg)" text-anchor="end" >COUT</text><text x="417" y="211" font-size="18" fill="var(--fg)" text-anchor="start" >D</text><text x="480" y="54" font-size="22" fill="var(--fg)" text-anchor="middle" >L</text><text x="707" y="143" font-size="17" fill="var(--fg)" text-anchor="start" >R2</text><text x="707" y="166" font-size="17" fill="var(--fg)" text-anchor="start" >6.2k</text><text x="707" y="254" font-size="17" fill="var(--fg)" text-anchor="start" >R1</text><text x="707" y="278" font-size="17" fill="var(--fg)" text-anchor="start" >2k</text><text x="490" y="260" font-size="17" fill="var(--clay)" text-anchor="middle" >FB 取分压中点</text><text x="380" y="387" font-size="18" fill="var(--sub)" text-anchor="middle" >结构示意，未画全外围元件；完整取值按所购型号手册</text></svg>
+        <div class="panel-foot">骨架 = 手册典型应用；<b>引脚定义、电容取值按手册典型图逐一对齐</b>，再加上任务要求的输出 LED 与排针。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="card shadow"><h3>现场算：输出 5V 的分压电阻</h3>
+          <p class="mono" style="font-size:var(--small-size);line-height:1.9">V<sub>OUT</sub> = 1.222 × (1 + R2/R1)<br>
+          5 = 1.222 × (1 + R2/R1)  →  R2/R1 = <b class="acc">3.09</b><br>
+          参考手册取 R1 = 2kΩ → R2 ≈ <b class="acc">6.2kΩ</b>（±1%）<br>
+          验算：1.222 × (1 + 3.1) = <b class="acc">5.01V</b> ✓</p>
+          <p class="note">5.01V 落在考核窗口 4.75~5.25V 内，余量充足。这就是你们任务里的第一道计算题。</p>
+        </div>
+        <div class="callout"><b>取值技巧：</b>阻值数量级参考手册示例——太大易受 FB 引脚漏电流影响、精度变差；太小则白白多耗电流。本例分压电流约 0.61mA，功耗很小。</div>
+        <div class="callout clay"><b>R1/R2 谁在上谁在下：</b>不同手册编号习惯不同！以你手里手册典型图中的<b>图上位置</b>为准，公式与图的编号必须配套。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P23 翻手册③：AMS1117 关键参数 ============ -->
+<section class="slide" data-ch="4" data-title="翻手册③：AMS1117 关键参数">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · DATASHEET</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 翻手册实战 ③</div>
+    <h2 class="page-title rv">AMS1117-3.3：先查参数，再判断能不能用</h2>
+    <div class="cols c2w">
+      <div class="rv" style="display:flex;flex-direction:column;gap:var(--gap)">
+        <h3 style="margin:0">01 · 对照任务，读关键参数</h3>
+        <table class="tbl shadow">
+          <thead><tr><th>参数</th><th>手册常见标注</th><th>本次设计怎么看</th></tr></thead>
+          <tbody>
+            <tr><td>电路类型</td><td>线性稳压 LDO · 固定 3.3V 输出</td><td>5V→3.3V 第二级</td></tr>
+            <tr><td>输入电压</td><td>常见版本最高约 15V</td><td>5V 输入，覆盖 ✓（以你那版为准）</td></tr>
+            <tr><td>输出电压</td><td class="mono acc"><b>3.3V</b>（精度随版本）</td><td>需落在 3.135 ~ 3.465V 窗口内</td></tr>
+            <tr><td>压差 Dropout</td><td class="mono acc"><b>典型约 1.1V / 最大约 1.3V</b></td><td>5 − 3.3 = 1.7V，留有余量</td></tr>
+            <tr><td>电流规格</td><td>版本而异（常见标 1A）</td><td>标称 ≠ 持续：500mA 考核看散热</td></tr>
+            <tr><td>输出电容</td><td>容量 / 类型 / ESR 按手册</td><td>稳定工作前提——配错会振荡</td></tr>
+          </tbody>
+        </table>
+        <div class="callout"><b>先问三件事：</b>输出对不对？压差够不够？输出电容怎么配？——答案全在手册里。</div>
+      </div>
+      <div class="card shadow rv" style="border-top:3px solid var(--gold);display:flex;flex-direction:column;gap:var(--gap)">
+        <h3 style="margin:0">02 · 现场演示：找到这份手册</h3>
+        <div>
+          <p style="margin:0"><b>半导小芯</b> · 芯片资料查询</p>
+          <p class="src" style="margin-top:.35em"><a href="https://www.semiee.com/" target="_blank" rel="noopener" style="font-size:var(--body-size);font-weight:700">www.semiee.com ↗</a></p>
+        </div>
+        <ol style="margin:0;padding-left:1.5em;line-height:1.8">
+          <li>输入型号 <b class="mono">AMS1117</b>，认准 <b class="mono">AMS1117-3.3</b> 后缀</li>
+          <li>核对<b>厂家与版本</b>（同名芯片多家生产）</li>
+          <li>重点翻两处：<b>压差表</b> 与 <b>输出电容稳定性要求</b></li>
+        </ol>
+        <p class="note">下一页的"三个坑"，几乎全部来自这两处没核对。</p>
+        <p class="src"><a href="https://xonstorage.z8.web.core.windows.net/pdf/advancedmonolithicsystems_ams111712_apr22_xonlink.pdf" target="_blank" rel="noopener">打开 AMS1117 原厂手册镜像 ↗</a></p>
+      </div>
+    </div>
+    <div class="callout warn rv"><b>翻手册，而不是背参数：</b>本页是常见版本的口径——AMS1117 同名多厂，电流规格、压差、电容要求随版本变化，以你实际买到的那颗的手册为准。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span><span></span></footer>
+</section>
+
+<!-- ================= P24 AMS1117 三个坑 ============ -->
+<section class="slide" data-ch="4" data-title="翻手册④：AMS1117 的三个坑">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · DATASHEET</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 翻手册实战 ④</div>
+    <h2 class="page-title rv" style="--d:.05s">AMS1117：三个最容易翻车的点<small>同名芯片多家生产——一切以你买到的那颗的手册为准</small></h2>
+    <div class="cols c3">
+      <div class="card shadow rv" style="--d:.08s;border-color:var(--ocher)">
+        <h3><span class="n" style="color:var(--ocher)">坑1</span>厂家与版本差异</h3>
+        <ul>
+          <li>不同厂家/版本的<b>电流规格、压差、封装丝印</b>可能不同</li>
+          <li>不能笼统说"AMS1117 都是 1A"——看你那版的电气参数表</li>
+          <li>下单后按<b>实际品牌</b>下载手册核对</li>
+        </ul>
+      </div>
+      <div class="card shadow rv" style="--d:.14s;border-color:var(--ocher)">
+        <h3><span class="n" style="color:var(--ocher)">坑2</span>输出电容稳定性</h3>
+        <ul>
+          <li>AMS1117 <b>必须按手册配输出电容</b>才能稳定</li>
+          <li>容量、类型、ESR 要求<b>随厂家版本而异</b>（原厂示例常用钽电容，如 22µF；也有版本允许其他组合）</li>
+          <li>配错 → 输出振荡、纹波暴增——常见翻车第一名</li>
+        </ul>
+      </div>
+      <div class="card shadow rv" style="--d:.2s;border-color:var(--ocher)">
+        <h3><span class="n" style="color:var(--ocher)">坑3</span>散热金属片接 VOUT</h3>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 270" role="img" aria-label="AMS1117-3.3的SOT-223封装顶视图：左侧1脚GND，中间2脚VOUT，右侧3脚VIN，上方大金属散热片与2脚内部相连" style="width:100%;height:clamp(160px,25vh,270px);display:block">
+          <text x="210" y="19" text-anchor="middle" font-size="16" fill="var(--sub)">SOT-223 · 顶视图（字面朝向你）</text>
+          <rect x="170" y="49" width="80" height="64" rx="4" fill="#e7b591" stroke="var(--accent)" stroke-width="3"/>
+          <path d="M250 66H276" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <text x="282" y="61" font-size="16" fill="var(--accent)">大金属片</text>
+          <text x="282" y="83" font-size="17" font-weight="700" fill="var(--accent)">TAB = VOUT</text>
+          <rect x="126" y="161" width="27" height="49" rx="2" fill="#c9c8c3" stroke="#77766e" stroke-width="2"/>
+          <rect x="196" y="161" width="28" height="49" rx="2" fill="#e7b591" stroke="var(--accent)" stroke-width="2"/>
+          <rect x="267" y="161" width="27" height="49" rx="2" fill="#c9c8c3" stroke="#77766e" stroke-width="2"/>
+          <rect x="107" y="99" width="206" height="80" rx="7" fill="#36352f" stroke="#24231f" stroke-width="2"/>
+          <text x="210" y="131" text-anchor="middle" font-size="24" font-family="Consolas,monospace" fill="#fffaf0">AMS1117</text>
+          <text x="210" y="159" text-anchor="middle" font-size="21" fill="#fffaf0">3.3</text>
+
+          <text x="139" y="232" text-anchor="middle" font-size="18" fill="var(--fg)">1 · GND</text>
+          <text x="210" y="255" text-anchor="middle" font-size="18" fill="var(--accent)" font-weight="700">2 · VOUT</text>
+          <text x="281" y="232" text-anchor="middle" font-size="18" fill="var(--fg)">3 · VIN</text>
+        </svg>
+        <p class="note" style="color:var(--accent)"><b>橙色部分内部相连：金属片 = 2 脚 = VOUT。</b></p>
+        <p style="margin:.4em 0 0">本板接 <b>3.3V 散热铜皮</b>，<b>不能接 GND</b>，否则输出短路。</p>
+      </div>
+    </div>
+    <div class="rv" style="--d:.26s;display:flex;gap:var(--gap);align-items:stretch;flex-wrap:wrap">
+      <div class="callout warn" style="flex:1;min-width:16em"><b>发热账再算一遍：</b>5V→3.3V、500mA 时 P ≈ 0.85W（前面的滑块可演示）。能不能持续跑 1 分钟，取决于你的散热铜——这就是大二带载考核的隐藏考点。</div>
+      <p class="src" style="flex:1;min-width:16em;align-self:center">参考：AMS1117 原厂手册（Advanced Monolithics，含散热与压差说明）：<a href="https://xonstorage.z8.web.core.windows.net/pdf/advancedmonolithicsystems_ams111712_apr22_xonlink.pdf" target="_blank" rel="noopener">AMS1117 数据手册镜像</a>；采购后请再核对你所购品牌的版本。</p>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P24 电感选型 ============ -->
+<section class="slide" data-ch="4" data-title="电感选型">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · PASSIVES</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 外围器件 ①</div>
+    <h2 class="page-title rv" style="--d:.05s">电感：感值、饱和电流、结构，一个都不能少</h2>
+    <div class="cols c2">
+      <div class="rv" style="--d:.1s;display:flex;flex-direction:column;gap:var(--gap)">
+        <div class="card shadow"><h3>看哪些参数</h3>
+          <ul>
+            <li><b>感值 L</b>：手册推荐值起步。L 大 → 纹波小但瞬态慢、体积大；L 小 → 反之</li>
+            <li><b>饱和电流 I<sub>SAT</sub></b>：必须大于电感<b>峰值电流</b>并留裕量——超过饱和，感量骤跌、纹波暴增</li>
+            <li><b>温升电流 / DCR</b>：铜损发热的来源</li>
+          </ul>
+          <p class="note mono">经验起步：纹波电流 ΔI<sub>L</sub> ≈ (V<sub>IN</sub>−V<sub>OUT</sub>)·D/(L·f<sub>SW</sub>)，取额定输出的 20%~40% 反推 L（f<sub>SW</sub> 查手册）</p>
+        </div>
+        <div class="callout"><b>给本次任务的话：</b>按所选芯片手册推荐 L、C 起步，再核对电感峰值电流与温升；大二不要照搬 XL1410 的数值。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap)">
+        <table class="tbl shadow">
+          <thead><tr><th>结构</th><th>特点</th><th>适用</th></tr></thead>
+          <tbody>
+            <tr><td>一体成型</td><td>屏蔽好、功率密度高；<b>耐压规格有限</b>，多用于低压场合（本板 12V 系完全够，高压板要核对耐压）</td><td class="ok">功率主选</td></tr>
+            <tr><td>绕线（开放式）</td><td>便宜、耐流大；漏磁明显，下方铺铜宜挖空（见第 36 页）</td><td>成本敏感</td></tr>
+            <tr><td>叠层</td><td>小而弱，载流小</td><td>信号/小电流，<b>不适合</b>本任务功率级</td></tr>
+          </tbody>
+        </table>
+        <div class="callout gold"><b>提醒：</b>"一体成型耐压有限""电感下挖空"这类说法都有<b>适用条件</b>，别当成万能铁律——一律先看手册和具体料号规格。</div>
+        <p class="src">实物外观对比 · 淘宝搜索演示：<a href="https://s.taobao.com/search?q=%E4%B8%80%E4%BD%93%E6%88%90%E5%9E%8B%E7%94%B5%E6%84%9F" target="_blank" rel="noopener">一体成型电感 ↗</a> · <a href="https://s.taobao.com/search?q=%E7%BB%95%E7%BA%BF%E5%8A%9F%E7%8E%87%E7%94%B5%E6%84%9F" target="_blank" rel="noopener">绕线功率电感 ↗</a> · <a href="https://s.taobao.com/search?q=%E5%8F%A0%E5%B1%82%E7%94%B5%E6%84%9F" target="_blank" rel="noopener">叠层电感 ↗</a>（看清感值、Isat 与尺寸再下单）</p>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P25 电容选型 ============ -->
+<section class="slide" data-ch="4" data-title="电容选型">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · PASSIVES</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 外围器件 ②（与实操直接相关）</div>
+    <h2 class="page-title rv" style="--d:.05s">电容：四种电容各就各位</h2>
+    <table class="tbl shadow rv" style="--d:.1s">
+      <thead><tr><th style="width:13%">类型</th><th style="width:33%">优点</th><th style="width:33%">注意</th><th>用在哪儿</th></tr></thead>
+      <tbody>
+        <tr><td><b>陶瓷 X7R/X5R</b></td><td>ESR 极低、便宜、体积小，最常用</td><td><b>DC 偏压下容值缩水</b>（标称 10µF 实际可能腰斩），留裕量；Y5V 别用于电源</td><td>去耦、输入、高频滤波；AMS1117 输入侧</td></tr>
+        <tr><td><b>钽电容</b></td><td>容值稳定、ESR 低、体积小</td><td>怕浪涌大电流、失效常表现为<b>短路</b>、贵；有极性</td><td>是否用于 AMS1117 输出——<b>按手册</b></td></tr>
+        <tr><td><b>液态电解</b></td><td>大容值、高耐压、便宜</td><td>ESR 大、寿命有限、有极性</td><td>大容量储能（470µF/220µF 级）</td></tr>
+        <tr><td><b>固态电解</b></td><td>ESR 低、寿命长</td><td>稍贵、耐压规格注意</td><td class="ok">大容量储能的更优选择</td></tr>
+      </tbody>
+    </table>
+    <div class="row rv" style="--d:.18s;flex-wrap:wrap">
+      <div class="callout gold" style="flex:1.2;min-width:18em"><b>ESR（等效串联电阻）：</b>真实电容 = 理想电容<b>串</b>一个小电阻。纹波电流流过它 → 产生纹波电压（ΔV = ESR × ΔI）、并发热（P = ESR × I²）。AMS1117 的输出电容对 <b>ESR 范围</b>有要求——太高太低都可能不稳，按手册选。</div>
+      <div class="callout warn" style="flex:1;min-width:18em"><b>两句话记住：</b>① 大容量储能选（固）电解，<b>别用钽</b>；② AMS1117 的输出电容<b>严格按你买的品牌手册</b>配——这是它稳定工作的前提，不是可选项。</div>
+    </div>
+    <p class="src rv" style="--d:.24s">实物与封装对比 · 淘宝搜索演示：<a href="https://s.taobao.com/search?q=X7R%E8%B4%B4%E7%89%87%E7%94%B5%E5%AE%B9" target="_blank" rel="noopener">陶瓷贴片 X7R（0603/0805/1206 封装）↗</a> · <a href="https://s.taobao.com/search?q=%E9%92%BD%E7%94%B5%E5%AE%B9" target="_blank" rel="noopener">钽电容 ↗</a> · <a href="https://s.taobao.com/search?q=%E7%94%B5%E8%A7%A3%E7%94%B5%E5%AE%B9" target="_blank" rel="noopener">液态电解电容 ↗</a> · <a href="https://s.taobao.com/search?q=%E5%9B%BA%E6%80%81%E7%94%B5%E5%AE%B9" target="_blank" rel="noopener">固态电容 ↗</a>　—— 大小搭配：大容值扛低频波动，小容值引脚旁就近补高频。</p>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P26 肖特基二极管 ============ -->
+<section class="slide" data-ch="4" data-title="肖特基二极管">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 04 · PASSIVES</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第四部分 · 外围器件 ③</div>
+    <h2 class="page-title rv" style="--d:.05s">肖特基二极管：续流位的低损选手</h2>
+    <div class="cols c2">
+      <div class="rv" style="--d:.1s;display:flex;flex-direction:column;gap:var(--gap)">
+        <table class="tbl shadow">
+          <thead><tr><th></th><th>肖特基</th><th>普通硅二极管</th></tr></thead>
+          <tbody>
+            <tr><td><b>正向压降 VF</b></td><td class="mono ok">常见约 0.3 ~ 0.6V，随电流/温度变化</td><td class="mono">0.6 ~ 1.7V</td></tr>
+            <tr><td><b>开关速度</b></td><td class="ok">极快（几乎无反向恢复）</td><td>普通整流管较慢；快恢复管另论</td></tr>
+            <tr><td><b>短板</b></td><td>反向漏电流偏大、耐压规格普遍低</td><td>损耗大、不够快</td></tr>
+            <tr><td><b>典型用途</b></td><td>开关电源续流、防反接、整流</td><td>低频整流、一般用途</td></tr>
+          </tbody>
+        </table>
+        <div class="callout"><b>为什么异步 BUCK 常用肖特基：</b>VF 低 → 续流损耗小、SW 节点负压浅；速度快 → 跟得上每秒几十万次的开关动作。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap)">
+        <div class="card shadow"><h3>命名解码：SS 系列</h3>
+          <p class="mono" style="font-size:var(--body-size);margin:.2em 0"><b>SS</b> <span class="acc">3</span> <span class="cly">4</span> &nbsp;→&nbsp; <span class="acc">3A</span> 耐流 / <span class="cly">40V</span> 耐压（电压码×10V）</p>
+          <table class="tbl" style="margin-top:.4em">
+            <thead><tr><th>型号</th><th>耐流</th><th>耐压</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">SS14</td><td class="mono">1A</td><td class="mono">40V</td></tr>
+              <tr><td class="mono">SS24</td><td class="mono">2A</td><td class="mono">40V</td></tr>
+              <tr class="hl"><td class="mono">SS34</td><td class="mono">3A</td><td class="mono">40V</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout gold"><b>本次选型：</b>耐压 ≥ 电路最高电压（12V）并留裕量 → 40V 档；XL1410 输出 2A，续流平均电流约 I×(1−D)≈1.2A、峰值达 2A+，建议直接上 <b>SS34（3A/40V）</b>留够余量。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">手册与选型</span></footer>
+</section>
+
+<!-- ================= P27 布局① 回路 ============ -->
+<section class="slide chapter-cover" data-ch="5" data-title="章节 05：PCB 布局与 EDA">
+      <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">CHAPTER 05 / 06</span></header>
+      <div class="slide-content">
+        <div class="eyebrow rv">第五部分 · PCB 布局与 EDA</div>
+        <div class="chapter-hero">
+          <div class="rv"><h1 class="chapter-heading">PCB 布局<br><span>与 EDA</span></h1><p class="chapter-lead">把原理图变成电路板，处理回路、去耦、线宽与散热。</p></div>
+          <div class="chapter-art rv" style="--d:.1s"><div class="chapter-number" aria-hidden="true">05</div><svg viewBox="0 0 350 270" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="35" y="30" width="280" height="170" rx="12" stroke-opacity=".35"/><rect x="130" y="85" width="70" height="55"/><path d="M35 65H85V110H130M200 110H260V165H315M165 30V85M165 140V200"/><circle cx="85" cy="65" r="7"/><circle cx="260" cy="165" r="7"/><text x="175" y="242" fill="currentColor" stroke="none" text-anchor="middle" font-size="20">回路 · 去耦 · 铜皮</text></g></svg></div>
+        </div>
+        <div class="chapter-topics rv" style="--d:.18s"><span>布局铁律</span><span>嘉立创 EDA</span><span>焊接准备</span></div>
+      </div>
+      <footer class="footer"><span class="ch-label">PCB 布局与 EDA</span></footer>
+    </section>
+    <section class="slide" data-ch="5" data-title="布局铁律①：功率回路面积最小">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 05 · LAYOUT</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第五部分 · PCB 与 EDA</div>
+    <h2 class="page-title rv" style="--d:.05s">铁律①：功率回路面积最小<small>布局布线是本次考核内容——不是"画通就行"</small></h2>
+    <div class="cols c2w">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>先认换流环路，再安排 PCB 摆件</strong><span class="mono">POWER LOOPS</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" role="img" aria-label="高di/dt换流环路位置示意，输出电感和负载不包含在这个最小环路内" class="teaching-svg" ><rect x="115" y="70" width="325" height="249" rx="5" fill="var(--apricot)" stroke="var(--line)" stroke-width="2" opacity=".65"/><path d="M65 120H250 M370 120H450 M550 120H690V196 M690 256V285H65 M280 150V285" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="250" y="86" width="120" height="64" rx="5" fill="var(--panel)" stroke="var(--fg)" stroke-width="2" /><text x="310" y="111" font-size="21" fill="var(--fg)" text-anchor="middle" >XL1410</text><text x="310" y="137" font-size="16" fill="var(--sub)" text-anchor="middle" >VIN → SW</text><path d="M160 120V196 M145 196h30 M145 208h30 M160 208V285" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M450 120a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0a12.5 12.5 0 0 1 25 0" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M595 120V196 M580 196h30 M580 208h30 M595 208V285" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><rect x="679" y="196" width="22" height="60" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5"/><path d="M410 120V195 M410 230V285 M393 195H427 M393 230L410 195L427 230Z" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="140" y="205" font-size="18" fill="var(--fg)" text-anchor="end" >CIN</text><text x="440" y="220" font-size="20" fill="var(--fg)" text-anchor="start" >D</text><text x="500" y="90" font-size="22" fill="var(--fg)" text-anchor="middle" >L</text><text x="573" y="205" font-size="17" fill="var(--fg)" text-anchor="end" >COUT</text><text x="690" y="181" font-size="18" fill="var(--fg)" text-anchor="middle" >负载</text><circle cx="410" cy="120" r="4" fill="var(--fg)"/><circle cx="595" cy="120" r="4" fill="var(--fg)"/><path d="M515 285v10m-15 0h30m-24 7h18m-12 7h6" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" /><text x="70" y="94" font-size="19" fill="var(--fg)" text-anchor="start" >VIN</text><text x="275" y="46" font-size="20" fill="var(--accent)" text-anchor="middle" >① CIN—高侧开关—D：紧凑换流环路</text><text x="585" y="340" font-size="19" fill="var(--clay)" text-anchor="middle" >② L → 输出：电流连续变化</text><text x="277" y="368" font-size="18" fill="var(--sub)" text-anchor="middle" >色块强调连接关系，实际摆件参考手册 Layout</text></svg>
+        <div class="panel-foot">①号回路里的电流在开关瞬间<b>突跳</b>（高 di/dt），是噪声与 EMI 的源头——<b>CIN、芯片、D 必须紧挨成一个小圈</b>；②号回路电流是连续三角波，优先保证短粗。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.4rem,1vh,.7rem);justify-content:center">
+        <div class="card"><h3><span class="n">1</span>CIN 紧贴 VIN/GND 引脚</h3><p class="note">它就是①号回路的"蓄水池"，放远了回路面积瞬间翻倍。</p></div>
+        <div class="card"><h3><span class="n">2</span>D 紧贴 SW 节点</h3><p class="note">重点缩小 CIN—高侧开关—D 的换流环路；别把整个输出回路都当成突变电流回路。</p></div>
+        <div class="card"><h3><span class="n">3</span>完整地平面 + 多打对地过孔</h3><p class="note">回流路径永远走阻抗最低的路线——完整 GND 平面就是给它修的高速公路；过孔把顶层回流"缝"到地平面。</p></div>
+        <div class="callout gold"><b>进阶不展开：</b>"割地、分区"是高速/混合信号话题，本板不需要，也别乱割。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">PCB 与 EDA</span></footer>
+</section>
+
+<!-- ================= P28 布局② 去耦与FB ============ -->
+<section class="slide" data-ch="5" data-title="布局铁律②：去耦作用域与 FB 走线">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 05 · LAYOUT</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第五部分 · PCB 与 EDA</div>
+    <h2 class="page-title rv" style="--d:.05s">铁律②：电容有"作用域"，FB 走线怕干扰</h2>
+    <div class="cols c2">
+      <div class="panel shadow rv" style="--d:.1s">
+        <div class="panel-cap"><strong>摆对位置 vs 摆错位置</strong><span class="mono">PLACEMENT</span></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" role="img" aria-label="去耦正确与错误布局：对比VIN到电容再到GND的回路长度" class="teaching-svg" ><rect x="35" y="58" width="320" height="246" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-width="2" /><text x="195" y="35" font-size="22" fill="var(--accent)" text-anchor="middle" >推荐：就近去耦</text><rect x="125" y="85" width="140" height="64" rx="5" fill="var(--apricot)" stroke="var(--fg)" stroke-width="2" /><text x="195" y="112" font-size="21" fill="var(--fg)" text-anchor="middle" >芯片</text><text x="160" y="136" font-size="15" fill="var(--fg)" text-anchor="middle" >VIN</text><text x="231" y="136" font-size="15" fill="var(--fg)" text-anchor="middle" >GND</text><path d="M160 149V190H180 M210 190H231V149" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><path d="M180 174V206 M210 174V206" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><text x="195" y="242" font-size="17" fill="var(--sub)" text-anchor="middle" >两端都要短：VIN → C → GND</text><rect x="405" y="58" width="320" height="246" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-width="2" /><text x="565" y="35" font-size="22" fill="var(--ocher)" text-anchor="middle" >避免：电容绕远</text><rect x="495" y="85" width="140" height="64" rx="5" fill="var(--apricot)" stroke="var(--fg)" stroke-width="2" /><text x="565" y="112" font-size="21" fill="var(--fg)" text-anchor="middle" >芯片</text><text x="530" y="136" font-size="15" fill="var(--fg)" text-anchor="middle" >VIN</text><text x="601" y="136" font-size="15" fill="var(--fg)" text-anchor="middle" >GND</text><path d="M530 149H448V257H645V215 M675 215H701V167H601V149" fill="none" stroke="var(--ocher)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><path d="M645 199V231 M675 199V231" fill="none" stroke="var(--ocher)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><text x="565" y="289" font-size="17" fill="var(--sub)" text-anchor="middle" >回路大 → 寄生电感与噪声增加</text><text x="380" y="348" font-size="21" fill="var(--clay)" text-anchor="middle" >FB 从输出电容取样，远离 SW 铜皮与电感</text></svg>
+        <div class="panel-foot">去耦的本质是<b>作用域</b>：小陶瓷电容只对<b>附近的高频电流需求</b>负责。</div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.4rem,1vh,.7rem);justify-content:center">
+        <div class="card"><h3><span class="n">1</span>小电容贴引脚</h3><p>输入电容贴 VIN/GND，输出电容贴 VOUT/GND 并靠近负载与反馈取样点。AMS1117 两颗电容都直接贴引脚。</p></div>
+        <div class="card"><h3><span class="n">2</span>多个小电容并联</h3><p>并联降 ESR、拓宽有效频段；芯片功耗突增时电容就近快速补电流。</p></div>
+        <div class="card"><h3><span class="n">3</span>FB 走线三原则</h3><p><b>短</b>（走线尽量简洁）、<b>远</b>（避开 SW 节点/电感的磁场）、<b>准</b>（取样点在输出电容焊盘）。FB 混入开关噪声 = 输出纹波莫名变大。</p></div>
+        <div class="callout"><b>顺带一句：</b>防浪涌别指望小电容，更推荐 TVS 器件（知道概念即可，本板不强求）。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">PCB 与 EDA</span></footer>
+</section>
+
+<!-- ================= P29 布局③ 线宽 ============ -->
+<section class="slide" data-ch="5" data-title="布局铁律③：线宽按电流算">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 05 · LAYOUT</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第五部分 · PCB 与 EDA</div>
+    <h2 class="page-title rv" style="--d:.05s">铁律③：线宽由电流决定，不是电压</h2>
+    <div class="cols c2w">
+      <div class="rv" style="--d:.1s;display:flex;flex-direction:column;gap:var(--gap)">
+        <table class="tbl shadow">
+          <thead><tr><th>载流需求</th><th>参考线宽（1oz 铜 · 外层 · 10°C 温升）</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">0.5A</td><td class="mono">≥ 8 mil</td></tr>
+            <tr><td class="mono">1A</td><td class="mono">≥ 12 ~ 16 mil</td></tr>
+            <tr class="hl"><td class="mono">2A（5V 主路）</td><td class="mono">≥ 32 ~ 40 mil，建议直接铺铜</td></tr>
+            <tr><td class="mono">3A</td><td class="mono">≥ 56 mil</td></tr>
+          </tbody>
+        </table>
+        <p class="note">1 mil = 0.0254 mm；线宽按 mil 取整。近似值（IPC-2221 经验公式），正式设计用嘉立创 EDA 内置的载流计算核对；再留 30%~50% 裕量。铜厚加到 2oz 可显著减小所需线宽。</p>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:clamp(.4rem,1vh,.7rem);justify-content:center">
+        <div class="callout warn"><b>纠正一个流传说法：</b>"12V 走 40 mil、5V 走 24 mil" 这类口诀的<b>本质是各网络的实际电流</b>（12V 输入约 1A、5V 主路 2A、3.3V 约 0.5A）。电压等级本身不决定线宽——<b>电流、铜厚、允许温升</b>才是。</div>
+        <div class="card"><h3>本板起步建议</h3>
+          <ul>
+            <li>12V 输入网络：≥ 16 mil（约 1A）</li>
+            <li>5V 主干：≥ 40 mil 或铺铜（2A，考核电流）</li>
+            <li>3.3V：≥ 12 mil（0.5A）；GND：整面铺铜</li>
+          </ul>
+        </div>
+        <div class="card"><h3>三条操作规矩</h3>
+          <ul>
+            <li>小焊盘处<b>短距离收窄</b>，随后加宽；留意细颈和过孔瓶颈</li>
+            <li>载流不足：优先加宽 / 铺铜 / 增加并联过孔</li>
+            <li>推荐大面积铺铜——顺带解决回流与散热</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">PCB 与 EDA</span></footer>
+</section>
+
+<!-- ================= P30 布局④ 散热 ============ -->
+<section class="slide" data-ch="5" data-title="布局铁律④：散热铺铜与电感挖空">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 05 · LAYOUT</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第五部分 · PCB 与 EDA</div>
+    <h2 class="page-title rv" style="--d:.05s">铁律④：把铜皮当散热器用</h2>
+    <div class="cols c2">
+      <div class="rv" style="--d:.1s;display:flex;flex-direction:column;gap:var(--gap)">
+        <div class="card shadow"><h3><span class="n">1</span>散热焊盘：先查手册再连接</h3>
+          <ul>
+            <li>芯片<b>有没有</b>裸露散热焊盘（EP）、它接<b>哪个网络</b>，一律以手册封装图为准——<b>不能默认都接 GND</b></li>
+            <li>XL1410 的封装与焊盘形式：看你买的版本手册封装章节</li>
+            <li>AMS1117（SOT-223）：大 tab = <b>VOUT</b> → 铺 3.3V 大铜皮，就是它的散热器</li>
+          </ul>
+        </div>
+        <div class="card shadow"><h3><span class="n">2</span>过孔阵列散热</h3><p>有散热焊盘时，在其下方打<b>过孔阵列</b>把热量导到背面/内层铺铜；孔径适中（太大易吸锡造成空焊）。</p></div>
+        <div class="card shadow"><h3><span class="n">3</span>没有散热焊盘怎么办</h3><p>靠网络本身的铺铜面积和板面积散热——500mA 工况约损耗 0.85W，需结合铜面积、板温和持续测试验证。</p></div>
+      </div>
+      <div class="rv" style="--d:.15s;display:flex;flex-direction:column;gap:var(--gap);justify-content:center">
+        <div class="card shadow"><h3><span class="n">4</span>电感下方挖空：有条件的技巧</h3>
+          <ul>
+            <li>目的：减少电感磁场在下方铜皮感应涡流、干扰反馈回路</li>
+            <li><b>绕线（开放式）电感</b>：挖空较有意义</li>
+            <li><b>屏蔽 / 一体成型电感</b>：按厂家建议，不盲目切断地平面</li>
+            <li>结论：按电感类型与手册建议决定，<b>不是铁律</b></li>
+          </ul>
+        </div>
+        <div class="card shadow"><h3><span class="n">5</span>输出电容位置</h3><p>靠近负载与反馈取样点，兼顾前面"作用域"原则；手册布局示例优先参考。</p></div>
+        <div class="callout" style="font-size:var(--body-size)"><b>理念：</b>Layout 是<b>成本最低的降故障率环节</b>——挪个件、铺块铜就能解决的事，别等板子坏了返修。但也别舍本逐末，先满足四条铁律。</div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">PCB 与 EDA</span></footer>
+</section>
+
+<!-- ================= P31 EDA 演示 ============ -->
+<section class="slide" data-ch="5" data-title="现场演示：嘉立创EDA 六步">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 05 · LIVE DEMO</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第五部分 · 现场演示 <span class="badge" style="margin-left:.4em">投屏演示</span></div>
+    <h2 class="page-title rv" style="--d:.05s">嘉立创 EDA：十分钟画一块 LDO 小板<small>本页是演示提纲——现场以主讲操作为准，每一步对应一条刚讲过的铁律</small></h2>
+    <div class="cols c3">
+      <div class="card shadow rv" style="--d:.06s"><h3><span class="n">1</span>原理图 → 转PCB</h3><p class="note">放 AMS1117-3.3（SOT-223）、输入/输出电容（按手册）、LED + 限流电阻、排针；检查无误后转 PCB。</p></div>
+      <div class="card shadow rv" style="--d:.1s"><h3><span class="n">2</span>摆件</h3><p class="note">输入/输出电容<b>贴引脚</b>，GND 就近汇集，输出口留出排针位——"作用域"当场看得见。（铁律②）</p></div>
+      <div class="card shadow rv" style="--d:.14s"><h3><span class="n">3</span>布线</h3><p class="note">5V 输入 ≥40 mil、3.3V 输出 ≥12 mil 起步；小焊盘处短距离收窄，随后加宽。（铁律③）</p></div>
+      <div class="card shadow rv" style="--d:.18s"><h3><span class="n">4</span>铺铜 + 过孔</h3><p class="note">顶底 GND 铺铜、打对地过孔缝合；AMS1117 的 tab 铺 <b>3.3V</b> 铜。（铁律①④）</p></div>
+      <div class="card shadow rv" style="--d:.22s;border-color:var(--accent)"><h3><span class="n">5</span>丝印与姓名 <span class="badge">易漏点</span></h3><p class="note">演示板标 5V / 3.3V / GND；完整两级板再标 12V；<b>姓名写铜层并开阻焊窗</b>——最容易画错层的一条，现场画给你看。</p></div>
+      <div class="card shadow rv" style="--d:.26s"><h3><span class="n">6</span>收尾</h3><p class="note">跑 DRC → 3D 预览看一眼 → 提一句打样下单流程。</p></div>
+    </div>
+    <div class="row rv" style="--d:.3s;flex-wrap:wrap">
+      <div class="callout clay" style="flex:1.3;min-width:18em"><b>彩蛋预警：</b>主讲会故意先犯一个典型错误（电容放太远 / 走线绕远）再当场改正——注意看，别把它学走。</div>
+      <p class="note" style="flex:1;min-width:14em;align-self:center">复现工程如课后发布，以群通知为准。演示只画最小系统：一颗 LDO + 电容 + LED + 排针。</p>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">PCB 与 EDA</span></footer>
+</section>
+
+<!-- ================= P32 焊接安全 ============ -->
+<section class="slide" data-ch="5" data-title="焊接安全预告">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 05 · SAFETY</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第五部分 · 下次实操预告</div>
+    <h2 class="page-title rv" style="--d:.05s">焊接之前，先记住这八条<small>摘自《济海追风实验室焊接安全准则（新生必读）》——下次课前通读全文</small></h2>
+    <div class="cols c4">
+      <div class="card rv" style="--d:.06s;border-color:var(--ocher)"><h3>烙铁离人必须断电</h3><p class="note">哪怕只是去接水、上厕所的几分钟。违反经提醒不改 → 暂停焊接资格。</p></div>
+      <div class="card rv" style="--d:.1s;border-color:var(--ocher)"><h3>300~400℃，严禁触摸</h3><p class="note">烙铁头、刚焊完的焊点、剪下的热引脚都烫；烙铁只能放<b>烙铁架</b>。</p></div>
+      <div class="card rv" style="--d:.14s"><h3>不甩、不吹、不入水</h3><p class="note">海绵加水挤至半干轻擦；严禁甩烙铁降温、对烙铁吹气、烙铁头蘸水。</p></div>
+      <div class="card rv" style="--d:.18s"><h3>助焊剂少量、易燃</h3><p class="note">蘸取少量涂待焊处即可，严禁倾倒；用完盖紧、远离高温。</p></div>
+      <div class="card rv" style="--d:.22s"><h3>通风 + 防烟</h3><p class="note">焊锡烟雾有害：开窗/排气扇，不正对焊点上方呼吸，不适立即休息并告知值班学长学姐。</p></div>
+      <div class="card rv" style="--d:.26s"><h3>含铅：禁食、洗手</h3><p class="note">实验室内严禁饮食；焊接后、进食前必须洗手；严禁用嘴咬元件引脚。</p></div>
+      <div class="card rv" style="--d:.3s"><h3>剪脚朝向桌面</h3><p class="note">剪下的引脚会弹飞，朝桌面/垃圾桶方向；废料随手入桶；长发扎起。</p></div>
+      <div class="card rv" style="--d:.34s;border-color:var(--accent)"><h3>不确定，就开口</h3><p class="note">极性分不清、工具不会用、焊错了、烫伤了——<b>第一时间找值班学长学姐</b>，不要凭感觉操作。</p></div>
+    </div>
+    <p class="note rv" style="--d:.38s">上电调试同样守规矩：先自查正负极与短路，可调电源<b>从低压、限流</b>开始。</p>
+  </div>
+  <footer class="footer"><span class="ch-label">PCB 与 EDA</span></footer>
+</section>
+
+<!-- ================= P33 任务布置 ============ -->
+<section class="slide chapter-cover" data-ch="6" data-title="章节 06：制作任务与验收">
+      <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">CHAPTER 06 / 06</span></header>
+      <div class="slide-content">
+        <div class="eyebrow rv">第六部分 · 制作任务与验收</div>
+        <div class="chapter-hero">
+          <div class="rv"><h1 class="chapter-heading">制作任务<br><span>与验收</span></h1><p class="chapter-lead">独立完成画板、打板和焊接，用实际测量结果验收。</p></div>
+          <div class="chapter-art rv" style="--d:.1s"><div class="chapter-number" aria-hidden="true">06</div><svg viewBox="0 0 350 270" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M30 185H320M30 30V185" stroke-opacity=".4"/><path d="M40 80H105L120 100L145 60L165 82H310"/><path d="m200 155 26 25 60-64" stroke-width="7"/><text x="175" y="235" fill="currentColor" stroke="none" text-anchor="middle" font-size="20">实物 · 测量 · 验收</text></g></svg></div>
+        </div>
+        <div class="chapter-topics rv" style="--d:.18s"><span>制作要求</span><span>测量条件</span><span>验收标准</span></div>
+      </div>
+      <footer class="footer"><span class="ch-label">制作任务与验收</span></footer>
+    </section>
+    <section class="slide" data-ch="6" data-title="任务布置：制作要求">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 06 · YOUR TASK</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第六部分 · 培训任务（逐条听清）</div>
+    <h2 class="page-title rv" style="--d:.05s">制作稳压电源模块：12V → 5V → 3.3V</h2>
+    <div class="cols c3">
+      <div class="card shadow rv" style="--d:.08s;border-color:var(--accent)">
+        <h3><span class="badge">大一 · 必做</span></h3>
+        <ul>
+          <li>12V→5V：<b class="acc">XL1410</b>（DC-DC 降压）</li>
+          <li>5V→3.3V：<b class="gld">AMS1117-3.3</b>（线性稳压）</li>
+          <li>考核：仅<b>空载电压 + 空载纹波</b>（不带载测试）</li>
+          <li>PCB 尺寸 ≤ <span class="mono">50 × 50 mm</span></li>
+        </ul>
+      </div>
+      <div class="card shadow rv" style="--d:.14s;border-color:var(--clay)">
+        <h3><span class="badge c">大二 · 进阶</span></h3>
+        <ul>
+          <li>12V→5V：<b>TPS5450 / TPS563200 二选一</b>，<b class="och">禁止 XL1410</b>，按各自手册重新选型设计</li>
+          <li>5V→3.3V：同样 <b class="gld">AMS1117-3.3</b>（无需扩流）</li>
+          <li>增加<b>两路带载测试</b>（第 41 页）</li>
+          <li>PCB 尺寸 ≤ <span class="mono">40 × 40 mm</span></li>
+        </ul>
+        <div class="callout gold"><b>TPS5450：</b>异步，需肖特基；PowerPAD 焊接散热，COUT / ESR 按手册。<br><b>TPS563200：</b>同步，小封装，轻载 Eco-mode 可能跳脉冲。</div>
+      </div>
+      <div class="card shadow rv" style="--d:.2s">
+        <h3><span class="badge o">共同要求</span></h3>
+        <ul>
+          <li>两路输出各 1 个 <b>LED + 合适限流电阻</b></li>
+          <li>排针引出并标注 <span class="mono">12V / 5V / 3.3V / GND</span></li>
+          <li><b>姓名写在铜层并开阻焊窗</b>，不影响电路（演示第 5 步）</li>
+          <li>自行完成<b>设计、采购、焊接、调试</b></li>
+          <li>组长只提前检查<b>大一</b>的原理图；<b>大二不检查原理图</b>——原理图与 PCB 全部独立完成后一并验收</li>
+          <li>最终交付：焊接、调试完成的实物板，参加验收打分</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout rv" style="--d:.28s"><b>现在就能动手：</b>翻手册 → 画原理图（大一找组长检查，大二独立完成）→ 下单物料 →（下次课）焊接调试。两种候选芯片均按各自手册设计。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">测试与考核</span></footer>
+</section>
+
+<!-- ================= P34 考核标准 ============ -->
+<section class="slide" data-ch="6" data-title="电气考核标准">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 06 · ACCEPTANCE</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第六部分 · 验收指标</div>
+    <h2 class="page-title rv" style="--d:.05s">电气考核标准：实物验收的测试依据</h2>
+    <table class="tbl shadow rv" style="--d:.1s">
+      <thead><tr><th style="width:22%">项目</th><th style="width:39%">大一</th><th style="width:39%">大二</th></tr></thead>
+      <tbody>
+        <tr><td>5V 空载电压</td><td class="mono ok">4.75 ~ 5.25V</td><td class="mono">同左</td></tr>
+        <tr><td>3.3V 空载电压</td><td class="mono ok">3.135 ~ 3.465V</td><td class="mono">同左</td></tr>
+        <tr><td>5V 空载纹波（峰峰值）</td><td class="mono ok">≤ 200mV Vpp</td><td class="mono">同左</td></tr>
+        <tr><td>3.3V 空载纹波（峰峰值）</td><td class="mono ok">≤ 100mV Vpp</td><td class="mono">同左</td></tr>
+        <tr><td>5V 带载</td><td>不要求</td><td class="mono">外接 2A，持续 1min，全程 4.75~5.25V</td></tr>
+        <tr><td>3.3V 带载</td><td>不要求</td><td class="mono">外接 500mA，持续 1min，全程 3.135~3.465V</td></tr>
+        <tr><td>带载运行状态</td><td>不要求</td><td>无热保护、无周期性掉压、无异常重启</td></tr>
+      </tbody>
+    </table>
+    <div class="row rv" style="--d:.18s;flex-wrap:wrap">
+      <div class="callout" style="flex:1;min-width:15em"><b>大一注意：</b>只考核<b>空载电压误差</b>和<b>空载纹波</b>两项；不设带载门槛。</div>
+      <div class="callout warn" style="flex:1;min-width:15em"><b>空载合格 ≠ 带载合格：</b>空载通过只能证明空载性能，不能说明带载能力——大二必须过带载关。</div>
+      <div class="callout gold" style="flex:1;min-width:15em"><b>返修机制：</b>未达标可返修后复测；电气项目按本页标准复测，最终参加实物验收打分。以上为培训验收标准，非厂家保证值；发布前先用教师参考板按同条件验证。</div>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">测试与考核</span></footer>
+</section>
+
+<!-- ================= P35 统一测量条件 ============ -->
+<section class="slide" data-ch="6" data-title="统一测量条件">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SEC 06 · MEASUREMENT</span>
+  </header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第六部分 · 怎么测才算数</div>
+    <h2 class="page-title rv" style="--d:.05s">统一测量条件：所有人同一把尺子</h2>
+    <div class="cols c2">
+      <div class="card shadow rv" style="--d:.08s">
+        <h3>基准条件与带载规则</h3>
+        <ul>
+          <li><b>输入</b>：板端 12.0V，测试期间全程维持；室温、自然散热，<b>不用风扇</b></li>
+          <li><b>空载定义</b>：两路均不接外部负载；板载 LED 与内部电路保留</li>
+          <li><b>大二两路分开带载</b>：测 5V/2A 时 3.3V 不接外部负载；测 3.3V/500mA 时 5V 不接外部负载（AMS1117 仍由板上 BUCK 供电）</li>
+          <li><b>电压</b>：万用表在<b>板端输出接口</b>测——别把负载导线压降算进板子</li>
+        </ul>
+      </div>
+      <div class="card shadow rv" style="--d:.14s">
+        <h3>纹波测量（在输出电容两端）</h3>
+        <ul>
+          <li>探头用<b>短接地弹簧</b>，不用长地线夹（否则纹波虚高）</li>
+          <li>示波器：<b>AC 耦合 · 20MHz 带宽限制</b>，读<b>峰峰值 Vpp</b>，不开波形平均</li>
+          <li><b>快慢两个时基都要看</b>：覆盖开关纹波与低频波动，不许只截平稳一段</li>
+          <li><b>记录</b>：输入/输出电压、负载电流、带载时间，波形截图注明端子、负载状态与示波器设置</li>
+        </ul>
+        <p class="src" style="margin-top:.4em">方法参考：TI 输出纹波测量指导 <a href="https://www.ti.com/lit/ug/sluu671/sluu671.pdf" target="_blank" rel="noopener">ti.com/lit/ug/sluu671</a>（探头接法与短接地设置）</p>
+      </div>
+    </div>
+    <div class="panel shadow rv" style="--d:.2s">
+      <div class="panel-cap"><strong>探头接法：短接地才可信</strong><span>PROBE GROUNDING</span></div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 240" role="img" aria-label="纹波测量短接地弹簧与长地线夹对比示意" class="teaching-svg" ><text x="235" y="27" font-size="22" fill="var(--accent)" text-anchor="middle" >短接地弹簧：推荐</text><rect x="46" y="69" width="390" height="109" rx="5" fill="var(--bg)" stroke="var(--line)" stroke-width="2" /><rect x="110" y="106" width="52" height="39" rx="5" fill="var(--apricot)" stroke="var(--fg)" stroke-width="2" /><circle cx="96" cy="124" r="4" fill="var(--accent)"/><circle cx="178" cy="124" r="4" fill="var(--accent)"/><text x="92" y="160" font-size="15" fill="var(--fg)" text-anchor="start" >OUT</text><text x="182" y="160" font-size="15" fill="var(--fg)" text-anchor="start" >GND</text><path d="M96 124L96 90L225 90" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><rect x="220" y="74" width="108" height="31" rx="5" fill="var(--panel)" stroke="var(--accent)" stroke-width="2" /><text x="273" y="96" font-size="17" fill="var(--accent)" text-anchor="middle" >探头</text><path d="M218 105L178 124" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><text x="230" y="214" font-size="17" fill="var(--sub)" text-anchor="middle" >尖端接 OUT，弹簧就近接 GND</text><text x="700" y="27" font-size="22" fill="var(--ocher)" text-anchor="middle" >长地线夹：避免</text><rect x="511" y="69" width="390" height="109" rx="5" fill="var(--bg)" stroke="var(--line)" stroke-width="2" /><rect x="575" y="106" width="52" height="39" rx="5" fill="var(--apricot)" stroke="var(--fg)" stroke-width="2" /><circle cx="561" cy="124" r="4" fill="var(--ocher)"/><circle cx="643" cy="124" r="4" fill="var(--ocher)"/><text x="557" y="160" font-size="15" fill="var(--fg)" text-anchor="start" >OUT</text><text x="647" y="160" font-size="15" fill="var(--fg)" text-anchor="start" >GND</text><path d="M561 124L561 90L690 90" fill="none" stroke="var(--ocher)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" /><rect x="685" y="74" width="108" height="31" rx="5" fill="var(--panel)" stroke="var(--ocher)" stroke-width="2" /><text x="738" y="96" font-size="17" fill="var(--ocher)" text-anchor="middle" >探头</text><path d="M780 105C943 109,815 222,643 124" fill="none" stroke="var(--ocher)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/><text x="695" y="214" font-size="17" fill="var(--sub)" text-anchor="middle" >环路像天线，容易拾取额外干扰</text></svg>
+    </div>
+  </div>
+  <footer class="footer"><span class="ch-label">测试与考核</span></footer>
+</section>
+
+<!-- ================= P36 提交与资料 ============ -->
+<section class="slide" data-ch="6" data-title="独立完成要求与验收流程">
+  <header class="masthead"><div class="brand"><span>济海追风 / 硬件培训</span></div><span class="edition">SEC 06 · BUILD &amp; ASSESSMENT</span></header>
+  <div class="slide-content">
+    <div class="eyebrow rv">第六部分 · 从画板到验收</div>
+    <h2 class="page-title rv">大一原理图可请检查，PCB 一律独立完成</h2>
+    <div class="cols c2">
+      <div class="card shadow rv">
+        <h3><span class="n">01</span>哪些可以请人检查？</h3>
+        <ul>
+          <li><b>大一</b>同学可把原理图发给组长检查对错；<b>大二不检查原理图</b>。</li>
+          <li>大二的原理图与 PCB 一样，全部由本人独立完成，验收时统一评定。</li>
+          <li><b>学长学姐（包括组长）不检查 PCB 对错。</b></li>
+        </ul>
+      </div>
+      <div class="card shadow rv">
+        <h3><span class="n">02</span>封装和采购自己负责</h3>
+        <ul>
+          <li>根据元件手册，<b>自行选择并核对封装</b>。</li>
+          <li>按自己设计中选用的封装购买元件。</li>
+          <li>下单前核对<b>完整型号、封装尺寸、引脚与焊盘对应关系</b>。</li>
+        </ul>
+      </div>
+      <div class="card shadow rv">
+        <h3><span class="n">03</span>完成什么、怎么验收？</h3>
+        <p><b>独立绘制 PCB → 打板、采购 → 焊接与调试 → 实物验收打分。</b></p>
+        <p>带焊接、调试完成的实物板参加验收，按对应年级的电气要求进行测试。</p>
+        <p class="note">不要求提交 EDA 工程或 BOM。验收时间与安排以群通知为准。</p>
+      </div>
+      <div class="card shadow rv">
+        <h3><span class="n">04</span>资料从哪里找？</h3>
+        <ul>
+          <li class="src"><b><a href="https://www.semiee.com/" target="_blank" rel="noopener">半导小芯 · www.semiee.com ↗</a></b>：按型号搜索芯片手册。</li>
+          <li><b>芯片厂家官网</b>：核对手册版本、引脚与封装尺寸。</li>
+          <li><b>立创商城</b>：核对实际采购型号、封装与规格。</li>
+          <li><b>嘉立创 EDA</b>：查找元件与封装库，再对照手册核验。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout rv"><b>统一规则：</b>只有<b>大一</b>提供原理图预检查，<b>大二不检查原理图</b>；两组的 PCB 都不提供代查——封装选用、布局布线和元件采购由自己完成。</div>
+  </div>
+  <footer class="footer"><span class="ch-label">测试与考核</span></footer>
+</section>
+
+<!-- ================= P37 结束页 ============ -->
+<section class="slide" data-ch="6" data-title="结束页">
+  <header class="masthead">
+    <div class="brand"><span>济海追风 / 硬件培训</span></div>
+    <span class="edition">SESSION 02 · END</span>
+  </header>
+  <div class="slide-content" style="justify-content:center">
+    <div class="eyebrow rv">小结 · 三句话带走</div>
+    <h1 class="rv" style="--d:.05s">把 12V，变成干净的<br><span>5V 和 3.3V。</span>然后，用测量证明它。</h1>
+    <div class="cols c3 rv" style="--d:.12s;margin:clamp(.6rem,2vh,1.4rem) 0">
+      <div class="card"><h3>口诀</h3><p class="note">电容电压不能突变，电感电流不能突变；开关关断，必须给电感留回路。</p></div>
+      <div class="card"><h3>思想</h3><p class="note">采样—比较—调整：BUCK 与 LDO 用同一个闭环思想稳压。</p></div>
+      <div class="card"><h3>习惯</h3><p class="note">手册指导设计，实测验证结果：参数、电容、布局、散热，全都查了再说。</p></div>
+    </div>
+    <div class="tags rv" style="--d:.18s">
+      <span class="tag">① 翻手册，画原理图</span><span class="tag">② 大一：可请组长查原理图</span><span class="tag">③ 下单采购</span><span class="tag">④ 下次课：焊接与调试（先读安全准则）</span>
+    </div>
+    <p class="note rv" style="--d:.22s;margin-top:clamp(.6rem,1.6vh,1.2rem)">答疑与通知：培训群（见群通知）· 大二 BUCK：TPS5450 / TPS563200 二选一 · 感谢聆听，实验室见。</p>
+  </div>
+  <footer class="footer"><span class="ch-label">测试与考核</span></footer>
+</section>
+
+
+</main>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const slides=$$('.slide'), chapters=['开场','为什么需要稳压','BUCK 原理','LDO 原理','手册与选型','PCB 与 EDA','测试与考核'];
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let reading=false, tocOpen=false, zoomed=null, returnFocus=null;
+const frameCallbacks=[];
+
+class Deck {
+  constructor(){this.current=-1;this.wheelTime=0;this.wheelSum=0;}
+  go(index,scroll=true){
+    index=Math.max(0,Math.min(slides.length-1,index));
+    if(index!==this.current){
+      this.pause();
+      slides.forEach((s,i)=>{s.classList.toggle('active',i===index);s.inert=!reading&&i!==index;s.setAttribute('aria-hidden',String(!reading&&i!==index));});
+      this.current=index;
+      $('#hud-pg').textContent=String(index+1).padStart(2,'0')+' / '+slides.length;
+      $('#progress').style.width=(index+1)/slides.length*100+'%';
+      $('#btn-prev').disabled=index===0;$('#btn-next').disabled=index===slides.length-1;
+      try{history.replaceState(null,'','#p'+(index+1));}catch(_){}
+      $$('#toc-grid button').forEach(b=>{b.classList.toggle('cur',+b.dataset.page===index);if(+b.dataset.page===index)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+      inkRender();
+    }
+    if(reading&&scroll)slides[index].scrollIntoView({behavior:'instant',block:'start'});
+  }
+  pause(){for(const c of frameCallbacks){c.running=false;if(c.button){c.button.setAttribute('aria-pressed','false');c.button.textContent=c.label;}}slides.forEach(s=>s.classList.remove('running'));$('#figure-dialog').classList.remove('running');}
+}
+const deck=new Deck();
+slides.forEach((s,i)=>{s.setAttribute('aria-label',`第 ${i+1} 页：${s.dataset.title}`);const foot=s.querySelector('.ch-label');if(foot)foot.textContent=chapters[+s.dataset.ch]+' · '+String(i+1).padStart(2,'0');});
+
+// ============ 批注层：投影时画圈标注重点，逐页保存（本次会话有效） ============
+const inkSvg=$('#ink');
+const ink={on:false,visible:true,colorKey:'accent',width:4,pages:{},drawing:null,pid:null};
+const INK_HEX={blue:'#1F5FA8',green:'#206B45',black:'#33302B'};   // 高对比补充色：靛蓝/墨绿/炭黑
+const inkVar=k=>INK_HEX[k]||getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()||'#B63B2E';
+$$('#ink-bar [data-ink-color]').forEach(b=>{b.style.background=inkVar(b.dataset.inkColor);});
+function inkPath(stroke){
+  const ns='http://www.w3.org/2000/svg',w=innerWidth,h=innerHeight,pts=stroke.pts;
+  if(pts.length===1){const c=document.createElementNS(ns,'circle');c.setAttribute('cx',pts[0][0]*w);c.setAttribute('cy',pts[0][1]*h);c.setAttribute('r',stroke.w*.8);c.setAttribute('stroke',stroke.c);c.setAttribute('fill',stroke.c);return c;}
+  let d='M'+(pts[0][0]*w).toFixed(1)+' '+(pts[0][1]*h).toFixed(1);
+  for(let i=1;i<pts.length-1;i++){const mx=(pts[i][0]+pts[i+1][0])/2*w,my=(pts[i][1]+pts[i+1][1])/2*h;d+='Q'+(pts[i][0]*w).toFixed(1)+' '+(pts[i][1]*h).toFixed(1)+' '+mx.toFixed(1)+' '+my.toFixed(1);}
+  const last=pts[pts.length-1];d+='L'+(last[0]*w).toFixed(1)+' '+(last[1]*h).toFixed(1);
+  const p=document.createElementNS(ns,'path');p.setAttribute('d',d);p.setAttribute('stroke',stroke.c);p.setAttribute('stroke-width',stroke.w);return p;
+}
+function inkRender(){
+  inkSvg.setAttribute('viewBox','0 0 '+innerWidth+' '+innerHeight);
+  inkSvg.replaceChildren();
+  if(!ink.visible)return;
+  (ink.pages[deck.current]||[]).forEach(s=>inkSvg.append(inkPath(s)));
+}
+function inkToggle(force){
+  const target=force===undefined?!ink.on:force;
+  if(target&&reading)return;           // 批注只在投影模式
+  ink.on=target;document.body.classList.toggle('ink-on',ink.on);
+  $('#btn-ink').setAttribute('aria-pressed',String(ink.on));
+  if(ink.on)$('#ink-exit').focus();
+}
+const inkPos=e=>[Math.max(0,Math.min(1,e.clientX/innerWidth)),Math.max(0,Math.min(1,e.clientY/innerHeight))];
+inkSvg.addEventListener('pointerdown',e=>{
+  if(!ink.on||e.button>0)return;e.preventDefault();
+  ink.pid=e.pointerId;try{inkSvg.setPointerCapture(e.pointerId);}catch(_){}
+  const stroke={c:inkVar(ink.colorKey),w:ink.width,pts:[inkPos(e)]};
+  (ink.pages[deck.current]=ink.pages[deck.current]||[]).push(stroke);
+  ink.drawing=stroke;inkSvg.append(inkPath(stroke));
+});
+inkSvg.addEventListener('pointermove',e=>{
+  if(!ink.drawing||e.pointerId!==ink.pid)return;
+  ink.drawing.pts.push(inkPos(e));
+  if(inkSvg.lastChild)inkSvg.lastChild.replaceWith(inkPath(ink.drawing));
+});
+const inkEnd=e=>{if(ink.drawing&&e.pointerId===ink.pid){ink.drawing=null;ink.pid=null;}};
+inkSvg.addEventListener('pointerup',inkEnd);inkSvg.addEventListener('pointercancel',inkEnd);
+inkSvg.addEventListener('contextmenu',e=>{if(ink.on)e.preventDefault();});
+$$('#ink-bar [data-ink-color]').forEach(b=>b.addEventListener('click',()=>{ink.colorKey=b.dataset.inkColor;$$('#ink-bar [data-ink-color]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));}));
+$('#ink-thin').addEventListener('click',()=>{ink.width=4;$('#ink-thin').setAttribute('aria-pressed','true');$('#ink-bold').setAttribute('aria-pressed','false');});
+$('#ink-bold').addEventListener('click',()=>{ink.width=8;$('#ink-bold').setAttribute('aria-pressed','true');$('#ink-thin').setAttribute('aria-pressed','false');});
+$('#ink-undo').addEventListener('click',()=>{const arr=ink.pages[deck.current];if(arr&&arr.length){arr.pop();inkRender();}});
+$('#ink-clear').addEventListener('click',()=>{delete ink.pages[deck.current];inkRender();});
+$('#ink-clear-all').addEventListener('click',()=>{ink.pages={};inkRender();});
+$('#ink-vis').addEventListener('click',()=>{ink.visible=!ink.visible;$('#ink-vis').textContent=ink.visible?'隐藏':'显示';$('#ink-vis').setAttribute('aria-pressed',String(!ink.visible));inkRender();});
+$('#ink-exit').addEventListener('click',()=>inkToggle(false));
+$('#btn-ink').addEventListener('click',()=>inkToggle());
+window.addEventListener('resize',inkRender);
+
+// 目录：焦点留在弹层，Esc 始终有效。
+const groups=new Map();slides.forEach((s,i)=>{const c=+s.dataset.ch;if(!groups.has(c))groups.set(c,[]);groups.get(c).push(i);});
+for(const [c,indices] of groups){const group=document.createElement('div');group.className='toc-ch';const title=document.createElement('h3');title.textContent=chapters[c];group.append(title);for(const i of indices){const b=document.createElement('button');b.dataset.page=i;b.textContent=String(i+1).padStart(2,'0')+'  '+slides[i].dataset.title;b.addEventListener('click',()=>{closeToc();deck.go(i);});group.append(b);}$('#toc-grid').append(group);}
+function openToc(){deck.pause();returnFocus=document.activeElement;tocOpen=true;$('#toc').classList.add('open');$('#deck').inert=true;$('#hud').inert=true;$('#toc-close').focus();}
+function closeToc(){tocOpen=false;$('#toc').classList.remove('open');$('#deck').inert=false;$('#hud').inert=false;if(returnFocus&&returnFocus.isConnected)returnFocus.focus();}
+$('#btn-toc').addEventListener('click',openToc);$('#toc-close').addEventListener('click',closeToc);$('#toc').addEventListener('click',e=>{if(e.target===$('#toc'))closeToc();});
+
+function setReading(on){
+  const current=Math.max(0,deck.current);deck.pause();reading=on;document.documentElement.classList.toggle('reading',on);
+  if(on&&ink.on)inkToggle(false);
+  $('#btn-reading').textContent=on?'投影':'阅读';$('#btn-reading').setAttribute('aria-pressed',String(on));
+  slides.forEach((s,i)=>{s.inert=!on&&i!==current;s.setAttribute('aria-hidden',String(!on&&i!==current));});
+  if(on)requestAnimationFrame(()=>slides[current].scrollIntoView({behavior:'instant',block:'start'}));else window.scrollTo(0,0);
+}
+$('#btn-reading').addEventListener('click',()=>setReading(!reading));
+let scrollFrame=0;
+window.addEventListener('scroll',()=>{if(!reading||scrollFrame||tocOpen)return;scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;let best=deck.current,dist=Infinity;slides.forEach((s,i)=>{const r=s.getBoundingClientRect();if(r.bottom>80){const d=Math.abs(r.top-80);if(d<dist){dist=d;best=i;}}});deck.go(best,false);});},{passive:true});
+
+// 放大时移动原 SVG 与交互按钮，ID 和状态保持一致，关闭后按原位置放回。
+function moveToDialog(node,area){const marker=document.createComment('图示原位置');node.before(marker);area.append(node);zoomed.moves.push({node,marker});}
+function openFigure(button,figure){
+  deck.pause();zoomed={button,moves:[]};const slide=button.closest('.slide');$('#figure-title').textContent=slide.dataset.title;
+  moveToDialog(figure,$('#figure-canvas'));
+  const selectors=slide.querySelector('[data-harmonic]')?['[data-harmonic]','#fourier-status']:slide.querySelector('#bk-play')?['#bk-state','#bk-btn-on','#bk-btn-off','#bk-play','#bk-step','#bk-reset','#bk-phase']:slide.querySelector('#pwm-play')?['#pwm-play','[data-duty]','#duty']:slide.querySelector('#divider-toggle')?['#divider-toggle']:slide.querySelector('#ldo-r')?['[data-current]','#ldo-r']:slide.querySelector('#feedback-step')?['#feedback-step','#feedback-status']:[];
+  for(const selector of selectors)for(const node of slide.querySelectorAll(selector))moveToDialog(node,$('#figure-controls'));
+  $('#figure-dialog').showModal();$('#figure-close').focus();
+}
+function closeFigure(){if(!zoomed)return;deck.pause();for(const {node,marker} of zoomed.moves){marker.replaceWith(node);}const button=zoomed.button;zoomed=null;button.focus();}
+$('#figure-close').addEventListener('click',()=>$('#figure-dialog').close());$('#figure-dialog').addEventListener('close',closeFigure);
+$$('.panel,.ia').forEach(panel=>{const figure=panel.querySelector(':scope > svg'),caption=panel.querySelector(':scope > .panel-cap');if(!figure||!caption)return;const b=document.createElement('button');b.className='zoom-btn';b.textContent='放大图示 ↗';b.setAttribute('aria-label','放大：'+panel.closest('.slide').dataset.title);b.addEventListener('click',()=>openFigure(b,figure));caption.append(b);});
+
+async function fullscreen(){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch(_){$('#btn-fs').title='浏览器未允许全屏，可使用 F11';}}
+$('#btn-fs').addEventListener('click',fullscreen);$('#btn-next').addEventListener('click',()=>deck.go(deck.current+1));$('#btn-prev').addEventListener('click',()=>deck.go(deck.current-1));
+document.addEventListener('keydown',e=>{
+  if($('#figure-dialog').open)return;
+  if(tocOpen){if(e.key==='Escape'){e.preventDefault();closeToc();}if(e.key==='Tab'){const list=$$('#toc button');const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}}return;}
+  if(e.target.closest('input,textarea,select,[contenteditable],a'))return;
+  if(e.target.closest('button')&&[' ','Enter'].includes(e.key))return;
+  const k=e.key.toLowerCase();if(k==='g'){e.preventDefault();openToc();return;}if(k==='f'){fullscreen();return;}if(k==='r'){setReading(!reading);return;}if(k==='p'){inkToggle();return;}if(reading)return;if(ink.on&&e.key==='Escape'){inkToggle(false);return;}
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();deck.go(deck.current+1);}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();deck.go(deck.current-1);}else if(e.key==='Home'){e.preventDefault();deck.go(0);}else if(e.key==='End'){e.preventDefault();deck.go(slides.length-1);}
+});
+const guarded=e=>e.target.closest('.ia,input,button,a,dialog,#hud,#toc');
+document.addEventListener('wheel',e=>{if(reading||tocOpen||$('#figure-dialog').open||guarded(e)||e.ctrlKey||ink.on)return;const now=performance.now();if(now-deck.wheelTime<650)return;if(now-(deck.wheelLast||0)>180)deck.wheelSum=0;deck.wheelLast=now;deck.wheelSum+=e.deltaY;if(Math.abs(deck.wheelSum)>60){deck.go(deck.current+(deck.wheelSum>0?1:-1));deck.wheelSum=0;deck.wheelTime=now;}},{passive:true});
+let touch=null;document.addEventListener('touchstart',e=>{touch=reading||guarded(e)||ink.on?null:{x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});document.addEventListener('touchend',e=>{if(!touch||tocOpen||$('#figure-dialog').open||ink.on)return;const dx=e.changedTouches[0].clientX-touch.x,dy=e.changedTouches[0].clientY-touch.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)deck.go(deck.current+(dx<0?1:-1));touch=null;},{passive:true});
+
+// 分压器：用 R2 ∥ RL 计算，按钮只改变负载通断。
+let loaded=false;$('#divider-toggle').addEventListener('click',()=>{loaded=!loaded;const equivalent=loaded?3300*1000/(3300+1000):3300;const v=12*equivalent/(8700+equivalent);$('#divider-value').textContent=(loaded?'带载 ':'空载 ')+v.toFixed(2)+'V';$('#divider-switch').setAttribute('d',loaded?'M350 183H392':'M350 183L388 165');$('#divider-toggle').textContent=loaded?'断开负载，回到空载':'接入 1kΩ 负载';$('#divider-toggle').setAttribute('aria-pressed',String(loaded));});
+
+function controller(button,slide,draw,duration,label){const c={button,slide,draw,duration,label,phase:0,running:false};frameCallbacks.push(c);button.addEventListener('click',()=>{c.running=!c.running;button.setAttribute('aria-pressed',String(c.running));button.textContent=c.running?'Ⅱ 暂停':label;slide.classList.toggle('running',c.running);$('#figure-dialog').classList.toggle('running',c.running);});return c;}
+function pauseOne(c){c.running=false;c.button.setAttribute('aria-pressed','false');c.button.textContent=c.label;c.slide.classList.remove('running');$('#figure-dialog').classList.remove('running');}
+
+// BUCK：统一用 p∈[0,1) 驱动开关、电流方向、电容电流符号和波形游标。
+const D=5/12;
+let buckControl;
+function buckDraw(p){
+  p=Math.max(0,Math.min(.999999,p));const on=p<D,relative=on?p/D:(p-D)/(1-D);const y=on?410-45*relative:365+45*relative;
+  $('#g-on').style.display=on?'':'none';$('#g-off').style.display=on?'none':'';$('#bk-switch-on').style.display=on?'':'none';$('#bk-switch-off').style.display=on?'none':'';
+  $('#bk-btn-on').setAttribute('aria-pressed',String(on));$('#bk-btn-off').setAttribute('aria-pressed',String(!on));
+  $('#bk-state').innerHTML=on?'导通 T<sub>on</sub> · vL = +7V':'关断 T<sub>off</sub> · vL = −5V';$('#bk-state').style.color=on?'var(--accent)':'var(--clay)';
+  $('#bk-desc-p').innerHTML=on?'输入经开关、电感向负载供能；二极管截止。电感两端电压为正，电流<b>连续上升</b>。':'开关断开，电感经二极管续流；电流方向不变。电感两端电压为负，电流<b>连续下降</b>。';
+  $('#bk-foot').innerHTML=on?'路径：<b>电源 → 开关 → L → 负载 → 电源</b>。COUT 只承担 iL 与负载电流的差额。':'路径：<b>GND → D → L → 负载 → GND</b>。同步 BUCK 改由下管提供续流通路。';
+  const charging=y<387.5;$('#cap-state').textContent=charging?'iL > I负载：电容充电':'iL < I负载：电容放电';$('#cap-arrow').setAttribute('d',charging?'M550 232V256m-6-8 6 8 6-8':'M550 256V232m-6 8 6-8 6 8');
+  const x=90+600*p;$('#bk-cursor').setAttribute('x1',x);$('#bk-cursor').setAttribute('x2',x);$('#bk-dot').setAttribute('cx',x);$('#bk-dot').setAttribute('cy',y);$('#bk-phase').value=Math.round(p*1000);
+}
+buckControl=controller($('#bk-play'),$('#bk-play').closest('.slide'),buckDraw,8,'▶ 连续播放');
+function buckSeek(p){pauseOne(buckControl);buckControl.phase=p;buckDraw(p);}
+$('#bk-btn-on').addEventListener('click',()=>buckSeek(D*.25));$('#bk-btn-off').addEventListener('click',()=>buckSeek(D+(1-D)*.25));$('#bk-reset').addEventListener('click',()=>buckSeek(0));$('#bk-phase').addEventListener('input',e=>buckSeek(+e.target.value/1000));
+const stages=[D*.25,D*.75,D+(1-D)*.25,D+(1-D)*.75];let stage=0;$('#bk-step').addEventListener('click',()=>{buckSeek(stages[stage]);stage=(stage+1)%stages.length;});buckDraw(0);
+
+// PWM：固定 L/C/f 与平均负载；输出纹波由 iC 积分得到，不伪装动态仿真。
+const duty=$('#duty');let exactDuty=41.7;
+const integral=(p,d)=>p<=d?(-p+p*p/d)/2:((p-d)-(p-d)*(p-d)/(1-d))/2;
+function pwmDraw(value){
+  const d=value/100,vo=12*d,delta=12*d*(1-d)/(100e-6*50000),period=620/3;
+  let wave='M80 140';for(let k=0;k<3;k++){const x=80+k*period;wave+=`L${x} 62H${x+period*d}V140H${x+period}`;}$('#pwm-line').setAttribute('d',wave);
+  const line=(fn)=>Array.from({length:601},(_,i)=>{const x=80+i/600*620,p=(i/600*3)%1;return(i?'L':'M')+x.toFixed(2)+' '+fn(p).toFixed(2);}).join('');
+  const il=p=>.5+delta*(p<=d?(-.5+p/d):(.5-(p-d)/(1-d)));
+  $('#pwm-current').setAttribute('d',line(p=>268-il(p)*78));
+  $('#pwm-voltage').setAttribute('d',line(p=>357-(delta/(100e-6*50000))*(integral(p,d)-(1-2*d)/12)*4000));
+  const avg=140-78*d;$('#pwm-avg').setAttribute('d',`M80 ${avg}H700`);$('#pwm-avg-lbl').textContent='平均 '+vo.toFixed(2)+'V';
+  $('#duty-v').textContent=value.toFixed(1)+'%';$('#vout-v').innerHTML=vo.toFixed(2)+'<small>V</small>';duty.setAttribute('aria-valuetext',value.toFixed(1)+'%，理想输出 '+vo.toFixed(2)+'伏');
+}
+const pwmControl=controller($('#pwm-play'),$('#pwm-play').closest('.slide'),p=>{const x=80+p*620;$('#pwm-cursor').setAttribute('x1',x);$('#pwm-cursor').setAttribute('x2',x);},9,'▶ 时间游标');
+duty.addEventListener('input',()=>{exactDuty=+duty.value;pwmDraw(exactDuty);});$$('[data-duty]').forEach(b=>b.addEventListener('click',()=>{exactDuty=+b.dataset.duty;duty.value=exactDuty;pwmDraw(exactDuty);}));pwmDraw(exactDuty);
+
+// LDO：仅计算电功率，不把损耗曲线冒充真实温度仿真。
+function ldoDraw(){const i=+$('#ldo-r').value,p=1.7*i/1000;$('#ldo-r-v').textContent=i+' mA';$('#ldo-i').innerHTML=i+'<small>mA</small>';$('#ldo-p').innerHTML=p.toFixed(2)+'<small>W</small>';$('#ldo-fill').style.width=p/1.6*100+'%';$('#ldo-i2').textContent='I = '+i+'mA';$('#ldo-heat').textContent='发热 '+p.toFixed(2)+'W';$('#ldo-r').setAttribute('aria-valuetext',i+'毫安，损耗'+p.toFixed(2)+'瓦');}
+$('#ldo-r').addEventListener('input',ldoDraw);$$('[data-current]').forEach(b=>b.addEventListener('click',()=>{$('#ldo-r').value=b.dataset.current;ldoDraw();}));ldoDraw();
+const feedbackSteps=['① 输出偏低：分压后的 VFB 也偏低','② 比较：VFB 低于 VREF，产生误差信号','③ 调整：控制器增加供能，输出回升','④ 恢复：VFB 接近 VREF，回到稳态'];let feedbackIndex=0;
+const feedbackBoxes=[...$('#feedback-step').closest('.slide').querySelectorAll('svg rect')];
+$('#feedback-step').addEventListener('click',()=>{$('#feedback-status').textContent=feedbackSteps[feedbackIndex];const lit=[[3,4],[0],[1,2],[]][feedbackIndex];feedbackBoxes.forEach((b,i)=>{b.style.stroke=lit.includes(i)?'var(--accent)':'var(--line)';b.style.strokeWidth=lit.includes(i)?4:2;b.style.fill=lit.includes(i)?'var(--apricot)':'var(--panel)';});feedbackIndex=(feedbackIndex+1)%4;$('#feedback-step').textContent=feedbackIndex?'下一步 →':'重新演示';});
+
+
+// 50% 占空比的经典方波傅里叶级数：奇次项 4/(πn)·sin(nx)。
+function drawFourier(n){
+  const ns='http://www.w3.org/2000/svg',group=$('#fourier-components');group.replaceChildren();
+  const colors=['var(--gold)','var(--clay)','#477582','var(--sub)'];
+  const trace=fn=>Array.from({length:1801},(_,i)=>{const x=i/1800*4*Math.PI;return (i?'L':'M')+(70+i/1800*650).toFixed(2)+' '+fn(x).toFixed(2);}).join('');
+  let terms=[];
+  for(let k=1;k<=n;k+=2){
+    terms.push(k);const line=document.createElementNS(ns,'path');
+    line.setAttribute('d',trace(x=>122-54*4/(Math.PI*k)*Math.sin(k*x)));
+    line.setAttribute('stroke',colors[Math.min((k-1)/2,3)]);line.setAttribute('opacity',k<=5?'1':'.5');group.append(line);
+  }
+  $('#fourier-sum').setAttribute('d',trace(x=>322-64*terms.reduce((sum,k)=>sum+4/(Math.PI*k)*Math.sin(k*x),0)));
+  $('#fourier-status').textContent=(n<=5?terms.join(' + '):'1 + 3 + … + '+n)+' 次，共 '+terms.length+' 项';
+  $$('[data-harmonic]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.harmonic===n)));
+}
+$$('[data-harmonic]').forEach(b=>b.addEventListener('click',()=>drawFourier(+b.dataset.harmonic)));
+drawFourier(5);
+
+let previous=0;
+function frame(t){const dt=previous?Math.min((t-previous)/1000,.08):0;previous=t;if(!document.hidden&&!tocOpen)for(const c of frameCallbacks){if(!c.running)continue;c.phase=(c.phase+dt/c.duration)%1;c.draw(c.phase);}requestAnimationFrame(frame);}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)deck.pause();});reduced.addEventListener('change',()=>deck.pause());
+// 不自动播放，教师决定何时动、何时停；窄屏默认进入自然流阅读。
+const initial=(location.hash.match(/^#p(\d+)$/)||[])[1];deck.go(initial?+initial-1:0,false);
+if(innerWidth<=900||innerHeight<540)setReading(true);
+window.addEventListener('resize',()=>{if(!reading&&!$('#figure-dialog').open&&(innerWidth<=900||innerHeight<540))setReading(true);});
+window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#p(\d+)$/);if(m)deck.go(+m[1]-1);});
+requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>

@@ -9,7 +9,8 @@
  *     - url 暂用 B站搜索页的条目会自动带「占位」角标，替换为真实地址后角标消失。
  *  2. 新增分类：在对应赛道的 cats 里加对象（id/name/en/icon/color 系/desc/items），
  *     icon 名见 assets/js/training.js 的 ICONS 表。
- *  3. 日程与讲义：改 SCHEDULE / DOCS 数组即可，日期确定后替换「以群通知为准」。
+ *  3. 日程与讲义：改 schedule / DOCS 数组即可；日程行 materials 里放「讲义 / 回放」链接，
+ *     DOCS 里 kind 区分 PDF（在线预览）与 HTML（在线浏览），rec 填 B 站回放地址。
  * ================================================================ */
 
 var TRACKS = {
@@ -26,8 +27,17 @@ var TRACKS = {
     roadmapCols: 'cols4',
     raceCta: { href: 'showcase.html#race', title: '想跑智能车？直通竞赛专区', sub: '赛规解析 · 组别介绍 · 往届国赛视频 —— 先看懂比赛，再决定怎么上车' },
     schedule: [
-      { name: '硬件第一次培训', topic: '硬件入门与工具使用（详见讲义）', date: '以群通知为准', doc: 'assets/docs/hw-training-1.pdf', owner: '硬件培训负责人', status: 'done', statusText: '讲义已发布' },
-      { name: '第二次培训', topic: '进阶内容（详见讲义）', date: '以群通知为准', doc: 'assets/docs/hw-training-2.pdf', owner: '硬件培训负责人', status: 'done', statusText: '讲义已发布' }
+      { name: '第一次培训', topic: '硬件入门与工具使用', date: '9 月 23 日', owner: '吕弘博', status: 'done', statusText: '已收官',
+        materials: [
+          { t: '讲义', u: 'assets/docs/hw-training-1.pdf' },
+          { t: '回放', u: 'https://www.bilibili.com/video/BV1cWaM6rEo8' }
+        ] },
+      { name: '第二次培训', topic: '稳压模块（原理 · 选型 · PCB · 测试）', date: '验收 10 月 30–31 日', owner: '硬件培训负责人', status: 'now', statusText: '已授课',
+        materials: [
+          { t: '讲义', u: 'assets/docs/hw-training-2.html' },
+          { t: '回放', u: 'https://www.bilibili.com/video/BV1nvpC6mEt9' }
+        ],
+        exam: '集中验收：10 月 30、31 日 · 具体安排以群通知为准' }
     ],
     cats: [
       {
@@ -142,23 +152,33 @@ var TRACKS = {
 
   sw: {
     id: 'sw', name: '软件赛道', en: 'SOFTWARE', accent: '#34d399',
-    tagline: 'CH32V307 + MounRiver II：五次培训，从点灯到图像识别',
-    stats: { sessions: '共 5 次培训 · 每次含考核' },
+    tagline: 'CH32V307 + MounRiver II：四次培训，从点灯到图像识别',
+    stats: { sessions: '共 4 次培训 · 每次含考核' },
     roadmap: [
       { num: 'S1', title: '嵌入式软件开发入门', sub: 'C 语言 · 逐飞库 · GPIO / PWM / 中断' },
-      { num: 'S2', title: '持久化菜单与简单阻塞按键', sub: 'Flash 存储 · 菜单系统 · 按键交互' },
-      { num: 'S3', title: '惯性测量单元与姿态解算', sub: 'IMU 读取 · 滤波 · 姿态解算' },
-      { num: 'S4', title: '电机闭环控制', sub: '编码器 · PID · 闭环调速' },
-      { num: 'S5', title: '嵌入式数字图像处理入门', sub: '摄像头 · 图像采集与处理' }
+      { num: 'S2', title: '持久化菜单与姿态解算', sub: 'Flash 存储 · 菜单 · IMU · 互补滤波' },
+      { num: 'S3', title: '电机闭环控制', sub: '编码器 · PID · 闭环调速' },
+      { num: 'S4', title: '嵌入式数字图像处理入门', sub: '摄像头 · 连通域 · 信标搜寻' }
     ],
-    roadmapCols: '',
+    roadmapCols: 'cols4',
     raceCta: null,
     schedule: [
-      { name: '第一次培训', topic: '嵌入式软件开发入门', date: '以群通知为准', doc: 'assets/docs/sw-training-1.pdf', owner: '李政熙', status: 'done', statusText: '讲义已发布', exam: '呼吸灯（基础）/ 呼吸闪烁交替（提高）· 考核周期 1 周' },
-      { name: '第二次培训', topic: '持久化菜单与简单阻塞按键', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 1 周' },
-      { name: '第三次培训', topic: '惯性测量单元与姿态解算', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 1 周' },
-      { name: '第四次培训', topic: '电机闭环控制', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 1 周' },
-      { name: '第五次培训', topic: '嵌入式数字图像处理入门', date: '以群通知为准', doc: null, owner: '待公布', status: 'wait', statusText: '待开始', exam: '周期内随时找学长验收 · 考核周期 2 周' }
+      { name: '第一次培训', topic: '嵌入式软件开发入门', date: '9 月 23 日', owner: '李政熙', status: 'done', statusText: '已收官',
+        materials: [
+          { t: '讲义', u: 'assets/docs/sw-training-1.pdf' },
+          { t: '回放', u: 'https://www.bilibili.com/video/BV1CzaT6rEvj' }
+        ],
+        exam: '呼吸灯（基础）/ 呼吸闪烁交替（提高）· 考核周期 1 周' },
+      { name: '第二次培训', topic: '持久化菜单与姿态解算', date: '10 月 15 日起 · 开放至 10 月 27 日', owner: '王玉莹、廖旺', status: 'now', statusText: '进行中',
+        materials: [
+          { t: '菜单讲义', u: 'assets/docs/sw-training-2-menu.html' },
+          { t: '姿态课件', u: 'assets/docs/sw-training-2-imu.html' },
+          { t: '菜单回放', u: 'https://www.bilibili.com/video/BV1p5p26fEhs' },
+          { t: '姿态回放', u: 'https://www.bilibili.com/video/BV1FSJk6BEx8' }
+        ],
+        exam: '菜单 + 姿态解算 · 考核周期 2 周（10-15 ~ 10-27）' },
+      { name: '第三次培训', topic: '电机闭环控制', date: '待定', owner: '欧阳佳颖', status: 'wait', statusText: '待开始', exam: '考核开放时段内到场验收 · 考核周期 1 周' },
+      { name: '第四次培训', topic: '嵌入式数字图像处理入门', date: '待定', owner: '秦华骏', status: 'wait', statusText: '待开始', exam: '考核开放时段内到场验收 · 考核周期 2 周' }
     ],
     cats: [
       {
@@ -238,27 +258,91 @@ var TRACKS = {
   }
 };
 
-/* 讲义中心（两条赛道共用） */
+/* 讲义中心（两条赛道共用）
+ * kind: 'pdf' 在线预览 + 下载 | 'html' 在线浏览（交互式网页课件）+ 下载
+ * rec:  B 站培训回放（官方号），无回放则省略 */
 var DOCS = [
   {
-    id: 'sw-training-1', track: 'sw', name: '软件第一次培训讲义',
-    file: 'assets/docs/sw-training-1.pdf',
+    id: 'sw-training-1', track: 'sw', session: '软件 · 第一次', kind: 'pdf',
+    name: '软件第一次培训讲义', file: 'assets/docs/sw-training-1.pdf',
     desc: '嵌入式软件开发入门：AI 时代为什么学编程、C 语言入门、逐飞 CH32V307 库、GPIO / PWM / 中断，与呼吸灯考核任务。',
-    meta: 'PDF · 24 页'
+    meta: 'PDF · 24 页',
+    rec: 'https://www.bilibili.com/video/BV1CzaT6rEvj'
   },
   {
-    id: 'hw-training-1', track: 'hw', name: '硬件第一次培训讲义（2026）',
-    file: 'assets/docs/hw-training-1.pdf',
-    desc: '硬件赛道第一次培训讲义，由培训 PPT 转换而来。',
-    meta: 'PDF · 由 PPTX 转换'
+    id: 'sw-training-2-menu', track: 'sw', session: '软件 · 第二次 · 菜单', kind: 'html',
+    name: '软件第二次培训讲义 · 持久化菜单', file: 'assets/docs/sw-training-2-menu.html',
+    desc: '从 ROM / RAM 到 Flash 存储：TFT180 屏幕与按键实现、C 语言菜单写法与工程模块化，附三级菜单考核要求与按键图。',
+    meta: '网页讲义 · 支持在线浏览与打印',
+    rec: 'https://www.bilibili.com/video/BV1p5p26fEhs'
   },
   {
-    id: 'hw-training-2', track: 'hw', name: '济海追风第二次培训讲义',
-    file: 'assets/docs/hw-training-2.pdf',
-    desc: '第二次培训讲义，由培训 PPT 转换而来。',
-    meta: 'PDF · 由 PPTX 转换'
+    id: 'sw-training-2-imu', track: 'sw', session: '软件 · 第二次 · 姿态', kind: 'html',
+    name: '软件第二次培训课件 · 陀螺仪与姿态解算', file: 'assets/docs/sw-training-2-imu.html',
+    desc: '从定时器中断到空间姿态：加速度计 / 陀螺仪原理、一阶互补滤波与零偏校准、VOFA+ 可视化验证，含可交互演示。',
+    meta: '网页课件 · 含交互演示',
+    rec: 'https://www.bilibili.com/video/BV1FSJk6BEx8'
+  },
+  {
+    id: 'hw-training-1', track: 'hw', session: '硬件 · 第一次', kind: 'pdf',
+    name: '硬件第一次培训讲义（2026）', file: 'assets/docs/hw-training-1.pdf',
+    desc: '硬件入门与工具使用：常用元器件、焊接工具与安全规范。',
+    meta: 'PDF · 由 PPTX 转换',
+    rec: 'https://www.bilibili.com/video/BV1cWaM6rEo8'
+  },
+  {
+    id: 'hw-training-2', track: 'hw', session: '硬件 · 第二次', kind: 'html',
+    name: '硬件第二次培训讲义 · 稳压模块', file: 'assets/docs/hw-training-2.html',
+    desc: '稳压电源从原理到实物：BUCK / LDO 原理、选型与数据手册、PCB 布局与 EDA、焊接调试与测试考核。',
+    meta: '网页讲义 · 含交互演示',
+    rec: 'https://www.bilibili.com/video/BV1nvpC6mEt9'
   }
 ];
+
+/* 当前培训速览（培训中心顶部横条；随培训进度更新） */
+var CURRENT = {
+  title: '2026 秋季培训 · 进行中',
+  items: [
+    { name: '软件第二次培训', tag: 'SW', accent: '#34d399', info: '持久化菜单与姿态解算 · 开放验收至 10 月 27 日（61#2155）', href: 'training-sw.html#exam-plan', linkText: '考核安排' },
+    { name: '硬件第二次培训', tag: 'HW', accent: '#4fd6ff', info: '稳压模块 · 集中验收 10 月 30–31 日', href: 'training-hw.html#schedule', linkText: '硬件日程' }
+  ],
+  note: '讲义与回放已上线（见下方讲义中心），缺课可看回放自学后参加验收；具体安排以招新 QQ 群通知为准。'
+};
+
+/* 当前考核安排（软件页「考核安排」区块；随轮次更新：改这里即可，置空 track 则隐藏） */
+var EXAM_ROUND = {
+  track: 'sw',
+  title: '第二次培训 · 考核安排',
+  window: '10 月 15 日（周四）– 10 月 27 日（周二）',
+  hours: [
+    { days: '周一、周二、周四、周五', time: '18:30–22:30' },
+    { days: '周三', time: '14:00–18:00、18:30–22:30' },
+    { days: '周六、周日', time: '10:00–12:00、14:00–18:00、18:30–22:30' }
+  ],
+  room: '默认 61#2155；到场调试前请关注培训群消息，当天教室以群通知为准（如无通知，即为 61#2155）。',
+  duty: '所有开放时间内都有一名学长值班，每两小时换班一次；学长只解答知识性问题，不解答编码细节问题。',
+  must: '菜单部分与姿态解算部分须做在同一个工程内（Alpha 从菜单读取并用于姿态解算），按一份工程提交。',
+  source: [
+    '从逐飞 CH32V307 开源库中的空工程开始撰写，不得从例程开始撰写（例程仅供学习参考）；',
+    '代码采用模块化、多文件管理，全部写在 main.c 文件中视为不合格。'
+  ],
+  submit: [
+    '现象验收通过后，按值班学长的引导提交工程压缩包（zip）；',
+    '压缩包打开后，首先应是工程文件夹（含 libraries 与 project）；',
+    '工程文件夹与压缩包统一命名「学号姓名」（学号在前、姓名在后、不加空格，姓名用中文）。'
+  ],
+  review: [
+    '学长会不定期核验源码与工作区快照（MounRiver 自动保留的工程记录），复查未发现问题的，即为最终通过；',
+    '复查发现问题时，可能需要重新验收或接受质询；验收未通过的，可在开放时间内再次联系值班学长验收；',
+    '验收与提交须在开放期内完成，逾期视为未通过（特殊情况请联系群主说明）；',
+    '作弊证据确凿的，取消后续培训资格；本次考核没有面试。'
+  ],
+  board: [
+    '培训板上所有外设均已插好，禁止私自拔下、调换；',
+    '培训板背面禁止接触金属；',
+    '因短路造成损毁的，将追究责任。'
+  ]
+};
 
 /* 术语速查（取自软件第一次培训讲义名词解释，维护时按需增补） */
 var GLOSSARY = [
@@ -291,7 +375,8 @@ var GLOSSARY = [
   { t: '传感器 / 控制器 / 执行器', d: '智能车的「感知 / 思考 / 动作」三段结构——把物理量变成电信号、算出控制量、再驱动机械动作。' }
 ];
 
-/* 考核专区（随培训进度增补；口径以讲义与群通知为准） */
+/* 考核专区（随培训进度增补；口径以讲义与招新群通知为准）
+ * status: 'open' 进行中 | 'done' 已收官（归档样式）*/
 var EXAMS = [
   {
     session: '软件 · 第一次培训', title: '基础任务：呼吸灯',
@@ -302,7 +387,7 @@ var EXAMS = [
     ],
     bonus: '用定时器硬件 PWM 实现者，验收时予以加分肯定。',
     ref: '例程：E01_gpio_demo（软件方式）/ E04_pwm_demo（硬件 PWM）',
-    owner: '李政熙', period: '考核周期 1 周', status: 'open'
+    owner: '李政熙', period: '考核周期 1 周', status: 'done'
   },
   {
     session: '软件 · 第一次培训', title: '提高任务：呼吸与闪烁交替',
@@ -313,6 +398,39 @@ var EXAMS = [
     ],
     bonus: null,
     ref: '例程：E01_gpio_demo（闪烁）＋ E04_pwm_demo（呼吸）组合',
-    owner: '李政熙', period: '考核周期 1 周', status: 'open'
+    owner: '李政熙', period: '考核周期 1 周', status: 'done'
+  },
+  {
+    session: '软件 · 第二次培训', title: '基础任务：持久化菜单',
+    points: [
+      '三级菜单：参数更改 / 功能实现 / 陀螺仪三个入口，二、三级可返回上一级；',
+      'int16 与 float 参数各至少一组：按键修改、大小步长、断电保存（Alpha 须实际用于姿态解算）；',
+      '屏幕功能至少各演示一次：改变屏幕颜色、画点与画线；',
+      '两页数据页：实时欧拉角与六轴原始数据完整可见（只读刷新）。'
+    ],
+    checkpoints: [
+      '掉电保持当场核验：修改并保存 → 断电 → 上电，数值保持（验收时任选一个参数核验）；',
+      '验收方式：现场逐项演示并核验；按键以讲义按键图为准（板载丝印有误）。'
+    ],
+    bonus: null,
+    ref: '讲义：软件第二次培训 · 持久化菜单',
+    owner: '王玉莹', period: '考核周期 2 周（10-15 ~ 10-27）', status: 'open'
+  },
+  {
+    session: '软件 · 第二次培训', title: '基础任务：姿态解算',
+    points: [
+      '解算 Pitch / Roll / Yaw，读取与解算放在 10 ms 定时器中断内；',
+      '上电静置零偏校准：10 ms 间隔采集 200 次三轴角速度求平均；',
+      '主循环按 FireWater 协议（115200）打印角度，VOFA+ 3D 立方体与培训板姿态同步。'
+    ],
+    checkpoints: [
+      '平放静止：Pitch、Roll ≈ 0、Z 轴朝上；静置无肉眼可见的持续漂移（读数小幅抖动不影响通过）；',
+      '晃动后恢复平放，角度正确收敛到水平；',
+      '绕 x/y/z 轴转动时，立方体绕对应红/绿/蓝轴响应：Roll、Pitch 方向一致；Yaw 无绝对参考，规范到 [-180°, 180°) 即可；',
+      'VOFA+ 现象由当值学长当场确认；调试串口 115200，打印延时 20 ms（不可放进中断）。'
+    ],
+    bonus: null,
+    ref: '课件：软件第二次培训 · 陀螺仪与姿态解算（含交互演示）',
+    owner: '廖旺', period: '考核周期 2 周（10-15 ~ 10-27）', status: 'open'
   }
 ];
