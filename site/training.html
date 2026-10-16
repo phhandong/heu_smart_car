@@ -48,7 +48,7 @@
     <a href="honors.html">获奖荣誉</a>
     <a href="showcase.html">成果沉淀</a>
     <a href="recruit.html">招新宣传</a>
-    <a href="training.html">培训中心</a>
+    <a href="training.html" class="active">培训中心</a>
     <a href="/wiki/">社团 Wiki</a>
     <a href="recruit.html#join">加入我们</a>
   </nav>
@@ -63,8 +63,11 @@
 
 <main class="wrap">
 
+  <!-- 当前培训速览（数据驱动，见 training-data.js 的 CURRENT） -->
+  <div id="currentBar" style="margin-top:22px"></div>
+
   <!-- 双赛道入口 -->
-  <section class="sec rv">
+  <section class="sec rv" style="margin-top:26px">
     <div class="sec-head">
       <h2><small>TRACKS</small>选择你的赛道</h2>
     </div>
@@ -73,7 +76,7 @@
         <span class="ex-session" style="color:#6ee7b7">SOFTWARE · CH32V307 + MounRiver II</span>
         <h3>软件赛道 →</h3>
         <ul>
-          <li>五次培训：嵌入式入门 → 菜单按键 → IMU 姿态 → 电机闭环 → 图像处理；</li>
+          <li>四次培训：嵌入式入门 → 菜单与姿态 → 电机闭环 → 图像处理；</li>
           <li>考核任务卡与验收口径、27 条术语速查；</li>
           <li>31 条软件资源：课程、工具链、刷题、社区、AI 助教。</li>
         </ul>
@@ -94,9 +97,9 @@
   <section class="sec rv" id="docs-section" style="scroll-margin-top:90px">
     <div class="sec-head">
       <h2><small>HANDOUTS</small>讲义中心</h2>
-      <p class="tip">两条赛道共用；支持在线预览与下载，缺课可自学后参加考核。</p>
+      <p class="tip">按赛道分组；PDF 讲义支持在线预览，网页课件支持在线浏览与交互演示，均可下载、均含 B 站回放。</p>
     </div>
-    <div class="doc-grid" data-s3d id="docs"></div>
+    <div id="docs"></div>
   </section>
 
   <!-- 考核机制 -->
@@ -106,7 +109,7 @@
     </div>
     <div class="notice-card">
       <h3>做出来，就算入门</h3>
-      <p style="font-size:14.5px;color:var(--sub);line-height:2">每次培训后发布考核任务（例如软件第一次的「呼吸灯」与「呼吸闪烁交替」），考核周期 1–2 周：<strong style="color:var(--txt)">一次培训周期内，随时在培训场地找学长验收</strong>，现场演示通过即计入培训进度。任务卡、验收口径与加分项见各赛道页「考核专区」；后续考核随讲义同步发布。</p>
+      <p style="font-size:14.5px;color:var(--sub);line-height:2">每次培训后发布考核任务（例如软件第一次的「呼吸灯」与第二次的「持久化菜单 / 姿态解算」），考核周期 1–2 周：<strong style="color:var(--txt)">考核开放时段内到场，找值班学长验收</strong>，现场演示通过即计入培训进度。任务卡见软件赛道页「考核专区」，开放时间表、提交与复查要求见「考核安排」。</p>
     </div>
   </section>
 
@@ -142,13 +145,13 @@
     </nav>
     <nav class="fg-col" aria-label="关注我们">
       <b>关注我们</b>
-      <a href="https://search.bilibili.com/all?keyword=%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">B站官方号</a>
+      <a href="https://space.bilibili.com/3706956032247893" target="_blank" rel="noopener">B站官方号</a>
       <a href="https://www.douyin.com/search/%E6%B5%8E%E6%B5%B7%E8%BF%BD%E9%A3%8E" target="_blank" rel="noopener">抖音「HEU济海追风」</a>
       <a href="https://gitee.com/WL2002/ji_hai_zhui_feng" target="_blank" rel="noopener">Gitee 公共仓库</a>
     </nav>
   </div>
   <!-- 部署期填写 ICP 备案号后移除 hidden -->
-  <p class="foot-note"><span id="icp" hidden></span>本站视频与部分图片来自网络公开教程与社团自制资料，仅用于学习交流；外链跳转至第三方平台，本站不收集、不存储任何个人信息。<br>最近更新：2026-09-25 · © 2026 哈尔滨工程大学济海追风智能汽车实验室</p>
+  <p class="foot-note"><span id="icp" hidden></span>本站视频与部分图片来自网络公开教程与社团自制资料，仅用于学习交流；外链跳转至第三方平台，本站不收集、不存储任何个人信息。<br>最近更新：2026-10-16 · © 2026 哈尔滨工程大学济海追风智能汽车实验室</p>
 </footer>
 
 <button id="toTop" title="回到顶部" aria-label="回到顶部">

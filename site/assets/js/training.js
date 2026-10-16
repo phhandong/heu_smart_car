@@ -1,9 +1,9 @@
 /* ================================================================
  * 培训中心逻辑（v0.4 拆页版）
  * 页面模式由 <body data-track="sw|hw|hub"> 决定：
- *  - hub：只渲染全站统计与讲义中心（training.html）；
+ *  - hub：渲染当前培训速览、全站统计与讲义中心（training.html）；
  *  - sw / hw：渲染该赛道的路线/日程/资源库（+sw 的考核与术语）。
- * 数据来自 data/training-data.js（TRACKS / DOCS / GLOSSARY / EXAMS）。
+ * 数据来自 data/training-data.js（TRACKS / DOCS / GLOSSARY / EXAMS / CURRENT / EXAM_ROUND）。
  * 交互：分类筛选 / 搜索 / 学习打卡（localStorage，键=赛道:稳定ID）。
  * 设计要点（继承旧版修复）：
  *  - 筛选与搜索用 hide 类切换显隐，不重建 DOM → 锚点始终有效；
@@ -68,8 +68,25 @@
     });
     el.innerHTML =
       '<div><b>2</b><span>培训赛道</span></div>' +
-      '<div><b>' + real + '</b><span>精选资源（另有 ' + (total - real) + ' 条占位待补）</span></div>' +
-      '<div><b>' + DOCS.length + '</b><span>培训讲义</span></div>';
+      '<div><b>' + real + '</b><span>精选资源</span></div>' +
+      '<div><b>' + DOCS.length + '</b><span>讲义与课件</span></div>';
+  }
+
+  /* ---- 当前培训速览（培训中心顶部横条） ---- */
+  function renderCurrent() {
+    var box = $('#currentBar');
+    if (!box || typeof CURRENT === 'undefined') return;
+    box.innerHTML =
+      '<div class="current-bar">' +
+      '<div class="cb-head"><span class="cb-dot" aria-hidden="true"></span><b>' + CURRENT.title + '</b></div>' +
+      '<div class="cb-items">' + CURRENT.items.map(function (c) {
+        return '<a class="cb-item" href="' + c.href + '" style="--cac:' + c.accent + '">' +
+          '<span class="cb-tag">' + c.tag + '</span>' +
+          '<span class="cb-body"><b>' + c.name + '</b><span>' + c.info + '</span></span>' +
+          '<span class="cb-go">' + c.linkText + ' →</span></a>';
+      }).join('') + '</div>' +
+      '<p class="cb-note">' + CURRENT.note + '</p>' +
+      '</div>';
   }
 
   /* ---- 学习路线 ---- */
@@ -88,7 +105,7 @@
       '<div class="sec-head"><h2><small>LEARNING PATH</small>' + t.name + ' · 学习路线</h2>' +
       '<p class="tip">' + (t.id === 'hw'
         ? '前三步练好硬件基本功，第四步帮你找到自己的方向；「仪器与工具」是全程支线。'
-        : '五次培训层层递进，每次培训后都有考核任务；配套资源在下方资源库。') + '</p></div>' +
+        : '四次培训层层递进，每次培训后都有考核任务；配套资源在下方资源库。') + '</p></div>' +
       '<ol class="steps ' + (t.roadmapCols || '') + '">' + steps + '</ol>' + cta;
   }
 
@@ -98,39 +115,55 @@
     if (!box) return;
     var t = TRACKS[TRACK];
     var rows = t.schedule.map(function (s) {
+      var mats = (s.materials || []).map(function (m) {
+        return '<a class="doc-link" href="' + m.u + '" target="_blank" rel="noopener">' + m.t + ' ↗</a>';
+      }).join('');
       return '<tr>' +
-        '<td><b>' + s.name + '</b></td>' +
-        '<td>' + s.topic + '</td>' +
-        '<td>' + s.date + '</td>' +
-        '<td>' + (s.doc ? '<a class="doc-link" href="' + s.doc + '" target="_blank" rel="noopener">讲义 PDF ↗</a>' : '—') + '</td>' +
-        '<td>' + (s.exam || '—') + '</td>' +
-        '<td>' + s.owner + '</td>' +
-        '<td><span class="tag-status ' + s.status + '">' + s.statusText + '</span></td>' +
+        '<td data-label="场次"><b>' + s.name + '</b></td>' +
+        '<td data-label="主题">' + s.topic + '</td>' +
+        '<td data-label="时间">' + s.date + '</td>' +
+        '<td data-label="材料">' + (mats || '—') + '</td>' +
+        '<td data-label="考核">' + (s.exam || '—') + '</td>' +
+        '<td data-label="负责人">' + s.owner + '</td>' +
+        '<td data-label="状态"><span class="tag-status ' + s.status + '">' + s.statusText + '</span></td>' +
         '</tr>';
     }).join('');
     box.innerHTML =
       '<div class="sec-head"><h2><small>SCHEDULE</small>培训日程与考核</h2>' +
-      '<p class="tip">具体时间以招新 QQ 群通知为准；考核在一次培训周期内随时可找学长验收。</p></div>' +
+      '<p class="tip">具体时间以招新 QQ 群通知为准；考核在开放时段内到场，找值班学长验收。</p></div>' +
       '<div class="sched-wrap"><table class="sched"><thead><tr>' +
-      '<th>场次</th><th>主题</th><th>时间</th><th>讲义</th><th>考核</th><th>负责人</th><th>状态</th>' +
+      '<th>场次</th><th>主题</th><th>时间</th><th>材料</th><th>考核</th><th>负责人</th><th>状态</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
 
-  /* ---- 讲义中心（按容器存在与否渲染） ---- */
+  /* ---- 讲义中心（按赛道分组；kind 决定预览按钮文案） ---- */
+  function docCard(d) {
+    var tname = TRACKS[d.track].name;
+    var viewLabel = d.kind === 'html' ? '在线浏览' : '在线预览';
+    var dlName = d.name + (d.kind === 'html' ? '.html' : '.pdf');
+    return '<article class="doc-card rv">' +
+      '<span class="dc-ico">' + svg(ICONS.doc) + '</span>' +
+      (d.session ? '<span class="dc-tag">' + d.session + '</span>' : '') +
+      '<b>' + d.name + '</b>' +
+      '<span>' + d.desc + '</span>' +
+      '<span class="dc-meta">' + tname + ' · ' + d.meta + '</span>' +
+      '<span class="doc-actions">' +
+      '<a class="view" href="' + d.file + '" target="_blank" rel="noopener">' + viewLabel + '</a>' +
+      '<a class="dl" href="' + d.file + '" download="' + dlName + '">下载</a>' +
+      (d.rec ? '<a class="rec" href="' + d.rec + '" target="_blank" rel="noopener">▶ 回放</a>' : '') +
+      '</span></article>';
+  }
   function renderDocs() {
     var box = $('#docs');
     if (!box) return;
-    box.innerHTML = DOCS.map(function (d) {
-      var tname = TRACKS[d.track].name;
-      return '<article class="doc-card rv">' +
-        '<span class="dc-ico">' + svg(ICONS.doc) + '</span>' +
-        '<b>' + d.name + '</b>' +
-        '<span>' + d.desc + '</span>' +
-        '<span style="color:#7cc4ff;font-size:12px">' + tname + ' · ' + d.meta + '</span>' +
-        '<span class="doc-actions">' +
-        '<a class="view" href="' + d.file + '" target="_blank" rel="noopener">在线预览</a>' +
-        '<a class="dl" href="' + d.file + '" download="' + d.name + '.pdf">下载</a>' +
-        '</span></article>';
+    box.innerHTML = [
+      { id: 'sw', name: '软件赛道' },
+      { id: 'hw', name: '硬件赛道' }
+    ].map(function (g) {
+      var list = DOCS.filter(function (d) { return d.track === g.id; });
+      return '<div class="doc-group">' +
+        '<div class="doc-group-head"><b>' + g.name + '</b><span>' + list.length + ' 份材料 · 均含回放</span></div>' +
+        '<div class="doc-grid">' + list.map(docCard).join('') + '</div></div>';
     }).join('');
     observeRv(box);
   }
@@ -151,7 +184,7 @@
       '<div class="v-foot">' +
       '<a class="btn-go" href="' + item.url + '" target="_blank" rel="noopener">' +
       '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5v13l11-6.5z"/></svg>' + goLabel(item.type) + '</a>' +
-      '<button class="btn-done" data-key="' + key + '" title="标记为已学" aria-label="标记为已学" aria-pressed="' + isDone + '">' +
+      '<button class="btn-done" data-key="' + key + '" title="标记已学（仅保存在本机）" aria-label="标记已学，仅保存在本机" aria-pressed="' + isDone + '">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
       '</button></div></article>';
   }
@@ -250,15 +283,46 @@
     var box = $('#examGrid');
     if (!box) return;
     box.innerHTML = EXAMS.map(function (e) {
-      return '<article class="exam-card tilt">' +
-        '<span class="ex-session">' + e.session + '</span>' +
+      var ar = e.status === 'done';
+      var checks = e.checkpoints ?
+        '<div class="ex-checks"><b>验收要点</b><ul>' + e.checkpoints.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul></div>' : '';
+      return '<article class="exam-card tilt' + (ar ? ' archived' : '') + '">' +
+        '<span class="ex-session">' + e.session + (ar ? '<i class="ex-done">已收官</i>' : '') + '</span>' +
         '<h3>' + e.title + '</h3>' +
         '<ul>' + e.points.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>' +
         (e.bonus ? '<p class="ex-bonus">★ ' + e.bonus + '</p>' : '') +
-        '<div class="ex-meta"><span>负责人：' + e.owner + '</span><span>' + e.period + '</span><span>周期内随时找学长验收</span></div>' +
+        checks +
+        '<div class="ex-meta"><span>负责人：' + e.owner + '</span><span>' + e.period + '</span><span>考核开放时段内到场验收</span></div>' +
         '<p class="ex-ref">' + e.ref + '</p>' +
         '</article>';
     }).join('');
+  }
+
+  /* ---- 考核安排（软件页；数据见 EXAM_ROUND） ---- */
+  function renderExamPlan() {
+    var box = $('#examPlan');
+    if (!box || typeof EXAM_ROUND === 'undefined' || !EXAM_ROUND.track) return;
+    var e = EXAM_ROUND;
+    var hours = e.hours.map(function (h) {
+      return '<div class="plan-row"><span>' + h.days + '</span><b>' + h.time + '</b></div>';
+    }).join('');
+    box.innerHTML =
+      '<div class="plan-strip">' +
+      '<div class="ps-item"><span>开放期</span><b>' + e.window + '</b></div>' +
+      '<div class="ps-item"><span>教室</span><b>默认 61#2155</b><em>以群通知为准</em></div>' +
+      '<div class="ps-item"><span>值班</span><b>每 2 小时一班</b><em>只答知识性问题</em></div>' +
+      '</div>' +
+      '<div class="plan-grid">' +
+      '<div class="plan-card"><b>开放时段与教室</b>' +
+      '<div class="plan-rows">' + hours + '</div>' +
+      '<p class="plan-note">' + e.room + '</p>' +
+      '<p class="plan-note">' + e.duty + '</p></div>' +
+      '<div class="plan-card"><b>考核必做</b><p class="plan-text">' + e.must + '</p>' +
+      '<b class="plan-sub">源码要求</b><ul>' + e.source.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="plan-card"><b>提交方式</b><ul>' + e.submit.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="plan-card"><b>复查与通过</b><ul>' + e.review.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="plan-card"><b>培训板使用须知</b><ul>' + e.board.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '</div>';
   }
 
   /* ---- 入场动画观察 ---- */
@@ -307,6 +371,8 @@
   }
 
   /* ---- 启动 ---- */
+  renderCurrent();
+  renderExamPlan();
   renderGlobalStats();
   renderDocs();
   if (TRACK !== 'hub') {
