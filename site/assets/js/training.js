@@ -122,7 +122,7 @@
         '<td data-label="场次"><b>' + s.name + '</b></td>' +
         '<td data-label="主题">' + s.topic + '</td>' +
         '<td data-label="时间">' + s.date + '</td>' +
-        '<td data-label="材料">' + (mats || '—') + '</td>' +
+        '<td data-label="材料"><span class="schedule-materials">' + (mats || '—') + '</span></td>' +
         '<td data-label="考核">' + (s.exam || '—') + '</td>' +
         '<td data-label="负责人">' + s.owner + '</td>' +
         '<td data-label="状态"><span class="tag-status ' + s.status + '">' + s.statusText + '</span></td>' +
@@ -150,6 +150,7 @@
       '<span class="doc-actions">' +
       '<a class="view" href="' + d.file + '" target="_blank" rel="noopener">' + viewLabel + '</a>' +
       '<a class="dl" href="' + d.file + '" download="' + dlName + '">下载</a>' +
+      (d.pdf ? '<a class="dl" href="' + d.pdf + '" target="_blank" rel="noopener">PDF 版</a>' : '') +
       (d.rec ? '<a class="rec" href="' + d.rec + '" target="_blank" rel="noopener">▶ 回放</a>' : '') +
       '</span></article>';
   }
@@ -211,9 +212,9 @@
     var box = $('#chips');
     if (!box) return;
     var t = TRACKS[TRACK];
-    box.innerHTML = '<button class="chip on" data-cat="all"><i></i>全部</button>' +
+    box.innerHTML = '<button class="chip on" data-cat="all" aria-pressed="true"><i></i>全部</button>' +
       t.cats.filter(function (c) { return !c.scope; }).map(function (c) {
-        return '<button class="chip" data-cat="' + c.id + '" style="--c:' + c.color + '"><i></i>' + c.name + '</button>';
+        return '<button class="chip" data-cat="' + c.id + '" aria-pressed="false" style="--c:' + c.color + '"><i></i>' + c.name + '</button>';
       }).join('');
   }
 
@@ -292,7 +293,7 @@
         '<ul>' + e.points.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>' +
         (e.bonus ? '<p class="ex-bonus">★ ' + e.bonus + '</p>' : '') +
         checks +
-        '<div class="ex-meta"><span>负责人：' + e.owner + '</span><span>' + e.period + '</span><span>考核开放时段内到场验收</span></div>' +
+        '<div class="ex-meta"><span>负责人：' + e.owner + '</span><span>' + e.period + '</span><span>' + (ar ? '历史任务 · 考核期已结束' : '当前验收安排见考核安排') + '</span></div>' +
         '<p class="ex-ref">' + e.ref + '</p>' +
         '</article>';
     }).join('');
@@ -309,19 +310,22 @@
     box.innerHTML =
       '<div class="plan-strip">' +
       '<div class="ps-item"><span>开放期</span><b>' + e.window + '</b></div>' +
-      '<div class="ps-item"><span>教室</span><b>默认 61#2155</b><em>以群通知为准</em></div>' +
+      '<div class="ps-item"><span>教室</span><b>' + e.roomLabel + '</b><em>组装、调试与验收场地</em></div>' +
       '<div class="ps-item"><span>值班</span><b>每 2 小时一班</b><em>只答知识性问题</em></div>' +
       '</div>' +
       '<div class="plan-grid">' +
-      '<div class="plan-card"><b>开放时段与教室</b>' +
+      '<div class="plan-card"><b>开放、验收与答疑</b>' +
+      '<p class="plan-text">' + e.openHours + '</p>' +
+      '<p class="plan-text"><strong>' + e.acceptanceStart + '</strong></p>' +
       '<div class="plan-rows">' + hours + '</div>' +
       '<p class="plan-note">' + e.room + '</p>' +
       '<p class="plan-note">' + e.duty + '</p></div>' +
-      '<div class="plan-card"><b>考核必做</b><p class="plan-text">' + e.must + '</p>' +
+      '<div class="plan-card"><b>考核对象与任务</b><p class="plan-text">' + e.eligibility + '</p><p class="plan-text">' + e.must + '</p>' +
       '<b class="plan-sub">源码要求</b><ul>' + e.source.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
       '<div class="plan-card"><b>提交方式</b><ul>' + e.submit.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
       '<div class="plan-card"><b>复查与通过</b><ul>' + e.review.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
-      '<div class="plan-card"><b>培训板使用须知</b><ul>' + e.board.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="plan-card"><b>失败判定</b><ul>' + e.failure.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="plan-card"><b>车辆、工具与安全须知</b><ul>' + e.board.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
       '</div>';
   }
 
@@ -341,8 +345,8 @@
     chips.addEventListener('click', function (e) {
       var b = e.target.closest('.chip');
       if (!b) return;
-      chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
-      b.classList.add('on');
+      chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); });
+      b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
       state.cat = b.dataset.cat;
       applyFilter();
     });

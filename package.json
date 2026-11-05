@@ -2,7 +2,8 @@
   "name": "jihai-zhuifeng-wiki",
   "private": true,
   "scripts": {
-    "build": "node scripts/build-wiki.mjs && node scripts/build-site.mjs && node scripts/validate-links.mjs && node scripts/check-site.mjs"
+    "build": "node scripts/build-wiki.mjs && node scripts/build-site.mjs && node scripts/prerender-news.mjs && node scripts/validate-links.mjs && node scripts/check-site.mjs",
+    "check:browser": "node scripts/check-browser.mjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

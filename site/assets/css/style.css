@@ -349,6 +349,7 @@ img{max-width:100%;display:block}
 .sched th{font-size:12px;letter-spacing:2px;color:var(--sub);font-weight:700;white-space:nowrap}
 .sched td b{font-size:14px}
 .sched tr:hover td{background:rgba(148,190,255,.04)}
+.schedule-materials{display:flex;flex-wrap:wrap;gap:6px 10px;min-width:0}
 .sched .doc-link{color:#7cc4ff;font-weight:700;white-space:nowrap}
 .sched .doc-link:hover{color:#fff}
 .tag-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}

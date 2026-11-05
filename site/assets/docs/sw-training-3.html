@@ -1,0 +1,2584 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>软件第三次培训 · 电机闭环控制</title>
+<style>
+:root{
+  --ink:#0f2a3d;--ink2:#24485c;--muted:#5f7787;--line:#d5e2e5;
+  --teal:#0f7c83;--teal-d:#0a5e64;--teal-l:#e6f4f4;--teal-m:#bfe0df;
+  --orange:#d9704a;--orange-l:#fbeee7;--blue:#3f6fb5;--blue-l:#eaf0fa;
+  --green:#2f8f6b;--green-l:#e7f4ee;--red:#c0504d;--red-l:#fbeceb;
+  --mono:"Cascadia Mono","Consolas",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#071c27}
+body{font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 700px at 20% 0%,#0d2f40,#071c27 70%)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{
+  position:relative;width:1280px;height:720px;flex:none;background:#f3f7f7;border-radius:18px;
+  overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06);
+  transform:scale(var(--s,1));transform-origin:center center
+}
+.progress{position:absolute;top:0;left:0;height:3px;background:linear-gradient(90deg,#0f7c83,#4fb3a8,#d9704a);
+  z-index:40;transition:width .35s ease}
+
+/* ---------- 单页 ---------- */
+.slide{position:absolute;inset:0;padding:40px 58px 54px;display:none;
+  background:radial-gradient(700px 380px at 100% -10%,rgba(15,124,131,.07),transparent 60%),#f3f7f7}
+.slide.active{display:block}
+.slide.active .anim{animation:rise .5s cubic-bezier(.2,.7,.3,1) both}
+.slide.active .anim:nth-child(2){animation-delay:.06s}
+.slide.active .anim:nth-child(3){animation-delay:.12s}
+.slide.active .anim:nth-child(4){animation-delay:.18s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.s-head{margin-bottom:16px}
+.s-kicker{font-size:11.5px;letter-spacing:.24em;color:var(--teal);font-weight:700;text-transform:uppercase}
+.s-title{font-size:33px;line-height:1.22;margin:7px 0 0;font-weight:700;letter-spacing:.01em}
+.s-title em{font-style:normal;color:var(--orange)}
+.s-sub{font-size:14.5px;color:var(--muted);margin-top:6px}
+.s-foot{position:absolute;left:58px;right:58px;bottom:16px;display:flex;justify-content:space-between;
+  align-items:center;font-size:11.5px;color:#93a8b0;letter-spacing:.02em}
+.s-foot b{color:#7b939c;font-weight:600}
+
+/* ---------- 布局 ---------- */
+.row{display:flex;gap:26px}
+.row.center{align-items:center}
+.col{flex:1;min-width:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  box-shadow:0 6px 18px rgba(15,42,61,.05)}
+.card.tight{padding:13px 15px}
+.card h3{margin:0 0 7px;font-size:15.5px}
+.card p{margin:0;font-size:13.5px;line-height:1.68;color:var(--ink2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ---------- 文字 ---------- */
+ul.pts{margin:0;padding-left:19px;font-size:14.5px;line-height:1.95;color:var(--ink2)}
+ul.pts li{margin-bottom:2px}
+ul.pts b{color:var(--ink)}
+.tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:99px;background:var(--teal-l);
+  color:var(--teal-d);border:1px solid var(--teal-m);white-space:nowrap}
+.tag.o{background:var(--orange-l);color:#a8502c;border-color:#eac3b1}
+.tag.b{background:var(--blue-l);color:#2a4f8c;border-color:#c3d2ea}
+.tag.g{background:#eef2f3;color:#4d6472;border-color:var(--line)}
+.note{border-left:4px solid var(--teal);background:#fff;padding:11px 15px;border-radius:0 10px 10px 0;
+  font-size:13.6px;line-height:1.75;box-shadow:0 4px 14px rgba(15,42,61,.04)}
+.note.o{border-color:var(--orange);background:#fffdfb}
+.note.b{border-color:var(--blue);background:#fcfdff}
+.note .t{font-weight:700;display:block;margin-bottom:2px}
+.formula{background:#fff;border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;
+  padding:10px 14px;font-family:var(--mono);font-size:13.5px;line-height:1.9;color:var(--ink);white-space:nowrap;overflow:hidden}
+.formula em{font-style:normal;color:var(--orange)}
+
+/* ---------- 控件 ---------- */
+.ctrl{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:flex-end}
+.ctrl label{display:block;font-size:11.5px;color:var(--muted);min-width:150px}
+.ctrl label b{font-family:var(--mono);color:var(--teal-d);font-size:12.5px;margin-left:4px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;
+  background:linear-gradient(90deg,#0f7c83 var(--p,50%),#dbe6e8 var(--p,50%));outline:none;margin-top:7px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:#fff;border:3px solid var(--teal);box-shadow:0 1px 4px rgba(15,124,131,.4);cursor:grab}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--teal)}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink2);padding:6px 12px;border-radius:8px;
+  font-size:12.5px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--teal);color:var(--teal-d)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-d);color:#fff}
+.btn[aria-pressed=true]{background:var(--orange-l);border-color:var(--orange);color:#a8502c}
+.btn.sm{padding:4px 9px;font-size:11.5px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.readout{display:flex;gap:8px;flex-wrap:wrap}
+.readout .box{background:#fff;border:1px solid var(--line);border-radius:9px;padding:6px 11px;min-width:86px}
+.readout .box span{display:block;font-size:10px;color:var(--muted)}
+.readout .box b{font-family:var(--mono);font-size:14.5px;color:var(--ink)}
+.readout .box.ok b{color:var(--green)}
+.readout .box.warn b{color:var(--orange)}
+
+/* ---------- 画布 ---------- */
+canvas{display:block;border-radius:10px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+  box-shadow:0 6px 18px rgba(15,42,61,.05)}
+
+/* ---------- 表格 ---------- */
+table{width:100%;border-collapse:collapse;font-size:12.8px;background:#fff;border-radius:10px;overflow:hidden}
+th,td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+th{background:#eef5f5;font-weight:700;color:var(--ink2);font-size:11.6px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td code{background:#f2f7f7;padding:1px 5px;border-radius:4px;font-family:var(--mono);color:var(--teal-d)}
+
+/* ---------- 代码 ---------- */
+.code{background:#0e2733;border-radius:12px;overflow:hidden}
+.code header{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#0a1e28;
+  color:#8fb6bd;font-size:11px;font-family:var(--mono)}
+.code header button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#d6eaea;
+  border-radius:6px;padding:2px 9px;font-size:10.5px;cursor:pointer}
+.code pre{margin:0;padding:12px 14px;overflow:hidden;color:#dbe9ec;font-size:11.6px;line-height:1.65;font-family:var(--mono)}
+.code .c{color:#6f9aa2}.code .k{color:#7fc9e8}.code .n{color:#f0b27a}.code .f{color:#c9a7f0}
+
+/* ---------- 清单 / 测验 ---------- */
+.checklist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:7px 16px}
+.checklist li{display:flex;gap:9px;align-items:flex-start;background:#fff;border:1px solid var(--line);
+  border-radius:9px;padding:8px 11px;font-size:12.6px;line-height:1.45}
+.checklist input{appearance:none;-webkit-appearance:none;width:16px;height:16px;border:2px solid #b9cdd0;
+  border-radius:5px;margin:1px 0 0;flex:none;cursor:pointer;background:#fff;position:relative}
+.checklist input:checked{background:var(--teal);border-color:var(--teal)}
+.checklist input:checked::after{content:"✓";position:absolute;inset:0;color:#fff;font-size:11px;display:grid;place-items:center}
+.checklist li.done{background:#f2faf8;border-color:#bfe0d4}
+.checklist li.done label{color:var(--muted);text-decoration:line-through}
+.quiz{background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px 12px}
+.quiz .q{font-size:12.6px;font-weight:700;margin-bottom:7px;line-height:1.45}
+.quiz .opt{display:block;width:100%;text-align:left;background:#f8fbfb;border:1px solid var(--line);
+  border-radius:7px;padding:5px 9px;margin-bottom:5px;font-size:11.9px;color:var(--ink2);cursor:pointer;line-height:1.4}
+.quiz .opt:hover{border-color:#a9d2d2}
+.quiz .opt.correct{border-color:var(--green);background:var(--green-l);color:#1d6b4e}
+.quiz .opt.wrong{border-color:var(--red);background:var(--red-l);color:#93372f}
+.quiz .fb{font-size:10.5px;color:var(--muted);min-height:0;line-height:1.4}
+
+/* ---------- 导航 ---------- */
+.nav{position:absolute;right:20px;bottom:10px;display:flex;gap:7px;align-items:center;z-index:30}
+.nav button{width:30px;height:30px;border-radius:50%;border:1px solid #cbdcdf;background:#fff;color:var(--ink2);
+  font-size:14px;cursor:pointer;display:grid;place-items:center;transition:.15s}
+.nav button:hover{border-color:var(--teal);color:var(--teal-d)}
+.nav button:disabled{opacity:.3;cursor:default}
+.page{position:absolute;right:108px;bottom:17px;font-size:11.5px;color:#93a8b0;font-family:var(--mono);z-index:30}
+.hint{position:absolute;left:58px;bottom:17px;font-size:11px;color:#a3b7bf}
+.hint kbd{font-family:var(--mono);border:1px solid #cfdee1;border-bottom-width:2px;border-radius:4px;
+  padding:0 4px;font-size:10px;background:#fff}
+
+/* 目录总览 */
+.overview{position:absolute;inset:0;background:rgba(6,23,32,.985);z-index:60;display:none;padding:22px 36px;color:#dfeef0;overflow:auto}
+.overview.on{display:block}
+.overview h3{font-size:14px;margin:0 0 8px;color:#9fd6cf;letter-spacing:.15em;font-weight:600}
+.ov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 18px;align-items:start}
+.ov-grid > *{min-width:0}
+.ov-part{overflow:hidden}
+.ov-part h4{font-size:10.5px;color:#7fc9c3;letter-spacing:.14em;margin:0 0 6px;padding-bottom:4px;
+  border-bottom:1px solid rgba(255,255,255,.16);font-weight:700}
+.ov-part button{display:block;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;color:#cfe2e4;text-align:left;padding:4px 9px;margin-bottom:4px;font-size:10px;
+  line-height:1.3;cursor:pointer;transition:.15s}
+.ov-part button:hover{background:rgba(79,179,168,.18);border-color:#4fb3a8}
+.ov-part button b{display:block;font-family:var(--mono);font-size:9px;color:#6fa9ad;margin-bottom:1px}
+.ov-part button span{display:block;font-weight:700;font-size:11px;color:#eaf4f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov-part button em{display:block;font-style:normal;font-size:8.6px;color:#8fb0b6;margin-top:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+
+@media (max-width:860px){
+  .hint{display:none}
+}
+
+.rotate-tip{display:none;position:fixed;left:0;right:0;bottom:0;background:#0f2a3d;color:#cfe2e4;
+  font-size:12px;text-align:center;padding:8px;z-index:99;letter-spacing:.05em}
+@media (max-width:700px) and (orientation:portrait){ .rotate-tip{display:block} }
+
+@page{size:1280px 720px;margin:0}
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #stage{position:static;display:block}
+  #deck{transform:none!important;box-shadow:none;border-radius:0;width:100%;height:auto}
+  .slide{position:relative;display:block!important;page-break-after:always;height:720px}
+  .nav,.page,.hint,.overview,.progress{display:none!important}
+  .s-foot > span:last-child{display:inline!important}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="deck">
+    <div class="progress" id="progress" style="width:0"></div>
+
+<style>
+/* 封面 */
+.cover{background:radial-gradient(900px 520px at 82% 12%,rgba(217,112,74,.28),transparent 62%),
+  radial-gradient(760px 520px at 8% 88%,rgba(79,179,168,.26),transparent 60%),
+  linear-gradient(120deg,#0b2433,#123a48 55%,#0f3f45);color:#eaf4f4;padding:0}
+.cover-inner{position:absolute;left:82px;top:150px;max-width:720px;z-index:2}
+.cover h1{font-size:64px;margin:14px 0 10px;letter-spacing:.02em;line-height:1.1}
+.cover .lead{font-size:19px;line-height:1.85;color:#cfe3e2;margin:0}
+.cover-chips{display:flex;gap:12px;margin-top:30px}
+.cover-chips span{border:1px solid rgba(159,214,207,.42);color:#bfe0dd;padding:7px 15px;border-radius:99px;font-size:13px}
+.cover-meta{margin-top:34px;font-size:13px;color:#8fb6bb;letter-spacing:.05em}
+.cover-deco{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:56px 56px;opacity:.55}
+.cover-ring{position:absolute;right:-30px;top:-70px;width:520px;height:520px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.13)}
+.cover-ring.r2{right:40px;top:70px;width:340px;height:340px;border-color:rgba(255,180,140,.22)}
+
+/* 路线卡片 */
+.card .num{font-family:var(--mono);font-size:12px;color:var(--teal);letter-spacing:.1em;margin-bottom:6px}
+
+/* 标签页 */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.tabs button{background:transparent;border:0;border-bottom:3px solid transparent;padding:7px 15px;
+  color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0}
+.tabs button[aria-selected=true]{color:var(--teal-d);border-bottom-color:var(--teal);background:#eef8f8}
+
+/* 步骤 */
+.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+.steps li{counter-increment:s;position:relative;padding-left:34px;margin-bottom:9px;font-size:13.2px;line-height:1.55;color:var(--muted)}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:23px;height:23px;border-radius:7px;
+  background:var(--teal-l);color:var(--teal-d);font-family:var(--mono);font-size:11.5px;font-weight:700;
+  display:grid;place-items:center;border:1px solid var(--teal-m)}
+.steps li b{display:block;color:var(--ink);font-size:13.8px;margin-bottom:1px}
+
+/* 状态芯片 */
+.chips{display:flex;gap:9px;flex-wrap:wrap}
+.chip{background:#fff;border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-size:12px;color:var(--muted)}
+.chip b{font-family:var(--mono);color:var(--ink);font-size:13px;margin-left:4px}
+.chip.on{background:var(--teal-l);border-color:var(--teal-m);color:var(--teal-d);box-shadow:0 2px 8px rgba(15,124,131,.12)}
+.chip.on b{color:var(--teal-d)}
+
+/* 结束页 */
+.end-list{margin:24px 0 0;padding-left:20px;color:#d7e8e7;font-size:17px;line-height:2.15}
+.end-list li{margin-bottom:6px}
+.end-list b{color:#fff;font-weight:700}
+.cover .s-kicker{color:#7fc9c3}
+
+
+/* ===================== 2026-10-27 修订：图示与版式 ===================== */
+/* 字号：1280×720 投到 1080p 后，13px 以下后排看不清 */
+.card p{font-size:14.8px;line-height:1.66}
+.card h3{font-size:16px}
+.card.tight{padding:13px 15px}
+.note{font-size:14.2px;line-height:1.68}
+.note .t{font-size:12.6px;letter-spacing:.03em;margin-bottom:2px}
+.s-sub{font-size:15.5px;line-height:1.5}
+ul.pts{font-size:15px;line-height:1.8}
+.formula{font-size:15px;line-height:1.95}
+.code pre{font-size:12.6px;line-height:1.7}
+.readout .box b{font-size:16px}
+.checklist li{font-size:13.4px}
+
+/* 图框：图 + 一句说明 */
+.fig{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;
+  box-shadow:0 6px 18px rgba(15,42,61,.05)}
+.fig canvas{width:100%;height:auto}
+.fig .cap{margin:8px 2px 0;font-size:13px;line-height:1.5;color:var(--muted)}
+.fig .cap b{color:var(--ink2)}
+.fig .cap em{font-style:normal;color:var(--orange);font-weight:700}
+
+/* 图例 */
+.legend{display:flex;flex-wrap:wrap;gap:5px 15px;font-size:12.3px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* 横向流程 */
+.flow{display:flex;gap:20px}
+.flow > .st{flex:1;position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.flow > .st + .st::before{content:"";position:absolute;left:-15px;top:50%;width:10px;height:2px;background:#b9ced1}
+.flow > .st + .st::after{content:"";position:absolute;left:-5px;top:calc(50% - 4px);
+  border-left:6px solid #b9ced1;border-top:4px solid transparent;border-bottom:4px solid transparent}
+.flow .n{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--teal)}
+.flow h4{margin:3px 0 4px;font-size:15.5px}
+.flow p{margin:0;font-size:13px;line-height:1.55;color:var(--ink2)}
+.flow .val{display:block;font-family:var(--mono);font-size:18px;color:var(--teal-d);margin-top:3px}
+
+/* 纵向链条 */
+.chain{display:flex;flex-direction:column;gap:6px}
+.chain .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px}
+.chain .st .n{width:22px;height:22px;flex:none;border-radius:7px;background:var(--teal-l);color:var(--teal-d);
+  font-family:var(--mono);font-size:12px;display:grid;place-items:center;border:1px solid var(--teal-m)}
+.chain .st p{margin:0;font-size:13.8px;line-height:1.5;color:var(--ink2)}
+.chain .st b{color:var(--ink)}
+
+/* 两栏对照 */
+.cmp{display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid var(--line);
+  border-radius:14px;overflow:hidden}
+.cmp > .side{padding:14px 18px}
+.cmp > .side + .side{border-left:1px solid var(--line)}
+.cmp h4{margin:0 0 7px;font-size:16px;display:flex;gap:8px;align-items:center}
+.cmp ul{margin:0;padding-left:17px;font-size:14px;line-height:1.8;color:var(--ink2)}
+.cmp li b{color:var(--ink)}
+
+/* 2×2 矩阵 */
+.quad{display:grid;grid-template-columns:66px 1fr 1fr;grid-template-rows:32px 1fr 1fr;gap:7px}
+.quad .ax{display:grid;place-items:center;text-align:center;font-size:12px;color:var(--muted);line-height:1.3}
+.quad .cell{position:relative;background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px 12px}
+.quad .cell h4{margin:0 0 2px;font-size:15px}
+.quad .cell p{margin:0;font-size:12.8px;line-height:1.5;color:var(--ink2)}
+.quad .cell .meta{margin-top:5px;font-size:11.8px;color:var(--muted);line-height:1.45}
+.quad .cell.on{border-color:var(--teal);box-shadow:0 0 0 2px rgba(15,124,131,.1)}
+.quad .badge{position:absolute;right:8px;top:8px;font-size:10.5px;background:var(--teal);color:#fff;
+  border-radius:99px;padding:1px 8px}
+
+/* 大数字 */
+.kpi{display:flex;gap:10px}
+.kpi > div{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 12px}
+.kpi b{display:block;font-family:var(--mono);font-size:19px;color:var(--teal-d);line-height:1.25}
+.kpi span{font-size:11.4px;color:var(--muted)}
+
+/* 只给查值表用 */
+table.tbl{font-size:13.8px}
+table.tbl th{font-size:12.8px}
+table.tbl th,table.tbl td{padding:7px 12px}
+
+/* 画布随容器缩放 */
+canvas{width:100%;height:auto}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.6px;color:var(--ink2);cursor:pointer}
+.chk input{width:15px;height:15px;accent-color:var(--teal);margin:0}
+
+/* 页脚只留分区名，页码统一由右下角显示 */
+.s-foot > span:last-child{display:none}
+/* 矩阵单元撑满，meta 贴底 */
+.quad .cell{display:flex;flex-direction:column}
+.quad .cell .meta{margin-top:auto;padding-top:6px}
+
+/* 封面路线 */
+.cover-route{position:absolute;left:82px;right:82px;bottom:52px;display:flex;z-index:2}
+.cover-route div{flex:1;border-top:2px solid rgba(159,214,207,.24);padding-top:8px;font-size:12px;
+  color:#86aeb3;letter-spacing:.03em}
+.cover-route div.on{border-top-color:#7fc9c3;color:#d8eeea}
+.cover-route b{display:block;font-family:var(--mono);font-size:10px;color:#6fa9ad;letter-spacing:.14em;margin-bottom:2px}
+</style>
+
+<!-- ===================== 01 封面 ===================== -->
+<section class="slide cover active" id="p01">
+  <div class="cover-deco"></div>
+  <div class="cover-inner">
+    <div class="s-kicker" style="color:#7fc9c3">软件培训 · 第三次</div>
+    <h1>电机闭环控制</h1>
+    <p class="lead">先弄清开环、闭环与反馈，认识电机和编码器；<br>再把位置式与增量式 PID 摆在一起，看它们各自怎么用在速度环上。</p>
+    <div class="cover-chips">
+      <span>原理优先</span><span>两种 PID 对照</span><span>含烧录与上电</span>
+    </div>
+    <div class="cover-meta">CH32V307 · 直流有刷编码器电机 · 上位机 VOFA+ · 现场演示验收</div>
+  </div>
+  <div class="cover-route">
+    <div class="on"><b>01</b>原理</div><div><b>02</b>器件</div><div><b>03</b>出力</div>
+    <div><b>04</b>实现</div><div><b>05</b>PID</div><div><b>06</b>验收</div>
+  </div>
+  <div class="cover-ring"></div><div class="cover-ring r2"></div>
+</section>
+
+<!-- ===================== 02 什么是控制 ===================== -->
+<section class="slide" id="p02">
+  <div class="s-head anim">
+    <div class="s-kicker">原理 · ① 反馈</div>
+    <h2 class="s-title">控制就是：拿实际值和目标比，再决定下一步做什么</h2>
+    <div class="s-sub">接水、骑车、调电机，做的都是同一件事。</div>
+  </div>
+  <div class="flow anim" style="margin-top:12px">
+    <div class="st"><div class="n">01 目标</div><h4>想要多少</h4>
+      <p>接满一杯水；电机每 5 ms 转 50 个计数。</p><span class="val">r = 50</span></div>
+    <div class="st"><div class="n">02 测量</div><h4>现在多少</h4>
+      <p>眼睛看水位；编码器数这一拍的增量。</p><span class="val">y = 43</span></div>
+    <div class="st"><div class="n">03 比较</div><h4>差多少</h4>
+      <p>还差 7 个计数。这个差值，是后面所有计算唯一的输入。</p><span class="val">e = r − y = 7</span></div>
+    <div class="st"><div class="n">04 执行</div><h4>多给一点</h4>
+      <p>水快满了就关小；电机慢了就把占空比加上去。</p><span class="val">u += Δu</span></div>
+  </div>
+  <div class="row anim" style="margin-top:12px;gap:18px;align-items:flex-start">
+    <div class="col" style="flex:1">
+      <div class="card"><h3>换个说法</h3>
+        <p>控制不是“把输出设成某个值”，而是“每个周期看一眼结果，再决定下一步改多少”。前者是开环，后者是闭环。</p></div>
+      <div class="note o" style="margin-top:10px"><span class="t">最容易翻车的一步</span>
+        目标用“50 个脉冲”，反馈却换成 rpm 去减。量纲不一致，后面怎么调都不对。</div>
+    </div>
+    <div class="col" style="flex:0 0 400px">
+      <div class="note"><span class="t">记住这个问句</span>
+        现在差了这么多，下一步输出该变多少？PID 就是这句话的一个具体答案。</div>
+      <div class="note b" style="margin-top:9px"><span class="t">三件事都要成立</span>
+        测量要准、比较要同量纲、执行要够快。缺一个，闭环就调不出来。</div>
+    </div>
+  </div>
+  <div class="fig anim" style="margin-top:10px;padding:6px 10px">
+    <canvas id="conceptCanvas" width="1080" height="130"></canvas>
+    <p class="cap">每一拍看一次结果：目标不动，实测追上来，偏差越来越小。</p>
+  </div>
+  <div class="s-foot"><span>原理 · 反馈</span><span><b>02</b> / 33</span></div>
+</section>
+
+<!-- ===================== 03 开环与闭环 ===================== -->
+<section class="slide" id="p03">
+  <div class="s-head anim">
+    <div class="s-kicker">原理 · ② 结构</div>
+    <h2 class="s-title">开环与闭环：差的就是那条反馈线</h2>
+    <div class="s-sub">同一个目标、同一台电机，多一个 Σ 和一条反馈，系统就不一样了。</div>
+  </div>
+  <div class="fig anim" style="margin-top:6px">
+    <canvas id="schemCanvas" width="1120" height="360"></canvas>
+    <p class="cap"><b>开环</b>：输出只是被看见，不参与决定。<b>闭环</b>：每 5 ms 把实测值送回比较，差多少补多少。</p>
+  </div>
+  <div class="row anim" style="margin-top:12px;align-items:center;gap:18px">
+    <div class="legend" style="flex:1">
+      <span><i style="background:#0f7c83"></i>控制与计算</span>
+      <span><i style="background:#d9704a"></i>出力与驱动</span>
+      <span><i style="background:#3f6fb5"></i>电机</span>
+      <span><i style="background:#2f8f6b"></i>反馈与编码器</span>
+    </div>
+    <div class="note o" style="flex:0 0 470px"><span class="t">只多了一条线，代价在后面</span>
+      传感器、固定周期、参数，都要跟着来。</div>
+  </div>
+  <div class="s-foot"><span>原理 · 结构</span><span><b>03</b> / 33</span></div>
+</section>
+
+<!-- ===================== 04 抗干扰 ===================== -->
+<section class="slide" id="p04">
+  <div class="s-head anim">
+    <div class="s-kicker">原理 · ③ 抗干扰</div>
+    <h2 class="s-title">闭环为什么能抗干扰</h2>
+    <div class="s-sub">干扰一出现，闭环马上知道“不对劲”；开环永远不知道。</div>
+  </div>
+  <div class="row anim" style="margin-top:8px;gap:18px;align-items:stretch">
+    <div class="col" style="flex:1">
+      <div class="fig">
+        <canvas id="distCanvas" width="660" height="330"></canvas>
+        <p class="cap">同一条负载扰动：开环掉下去就回不来，闭环掉一点就被补回来。</p>
+      </div>
+    </div>
+    <div class="col" style="flex:0 0 430px;display:flex;flex-direction:column;gap:9px">
+      <div class="card tight"><h3 style="font-size:15px">负载变大</h3>
+        <p style="font-size:13.6px">上坡、压到地面、轮子阻力变大。转速一掉，偏差变大，占空比自己加上去。</p></div>
+      <div class="card tight"><h3 style="font-size:15px">电池电压下降</h3>
+        <p style="font-size:13.6px">电量低、大电流时压降。同样的占空比出力变小，闭环会多给一点。</p></div>
+      <div class="card tight"><h3 style="font-size:15px">摩擦与温度变化</h3>
+        <p style="font-size:13.6px">轴承磨损、温度升高。这类慢变化，靠积分项一点点补上。</p></div>
+    </div>
+  </div>
+  <div class="note anim" style="margin-top:10px"><span class="t">但闭环不是万能的</span>
+    目标超出电机能力（比如空载都到不了 80 个计数）时，怎么调都上不去。调参看三个数：掉多少、多久回来、稳态波动多大。</div>
+  <div class="s-foot"><span>原理 · 抗干扰</span><span><b>04</b> / 33</span></div>
+</section>
+
+<!-- ===================== 05 闭环的代价 ===================== -->
+<section class="slide" id="p05">
+  <div class="s-head anim">
+    <div class="s-kicker">原理 · ④ 代价</div>
+    <h2 class="s-title">闭环不是免费的</h2>
+    <div class="s-sub">系统更“聪明”，也更难调、更容易振。</div>
+  </div>
+  <div class="cmp anim" style="margin-top:8px">
+    <div class="side">
+      <h4><span class="tag g">开环</span> 给多少就是多少</h4>
+      <ul>
+        <li>结构：一段赋值代码，给个固定占空比</li>
+        <li>调参：不用调</li>
+        <li>抗干扰：没有</li>
+        <li>风险：几乎不会失控</li>
+      </ul>
+    </div>
+    <div class="side">
+      <h4><span class="tag">闭环</span> 看结果再决定</h4>
+      <ul>
+        <li>结构：固定周期 + 反馈 + 控制器</li>
+        <li>调参：按对象调 1–3 个参数</li>
+        <li>抗干扰：有，但受输出能力限制</li>
+        <li>风险：参数不当会振荡、顶满、反转</li>
+      </ul>
+    </div>
+  </div>
+  <div class="row anim" style="margin-top:14px;gap:16px;align-items:stretch">
+    <div class="col" style="flex:1">
+      <div class="card"><h3>多出来的四样东西</h3>
+        <p><b>传感器</b>：编码器和接线；<b>固定周期</b>：每拍读、算、写，不能忽快忽慢；
+          <b>参数</b>：K<sub>p</sub>/K<sub>i</sub>/K<sub>d</sub> 要按对象调；<b>风险</b>：参数不合适会振，越调越差。</p></div>
+    </div>
+    <div class="col" style="flex:1">
+      <div class="card"><h3>什么时候可以不用闭环</h3>
+        <p>负载基本不变、对速度要求不高（风扇、小水泵），开环给个电压就够；
+          车轮要按目标速度走、还要抗坡道和摩擦变化，就必须闭环。</p></div>
+    </div>
+  </div>
+  <div class="flow anim" style="margin-top:18px">
+    <div class="st"><div class="n">问题 1</div><h4>负载会变吗</h4>
+      <p>坡道、摩擦、电池压降——只要会变，开环就稳不住。</p></div>
+    <div class="st"><div class="n">问题 2</div><h4>速度要稳住吗</h4>
+      <p>差一点能接受就开环；要求跟着目标走，就得闭环。</p></div>
+    <div class="st"><div class="n">问题 3</div><h4>传感器和周期有吗</h4>
+      <p>没有编码器、给不出固定周期，闭环免谈。</p></div>
+  </div>
+  <div class="s-foot"><span>原理 · 代价</span><span><b>05</b> / 33</span></div>
+</section>
+
+<!-- ===================== 06 电机分类 ===================== -->
+<section class="slide" id="p06">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 电机 ①</div>
+    <h2 class="s-title">先分清四类电机</h2>
+    <div class="s-sub">换向由谁完成、有没有内置反馈，决定了它好不好控制。</div>
+  </div>
+  <div class="quad anim" style="margin-top:8px;height:360px">
+    <div class="ax"></div>
+    <div class="ax">机械换向<br>电刷 + 换向器</div>
+    <div class="ax">电子换相<br>驱动电路按序通电</div>
+
+    <div class="ax">无内置反馈<br>开环也能转</div>
+    <div class="cell on"><span class="badge">本次</span>
+      <h4>直流有刷</h4>
+      <p>两根线加电压就转，一路 H 桥就够。有火花、寿命有限，常见于小车与玩具。</p>
+      <div class="meta">驱动：H 桥　·　外挂编码器即可速度闭环</div></div>
+    <div class="cell">
+      <h4>步进电机</h4>
+      <p>按节拍轮流励磁，不用反馈也能定位；高速力矩衰减快，可能丢步。常见于 3D 打印机。</p>
+      <div class="meta">驱动：专用步进驱动器　·　闭环需另加编码器</div></div>
+
+    <div class="ax">有内置反馈<br>自己就在闭环</div>
+    <div class="cell">
+      <h4>舵机</h4>
+      <p>有刷电机 + 减速箱 + 位置反馈，给角度指令就到位。转向、云台都用它。</p>
+      <div class="meta">驱动：给脉宽　·　内部已经是位置闭环</div></div>
+    <div class="cell">
+      <h4>直流无刷</h4>
+      <p>转子永磁、定子三相，电子换相。效率高、寿命长，但必须先知道转子位置。风机、无人机常见。</p>
+      <div class="meta">驱动：三相驱动器　·　能闭环，换相逻辑复杂</div></div>
+  </div>
+  <div class="note o anim" style="margin-top:12px"><span class="t">为什么这次选有刷</span>
+    一路 PWM + 一个 H 桥 + 外挂编码器，就能把“反馈、测速、闭环”讲完整，是硬件最少的一种。</div>
+  <div class="kpi anim" style="margin-top:10px">
+    <div><b>CH32V307</b><span>主控</span></div>
+    <div><b>有刷 + 编码器</b><span>被控对象</span></div>
+    <div><b>H 桥驱动</b><span>出力</span></div>
+    <div><b>12 V 电池</b><span>供电</span></div>
+  </div>
+  <div class="s-foot"><span>器件 · 电机 ①</span><span><b>06</b> / 33</span></div>
+</section>
+
+<!-- ===================== 07 有刷电机结构 ===================== -->
+<section class="slide" id="p07">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 电机 ②</div>
+    <h2 class="s-title">直流有刷电机里面有什么</h2>
+    <div class="s-sub">四个部件，各干一件事；右边三步说明“为什么每半圈要换一次电流方向”。</div>
+  </div>
+  <div class="fig anim" style="margin-top:6px;max-width:1010px;margin-left:auto;margin-right:auto">
+    <canvas id="brushedCanvas" width="1080" height="392"></canvas>
+    <p class="cap">剖面里 ①–④ 对应下排四张卡；三步图里电流方向在 90° 处翻转，转矩方向始终不变。</p>
+  </div>
+  <div class="grid4 anim" style="margin-top:10px;gap:10px">
+    <div class="card tight"><h3 style="font-size:14.5px"><span class="tag">①</span> 定子磁铁</h3>
+      <p style="font-size:12.8px">提供恒定磁场。退磁 → 力矩明显变小。</p></div>
+    <div class="card tight"><h3 style="font-size:14.5px"><span class="tag">②</span> 转子线圈</h3>
+      <p style="font-size:12.8px">通电后受安培力产生转矩。烧断 → 完全不动。</p></div>
+    <div class="card tight"><h3 style="font-size:14.5px"><span class="tag">③</span> 换向器</h3>
+      <p style="font-size:12.8px">每半圈交换一次接触片。磨损 → 抖动、异响。</p></div>
+    <div class="card tight"><h3 style="font-size:14.5px"><span class="tag">④</span> 电刷</h3>
+      <p style="font-size:12.8px">把电流送到转动的换向器上。磨损 → 火花大、接触不良。</p></div>
+  </div>
+  <div class="s-foot"><span>器件 · 电机 ②</span><span><b>07</b> / 33</span></div>
+</section>
+
+<!-- ===================== 08 无刷电机结构 ===================== -->
+<section class="slide" id="p08">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 电机 ③</div>
+    <h2 class="s-title">无刷电机：没有电刷，换相交给电路</h2>
+    <div class="s-sub">转子是永磁体，定子是三相绕组；驱动器按顺序通电，磁场一步步转，转子被拖着走。</div>
+  </div>
+  <div class="fig anim" style="margin-top:4px;max-width:1010px;margin-left:auto;margin-right:auto">
+    <canvas id="bldcCanvas" width="1080" height="390"></canvas>
+    <p class="cap">右侧六步会自动循环；亮的两个绕组就是当前通电的两相，箭头是合成的磁场方向。</p>
+  </div>
+  <div class="row anim" style="margin-top:10px;gap:14px">
+    <div class="note" style="flex:1"><span class="t">六步换相</span>
+      每 60° 电角度换一次绕组组合，磁场“跳”六次转一圈。任何时刻只通电两相，第三相悬空。</div>
+    <div class="note o" style="flex:1"><span class="t">为什么复杂</span>
+      必须先知道转子在哪（霍尔 / 编码器 / 无感反电动势），否则不知道该通哪两相。</div>
+    <div class="note b" style="flex:1"><span class="t">和有刷的对照</span>
+      都是“让电流跟着转子转”；有刷靠机械，两根线就行；无刷靠电路，必须配驱动和位置检测。</div>
+  </div>
+  <div class="s-foot"><span>器件 · 电机 ③</span><span><b>08</b> / 33</span></div>
+</section>
+
+<!-- ===================== 09 电机特性 ===================== -->
+<section class="slide" id="p09">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 电机 ④</div>
+    <h2 class="s-title">电压定转速，负载定电流</h2>
+    <div class="s-sub">右图是一条机械特性：横轴转矩、纵轴转速，线上任何一点都能稳定工作。</div>
+  </div>
+  <div class="row anim" style="margin-top:2px;gap:18px">
+    <div class="col" style="flex:1">
+      <div class="fig">
+        <canvas id="motorCharCanvas" width="660" height="400"></canvas>
+        <p class="cap">同一电压下，负载越大，工作点沿斜线往右下走，转速越低。</p>
+      </div>
+    </div>
+    <div class="col" style="flex:0 0 450px">
+      <div class="formula" style="white-space:normal">
+        空载：n₀ ≈ K<sub>v</sub> · U<br>
+        带载：n ≈ K<sub>v</sub> · (U − I·R)<br>
+        转矩：T ≈ K<sub>t</sub> · I
+      </div>
+      <table class="tbl" style="margin-top:10px">
+        <thead><tr><th>量</th><th>含义</th><th style="width:92px">单位</th></tr></thead>
+        <tbody>
+          <tr><td>U</td><td>电机两端电压</td><td>V</td></tr>
+          <tr><td>I</td><td>流过的电流</td><td>A</td></tr>
+          <tr><td>R</td><td>电枢内阻</td><td>Ω</td></tr>
+          <tr><td>K<sub>v</sub></td><td>转速常数（每伏多少转）</td><td>rpm/V</td></tr>
+        </tbody>
+      </table>
+      <div class="note o" style="margin-top:10px"><span class="t">看得出来的规律</span>
+        电压升高，整条线往上平移；转矩加大，工作点往右下走，转速就降了。</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>器件 · 电机 ④</span><span><b>09</b> / 33</span></div>
+</section>
+
+<!-- ===================== 10 为什么掉速 ===================== -->
+<section class="slide" id="p10">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 电机 ⑤</div>
+    <h2 class="s-title">负载一大，为什么转速就掉</h2>
+    <div class="s-sub">电机转动时自己会产生“反抗电压”，转速越高，反抗越强。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:20px;align-items:flex-start">
+    <div class="col" style="flex:1">
+      <div class="chain">
+        <div class="st"><div class="n">1</div><p>转子切割磁感线，产生反电动势 <b>E = K<sub>e</sub> · n</b>，方向和电源相反。</p></div>
+        <div class="st"><div class="n">2</div><p>真正推动电流的是差值：<b>I = (U − E) / R</b>。</p></div>
+        <div class="st"><div class="n">3</div><p>负载加大 → 要更大转矩 → 要更大电流 → <b>I 变大</b>。</p></div>
+        <div class="st"><div class="n">4</div><p>U 不变、I 变大，只能 <b>E 变小</b> → 转速 n 下降。</p></div>
+      </div>
+      <div class="note" style="margin-top:10px"><span class="t">结论</span>
+        只要电压不变，负载一变转速就变。想让转速不受负载影响，就得在负载变化时主动改 U——这正是闭环要做的事。</div>
+    </div>
+    <div class="col" style="flex:0 0 440px">
+      <div class="card"><h3>算一个例子</h3>
+        <p style="font-size:13.4px">U = 6 V，R = 2 Ω，K<sub>e</sub> = 0.01 V/rpm。</p>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)">
+            <span>空载　I ≈ 0.1 A</span><b style="font-family:var(--mono);color:var(--teal-d)">580 rpm</b></div>
+          <div style="height:10px;background:#eef2f3;border-radius:99px;margin-top:5px;overflow:hidden">
+            <div style="width:100%;height:100%;background:var(--teal)"></div></div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)">
+            <span>带载　I = 1.0 A</span><b style="font-family:var(--mono);color:var(--orange)">400 rpm</b></div>
+          <div style="height:10px;background:#eef2f3;border-radius:99px;margin-top:5px;overflow:hidden">
+            <div style="width:69%;height:100%;background:var(--orange)"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--orange)">同样 6 V，掉了 180 rpm。</p>
+      </div>
+      <div class="note o" style="margin-top:10px"><span class="t">闭环怎么补</span>
+        发现只有 400，就把占空比从 50% 提到 70%，U 变 8.4 V，E 回到 5.8 V，转速回到 580。</div>
+    </div>
+  </div>
+  <div class="formula anim" style="margin-top:16px;font-size:16px">
+    U = E + I·R = K<sub>e</sub>·n + I·R　→　n = (U − I·R) / K<sub>e</sub>
+  </div>
+  <div class="row anim" style="margin-top:10px;gap:14px">
+    <div class="note o" style="flex:1"><span class="t">堵转为什么最危险</span>
+      n=0 时 E=0，电流只剩 U/R，是正常转动的十几倍——最容易烧电机和驱动。</div>
+    <div class="note b" style="flex:1"><span class="t">反电动势还有别的用</span>
+      无感无刷就是靠它判断转子位置；这里只要记住：它随转速升高而变大。</div>
+  </div>
+  <div class="s-foot"><span>器件 · 电机 ⑤</span><span><b>10</b> / 33</span></div>
+</section>
+
+<!-- ===================== 11 编码器分类 ===================== -->
+<section class="slide" id="p11">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 编码器 ①</div>
+    <h2 class="s-title">编码器：把“转了多少”变成数字</h2>
+    <div class="s-sub">增量式有两种接口——正交 A/B 和带方向（PUL+DIR）；绝对式上电就知道在哪。测速只需要增量式。</div>
+  </div>
+  <div class="grid3 anim" style="margin-top:4px;gap:10px">
+    <div class="card tight" style="border-left:4px solid var(--teal)"><h3 style="font-size:14.5px">正交 A/B <span class="tag">本次</span></h3>
+      <p style="font-size:12.8px">两路方波差 90°，靠相位先后判向；4 倍频，分辨率最高；要两路输入。</p></div>
+    <div class="card tight" style="border-left:4px solid #8fa9ae"><h3 style="font-size:14.5px">带方向编码器</h3>
+      <p style="font-size:12.8px">一路脉冲 PUL + 一路方向电平 DIR；DIR 直接表示正反；1 倍频，接线少一根。</p></div>
+    <div class="card tight" style="border-left:4px solid #9db7c4"><h3 style="font-size:14.5px">绝对式</h3>
+      <p style="font-size:12.8px">每个角度位置一个唯一编码，上电就知道在哪；接口复杂、成本高。</p></div>
+  </div>
+  <div class="fig anim" style="margin-top:10px">
+    <canvas id="diskCanvas" width="1080" height="272"></canvas>
+    <p class="cap">左：一圈刻缝 + 错开 1/4 缝距的 A/B 两路，另有一个每圈一次的 Z。右：每个扇区自带编号，掉电也知道在哪。</p>
+  </div>
+  <div class="row anim" style="margin-top:8px;gap:12px">
+    <div class="note" style="flex:1"><span class="t">Z 相干什么</span>每转只出一个脉冲，用来“对零”：过一次 Z，计数就有了确定参考。</div>
+    <div class="note o" style="flex:1"><span class="t">选型看三个数</span>每转脉冲数（分辨率）、最高响应频率、输出类型（开漏 / 推挽 / 差分）。</div>
+  </div>
+  <div class="s-foot"><span>器件 · 编码器 ①</span><span><b>11</b> / 33</span></div>
+</section>
+
+<!-- ===================== 12 正交 A/B（交互） ===================== -->
+<section class="slide" id="p12">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 编码器 ②</div>
+    <h2 class="s-title">正交 A/B：两路相差 90°，才能判方向</h2>
+    <div class="s-sub">拖滑块或点「让它转」，看游标扫过四个状态；波形会自己滚动。</div>
+  </div>
+  <div class="fig anim" style="padding:6px 8px">
+    <canvas id="quadCanvas" width="1120" height="322"></canvas>
+  </div>
+  <div class="row anim" style="margin-top:6px;align-items:center;gap:16px">
+    <div style="flex:0 0 290px">
+      <div class="ctrl"><label>轴的角度 <b id="qAngleVal">0°</b>
+        <input type="range" id="qAngle" min="0" max="720" value="0" step="1"></label></div>
+    </div>
+    <div class="btns" style="flex:0 0 auto">
+      <button class="btn" id="qDirBtn" aria-pressed="false">方向：正转</button>
+      <button class="btn primary" id="qSpinBtn">让它转</button>
+    </div>
+    <div class="readout" style="margin-left:auto">
+      <div class="box"><span>A / B</span><b id="qState">10</b></div>
+      <div class="box"><span>累计计数</span><b id="qCount">0</b></div>
+      <div class="box"><span>判定</span><b id="qDirOut" style="font-size:13px">正转</b></div>
+      <span id="qA" style="display:none">1</span><span id="qB" style="display:none">0</span>
+      <span id="qPprVal" style="display:none">20</span>
+    </div>
+  </div>
+  <div class="grid4 anim" style="margin-top:8px;gap:10px">
+    <div class="note" style="font-size:12.6px"><span class="t">① 90° 从哪来</span>A、B 两组透光缝错开 1/4 个缝距。</div>
+    <div class="note b" style="font-size:12.6px"><span class="t">② 四个状态</span>正转依次 <b>10 → 11 → 01 → 00</b>，每态占 1/4 周期。</div>
+    <div class="note o" style="font-size:12.6px"><span class="t">③ 判方向</span>A 上升沿时 B=0 → 正转；B=1 → 反转。</div>
+    <div class="note" style="font-size:12.6px"><span class="t">④ 单路不够</span>只接 A 能数“转了多少”，但不知道往哪转。</div>
+  </div>
+  <div class="s-foot"><span>器件 · 编码器 ②</span><span><b>12</b> / 33</span></div>
+</section>
+
+<!-- ===================== 13 A/B 正反转对比 ===================== -->
+<section class="slide" id="p13">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 编码器 ③</div>
+    <h2 class="s-title">同样是增量式，判向有两种做法</h2>
+    <div class="s-sub">正交 A/B 看两路方波的先后；带方向编码器只看一根 DIR 电平。这次板子是正交。</div>
+  </div>
+  <div class="fig anim" style="padding:6px 8px">
+    <div style="position:relative">
+      <canvas id="abDirCanvas" width="1120" height="330"></canvas>
+      <div style="position:absolute;left:9.5%;top:6.5%;font-size:14px;color:#d6eeea;letter-spacing:.02em">正转：A 相领先 B 相</div>
+      <div style="position:absolute;left:9.5%;top:53.5%;font-size:14px;color:#d6eeea;letter-spacing:.02em">反转：B 相领先 A 相</div>
+    </div>
+    <p class="cap">看 A 的上升沿：B 还是低电平 → A 领先 → 正转；B 已经是高电平 → 反转。</p>
+  </div>
+  <div class="grid3 anim" style="margin-top:8px;gap:12px">
+    <div class="note" style="font-size:13.2px"><span class="t">正交 A/B</span>
+      两路方波，看相位先后判向；4 倍频，分辨率最高；A、B 都进定时器，硬件解码。</div>
+    <div class="note b" style="font-size:13.2px"><span class="t">带方向编码器 PUL+DIR</span>
+      一路脉冲计数，一路电平直接给方向；1 倍频，接线少一根，但多占一个 GPIO。</div>
+    <div class="note o" style="font-size:13.2px"><span class="t">这次用哪种</span>
+      板子是正交 A/B，定时器编码器模式；软件只读计数差，不自己判相位。</div>
+  </div>
+  <div class="s-foot"><span>器件 · 编码器 ③</span><span><b>13</b> / 33</span></div>
+</section>
+
+<!-- ===================== 14 测速窗口 ===================== -->
+<section class="slide" id="p14">
+  <div class="s-head anim">
+    <div class="s-kicker">器件 · 编码器 ④</div>
+    <h2 class="s-title">测速：固定窗口内数增量</h2>
+    <div class="s-sub">编码器给的是位移，配上时间才是速度。窗口越短越灵敏，计数越少越粗糙。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:18px;align-items:flex-start">
+    <div class="col" style="flex:1">
+      <div class="fig">
+        <canvas id="speedCanvas" width="660" height="300"></canvas>
+        <p class="cap">每 5 ms 开一次窗，数窗口里过了多少个脉冲；这个数就是这一拍的速度。</p>
+      </div>
+    </div>
+    <div class="col" style="flex:0 0 430px">
+      <div class="formula" style="white-space:normal">
+        y = Δn / T<sub>s</sub>　（count / s）<br>
+        rpm = 60 × Δn / (C × T<sub>s</sub>)
+      </div>
+      <table class="tbl" style="margin-top:9px">
+        <thead><tr><th>Δn（5 ms 内）</th><th>C = 1040</th><th>计数率</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td>115 rpm</td><td>2000 count/s</td></tr>
+          <tr><td>25</td><td>288 rpm</td><td>5000 count/s</td></tr>
+          <tr><td><b>50（默认）</b></td><td><b>577 rpm</b></td><td><b>10000 count/s</b></td></tr>
+          <tr><td>100</td><td>1154 rpm</td><td>20000 count/s</td></tr>
+        </tbody>
+      </table>
+      <div class="note o" style="margin-top:9px"><span class="t">量化误差</span>
+        计数是整数，目标 50 时 1 个计数就是 2%，读数在 49/50/51 之间跳是正常的。</div>
+    </div>
+  </div>
+  <div class="note anim" style="margin-top:8px"><span class="t">换算时只用 count</span>
+    目标和反馈都用“每 5 ms 多少计数”，就不必关心电机型号、减速比和线数。C 不确定时，手转一圈数计数，以实测为准。</div>
+  <div class="s-foot"><span>器件 · 编码器 ④</span><span><b>14</b> / 33</span></div>
+</section>
+
+<!-- ===================== 16 PWM ===================== -->
+<section class="slide" id="p15">
+  <div class="s-head anim">
+    <div class="s-kicker">出力 · ① PWM</div>
+    <h2 class="s-title">单片机怎么“给”出一个中间电压</h2>
+    <div class="s-sub">IO 只会输出高或低；开关足够快，电机只感受到平均值。拖滑块试试。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:18px;align-items:flex-start">
+    <div class="col" style="flex:1">
+      <div class="fig">
+        <canvas id="pwmCanvas" width="660" height="330"></canvas>
+        <p class="cap">橙色面积的平均高度就是平均电压；占空比一变，电机两端看到的电压就变。</p>
+      </div>
+    </div>
+    <div class="col" style="flex:0 0 420px">
+      <div class="ctrl"><label>占空比 <b id="pwmDutyVal">50%</b>
+        <input type="range" id="pwmDuty" min="5" max="100" value="50" step="1"></label></div>
+      <div class="kpi" style="margin-top:12px">
+        <div><b id="pwmU">6.0 V</b><span>平均电压（12 V 供电）</span></div>
+        <div><b id="pwmN">2000</b><span>空载转速 rpm（估算）</span></div>
+      </div>
+      <div class="note" style="margin-top:12px"><span class="t">两个频率别混</span>
+        <b>开关频率</b> 20 kHz 决定电流平不平滑、有没有啸叫；<b>控制频率</b> 200 Hz 决定多久修正一次。</div>
+      <div class="note o" style="margin-top:9px"><span class="t">100% 也不是全速</span>
+        还有电池压降、驱动压降、电机内阻，实际总比理想值低一点。</div>
+    </div>
+  </div>
+  <div class="row anim" style="margin-top:10px;gap:14px">
+    <div class="note" style="flex:1"><span class="t">为什么是 20 kHz</span>
+      高于人耳听觉，电机不啸叫；周期 50 µs，电流纹波也小。</div>
+    <div class="note b" style="flex:1"><span class="t">太低会怎样</span>
+      电流断续、电机抖动、有可闻噪声；频率太高则开关损耗上升。</div>
+  </div>
+  <div class="s-foot"><span>出力 · ① PWM</span><span><b>16</b> / 33</span></div>
+</section>
+
+<!-- ===================== 17 H 桥 ===================== -->
+<section class="slide" id="p16">
+  <div class="s-head anim">
+    <div class="s-kicker">出力 · ② H 桥</div>
+    <h2 class="s-title">方向由 H 桥决定，大小由占空比决定</h2>
+    <div class="s-sub">单片机引脚只有毫安级电流，电机要安培级；H 桥负责功率放大和换向。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:18px;align-items:flex-start">
+    <div class="col" style="flex:0 0 560px">
+      <div class="fig" style="padding:8px 10px">
+        <canvas id="hbCanvas" width="540" height="380"></canvas>
+        <p class="cap">点右边的状态，看电流从哪两条腿走；同一桥臂上下一起导通就是电源短路。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="btns" style="gap:8px">
+        <button class="btn primary" data-hb="fwd">正转 Q1+Q4</button>
+        <button class="btn" data-hb="rev">反转 Q2+Q3</button>
+        <button class="btn" data-hb="brake">刹车 下桥全通</button>
+        <button class="btn" data-hb="coast">滑行 全关断</button>
+      </div>
+      <div class="note o" style="margin-top:12px"><span class="t">一条硬规矩：不能直通</span>
+        同一桥臂上下两个开关同时导通 = 电源短路。换向前先关断，必要时加<b>死区</b>（几十 ns 到几 µs）。</div>
+      <div class="note b" style="margin-top:10px"><span class="t">PWM 加在哪</span>
+        常见做法是“一路 PWM + 另一路常低”，或两路互补 PWM；方向由导通组合决定，大小由占空比决定。</div>
+      <div class="note" style="margin-top:10px"><span class="t">选驱动看三个数</span>
+        耐压 ≥ 电源 2 倍余量、持续电流 ≥ 堵转电流、导通电阻决定发热。</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>出力 · ② H 桥</span><span><b>17</b> / 33</span></div>
+</section>
+
+<!-- ===================== 18 闭环结构 ===================== -->
+<section class="slide" id="p17">
+  <div class="s-head anim">
+    <div class="s-kicker">实现 · ① 结构</div>
+    <h2 class="s-title">把零件连成一条闭环</h2>
+    <div class="s-sub">每个方框都对得上工程里的一个函数或一个外设；信号名和单位要一致。</div>
+  </div>
+  <div class="fig anim" style="margin-top:6px">
+    <canvas id="loopCanvas" width="1120" height="310"></canvas>
+    <p class="cap">目标 r 与反馈 y 都用 count/5 ms；控制器输出 u 是占空比，单位 %，限幅 ±100。</p>
+  </div>
+  <div class="grid3 anim" style="margin-top:10px;gap:12px">
+    <div class="note" style="font-size:13.6px"><span class="t">量纲要一致</span>
+      拿计数去减 rpm 或占空比，怎么调都不对。</div>
+    <div class="note o" style="font-size:13.6px"><span class="t">符号要正确</span>
+      先确认“PWM 增大 → 计数增大”；反了就是正反馈，几拍顶满。</div>
+    <div class="note b" style="font-size:13.6px"><span class="t">控制器是什么</span>
+      拿偏差算输出的那个部件：输入 e，输出 u。换电机只改参数，结构不变。</div>
+  </div>
+  <div class="s-foot"><span>实现 · ① 结构</span><span><b>18</b> / 33</span></div>
+</section>
+
+<!-- ===================== 19 5 ms 节拍 ===================== -->
+<section class="slide" id="p18">
+  <div class="s-head anim">
+    <div class="s-kicker">实现 · ② 节拍</div>
+    <h2 class="s-title">每 5 ms 做四件事</h2>
+    <div class="s-sub">读、算、写必须在同一个节拍里完成；跨节拍错位，控制器就拿旧数据做新决定。</div>
+  </div>
+  <div class="fig anim" style="margin-top:6px">
+    <canvas id="tickCanvas" width="1120" height="300"></canvas>
+    <p class="cap">一个周期 5 ms，四步加起来约 40 µs，只占 0.8%；剩下时间留给主循环刷屏和打印。</p>
+  </div>
+  <div class="grid4 anim" style="margin-top:10px;gap:10px">
+    <div class="note" style="font-size:12.8px"><span class="t">① 读编码器</span>取走本周期增量 Δn，并清零计数器。</div>
+    <div class="note b" style="font-size:12.8px"><span class="t">② 算转速</span>y = Δn，单位 count/5 ms。</div>
+    <div class="note o" style="font-size:12.8px"><span class="t">③ 算偏差</span>e = 目标 − y，交给 PID 算 Δu。</div>
+    <div class="note" style="font-size:12.8px"><span class="t">④ 更新 PWM</span>u += Δu，限幅后写比较寄存器，并把 u 一起发给 VOFA。</div>
+  </div>
+  <div class="s-foot"><span>实现 · ② 节拍</span><span><b>19</b> / 33</span></div>
+</section>
+
+<!-- ===================== 20 中断 ===================== -->
+<section class="slide" id="p19">
+  <div class="s-head anim">
+    <div class="s-kicker">实现 · ③ 定时器中断</div>
+    <h2 class="s-title">让周期不受主循环影响</h2>
+    <div class="s-sub">主循环里用 while 延时算出来的周期不确定；一打印、一刷屏，周期就变了。</div>
+  </div>
+  <div class="fig anim" style="margin-top:6px">
+    <canvas id="isrCanvas" width="1120" height="280"></canvas>
+    <p class="cap">定时器每 5 ms 打断一次主循环，进 ISR 把“读、算、写”做完，几十微秒后返回。</p>
+  </div>
+  <div class="grid4 anim" style="margin-top:10px;gap:10px">
+    <div class="note" style="font-size:12.8px"><span class="t">ISR 里只做</span>读计数 → 算 PID → 写 PWM，几十微秒结束。</div>
+    <div class="note b" style="font-size:12.8px"><span class="t">ISR 里不要</span>printf、刷屏、动态内存、while 等待。</div>
+    <div class="note o" style="font-size:12.8px"><span class="t">volatile</span>中断里改的变量要加，否则可能被优化掉。</div>
+    <div class="note" style="font-size:12.8px"><span class="t">原子性</span>主循环读多字节变量可能被打断，读两次或关中断保护。</div>
+  </div>
+  <div class="s-foot"><span>实现 · ③ 中断</span><span><b>20</b> / 33</span></div>
+</section>
+
+<!-- ===================== 21 程序结构 ===================== -->
+<section class="slide" id="p20">
+  <div class="s-head anim">
+    <div class="s-kicker">实现 · ④ 代码结构</div>
+    <h2 class="s-title">main.c 只负责调度，逻辑分模块</h2>
+    <div class="s-sub">把所有代码堆进 main.c 不算完成；一个模块只做一件事，换器件才不牵一发动全身。</div>
+  </div>
+  <div class="row anim" style="margin-top:6px;gap:18px;align-items:flex-start">
+    <div class="col" style="flex:0 0 520px">
+      <div class="code">
+        <header><span>工程目录（示意）</span></header>
+        <pre>project/
+├─ code/
+│   ├─ motor.c / .h      方向 + PWM + 限幅
+│   ├─ encoder.c / .h    正交计数、读增量
+│   ├─ pid.c / .h        增量式 PID（纯数学）
+│   └─ vofa.c / .h       串口上报（可选）
+└─ user/src/
+    ├─ main.c            初始化 + 启动定时器 + 打印
+    └─ isr.c             TIM 中断 → 调 pid_step()</pre>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card"><h3>对外接口只有四个</h3>
+        <p style="font-family:var(--mono);font-size:13.4px;line-height:2.05;color:var(--ink)">
+          motor_set(<span style="color:var(--orange)">int u</span>)<br>
+          encoder_read_delta(<span style="color:var(--orange)">void</span>)<br>
+          pid_update(<span style="color:var(--orange)">float target, float y</span>)<br>
+          vofa_send(<span style="color:var(--orange)">…</span>)</p>
+      </div>
+      <div class="note o" style="margin-top:10px"><span class="t">三条规矩</span>
+        main.c 里不出现 PID 公式与寄存器操作；模块内部变量用 static；头文件只放函数原型与宏。</div>
+      <div class="note" style="margin-top:9px"><span class="t">为什么要拆</span>
+        换电机只动 motor.c，换编码器只动 encoder.c，调参只动 pid.c——其他文件不用重读。</div>
+    </div>
+  </div>
+  <div class="note o anim" style="margin-top:14px"><span class="t">验收会这样问</span>
+    “这个文件负责什么？改目标值要动哪一行？PID 公式在哪个文件？”——答不上来，说明还是堆在一个文件里。</div>
+  <div class="s-foot"><span>实现 · ④ 代码结构</span><span><b>21</b> / 33</span></div>
+</section>
+
+<!-- ===================== 22 PID 三项 ===================== -->
+<section class="slide" id="p21">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ① 三项</div>
+    <h2 class="s-title">P 看现在，I 看历史，D 看趋势</h2>
+    <div class="s-sub">同一台电机、同一个目标，只改参数，看四条曲线差在哪。</div>
+  </div>
+  <div class="fig anim" style="margin-top:4px">
+    <canvas id="roleCanvas" width="1120" height="322"></canvas>
+    <p class="cap">P 小：慢、停在下边；P 大：快但来回摆；加 I：静差消失；再加 D：峰值压低。</p>
+  </div>
+  <div class="grid3 anim" style="margin-top:10px;gap:12px">
+    <div class="card tight"><h3 style="font-size:15px;color:var(--teal-d)">P：差多少补多少</h3>
+      <p style="font-size:13.4px">输出 = K<sub>p</sub> × 偏差。响应最快，但偏差为 0 时出力也为 0，所以纯 P 一定有静差。</p></div>
+    <div class="card tight"><h3 style="font-size:15px;color:var(--orange)">I：把历史累加起来</h3>
+      <p style="font-size:13.4px">误差消失后累加值仍在，正好提供维持转速的出力；太强会超调、来回摆。</p></div>
+    <div class="card tight"><h3 style="font-size:15px;color:var(--blue)">D：看变化趋势</h3>
+      <p style="font-size:13.4px">速度冲得太快时给反向修正，压超调；差分会放大计数噪声，速度环常常不加。</p></div>
+  </div>
+  <div class="s-foot"><span>PID · ① 三项</span><span><b>22</b> / 33</span></div>
+</section>
+
+<!-- ===================== 23 静差 ===================== -->
+<section class="slide" id="p22">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ② 静差</div>
+    <h2 class="s-title">只有 P，就一定会差一点</h2>
+    <div class="s-sub">不是参数没调好，是结构决定的：误差为 0，P 的出力也为 0。拖 K<sub>p</sub> 看稳态点怎么挪。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:18px;align-items:flex-start">
+    <div class="col" style="flex:1">
+      <div class="fig">
+        <canvas id="poCanvas" width="700" height="330"></canvas>
+        <p class="cap">目标线不动，K<sub>p</sub> 再大，稳态点也只能逼近、贴不上。</p>
+      </div>
+    </div>
+    <div class="col" style="flex:0 0 400px">
+      <div class="formula" style="white-space:normal">
+        稳态：y = K<sub>v</sub>K<sub>p</sub>r / (1 + K<sub>v</sub>K<sub>p</sub>)<br>
+        静差：e = r / (1 + K<sub>v</sub>K<sub>p</sub>)<br>
+        <span style="font-size:12.5px;color:var(--muted)">K<sub>v</sub> 是电机增益（这台约 1.25），不是 K<sub>p</sub></span>
+      </div>
+      <div class="ctrl" style="margin-top:12px"><label>K<sub>p</sub> <b id="kpVal">0.60</b>
+        <input type="range" id="kpDrag" min="0.3" max="5" value="0.6" step="0.05"></label></div>
+      <div class="kpi" style="margin-top:10px">
+        <div><b id="ssY">21</b><span>稳态 y（count/5 ms）</span></div>
+        <div><b id="ssE" style="color:var(--orange)">29</b><span>静差（count/5 ms）</span></div>
+      </div>
+      <div class="note o" style="margin-top:12px"><span class="t">结论</span>
+        加大 K<sub>p</sub> 只能把静差压小，消不掉；要消静差必须加 I。</div>
+    </div>
+  </div>
+  <div class="s-foot"><span>PID · ② 静差</span><span><b>23</b> / 33</span></div>
+</section>
+
+<!-- ===================== 24 增量式 ===================== -->
+<section class="slide" id="p23">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ③ 增量式</div>
+    <h2 class="s-title">每次只算“变化多少”，再加回输出</h2>
+    <div class="s-sub">位置式相邻两拍相减，就得到这一拍的增量；只依赖最近三次偏差。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:18px">
+    <div class="col" style="flex:0 0 470px">
+      <div class="formula" style="white-space:normal;font-size:14.4px;line-height:2">
+        Δu = K<sub>p</sub>(e<sub>k</sub>−e<sub>k−1</sub>) + K<sub>i</sub>·e<sub>k</sub> + K<sub>d</sub>(e<sub>k</sub>−2e<sub>k−1</sub>+e<sub>k−2</sub>)<br>
+        u = u + Δu
+      </div>
+      <div class="note" style="margin-top:10px"><span class="t">单位</span>
+        三个系数都折算过 T<sub>s</sub>，统一为“% / (count/5 ms)”，代码里直接用。</div>
+      <div class="note o" style="margin-top:9px"><span class="t">上电第一拍</span>
+        e1、e2、u 必须清零，否则第一次的微分项是随机值。</div>
+      <div class="note b" style="margin-top:9px"><span class="t">先累加再限幅</span>
+        限幅后的值写回 u，下一拍才从受限值继续加。</div>
+    </div>
+    <div class="col" style="flex:1">
+      <div class="code">
+        <header><span>5 ms 中断里的速度环</span><button class="copy-btn" data-copy="code1">复制</button></header>
+        <pre id="code1"><span class="c">/* 量纲统一：count/5ms 与 % */</span>
+<span class="k">static float</span> e1, e2, u;
+
+<span class="k">void</span> <span class="f">speed_loop_5ms</span>(<span class="k">void</span>)
+{
+    <span class="k">int</span>   n = <span class="f">encoder_read_delta</span>();
+    <span class="k">float</span> y = (<span class="k">float</span>)n;
+    <span class="k">float</span> e = <span class="n">50.0f</span> - y;   <span class="c">/* 默认目标 */</span>
+
+    <span class="k">float</span> du = KP*(e - e1)
+             + KI*e
+             + KD*(e - <span class="n">2.0f</span>*e1 + e2);
+
+    u += du;
+    <span class="k">if</span> (u &gt;  <span class="n">100.0f</span>) u =  <span class="n">100.0f</span>;
+    <span class="k">if</span> (u &lt; -<span class="n">100.0f</span>) u = -<span class="n">100.0f</span>;
+
+    <span class="f">motor_set</span>((<span class="k">int</span>)u);
+    e2 = e1;
+    e1 = e;
+}</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>PID · ③ 增量式</span><span><b>24</b> / 33</span></div>
+</section>
+
+<!-- ===================== 25 位置式 ===================== -->
+<section class="slide" id="p24">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ④ 位置式</div>
+    <h2 class="s-title">位置式：算出“这一脚该给多大”</h2>
+    <div class="s-sub">输出就是控制量本身，误差多大油门就给多大；积分是一个要自己看住的状态。</div>
+  </div>
+  <div class="row anim" style="margin-top:4px;gap:18px">
+    <div class="col" style="flex:0 0 460px">
+      <div class="formula" style="white-space:normal;font-size:14.4px;line-height:2">
+        u = K<sub>p</sub>·e + K<sub>i</sub>·Σe + K<sub>d</sub>·(e − e<sub>1</sub>)
+      </div>
+      <div class="note o" style="margin-top:10px"><span class="t">积分要限幅</span>
+        Σe 会一直涨。输出顶到 100 之后积分还在累，松手就先冲一下——这就是积分饱和，必须单独夹住。</div>
+      <div class="note" style="margin-top:9px"><span class="t">重启要清状态</span>
+        integ、e1 不清零，第一拍就会带着上一次的积分跑。</div>
+      <div class="note b" style="margin-top:9px"><span class="t">改参数会跳</span>
+        u 是直接输出，K<sub>p</sub> 一改，工作点立刻变。要平滑，得做无扰切换。</div>
+      <div class="note" style="margin-top:9px"><span class="t">一句话</span>
+        它最像人开车：看着速度表，脚直接踩到某个深度。</div>
+    </div>
+    <div class="col" style="flex:1">
+      <div class="code">
+        <header><span>同样的 5 ms 速度环</span><button class="copy-btn" data-copy="code2">复制</button></header>
+        <pre id="code2"><span class="c">/* 位置式：输出全量，积分显式 */</span>
+<span class="k">static float</span> integ, e1;
+
+<span class="k">void</span> <span class="f">speed_loop_5ms</span>(<span class="k">void</span>)
+{
+    <span class="k">int</span>   n = <span class="f">encoder_read_delta</span>();
+    <span class="k">float</span> y = (<span class="k">float</span>)n;
+    <span class="k">float</span> e = <span class="n">50.0f</span> - y;
+
+    integ += e;                     <span class="c">/* 积分显式累加 */</span>
+    <span class="k">if</span> (integ &gt;  <span class="n">2000.0f</span>) integ =  <span class="n">2000.0f</span>;  <span class="c">/* 抗饱和 */</span>
+    <span class="k">if</span> (integ &lt; -<span class="n">2000.0f</span>) integ = -<span class="n">2000.0f</span>;
+
+    <span class="k">float</span> u = KP*e + KI*integ + KD*(e - e1);
+    <span class="k">if</span> (u &gt;  <span class="n">100.0f</span>) u =  <span class="n">100.0f</span>;
+    <span class="k">if</span> (u &lt; -<span class="n">100.0f</span>) u = -<span class="n">100.0f</span>;
+
+    <span class="f">motor_set</span>((<span class="k">int</span>)u);
+    e1 = e;
+}</pre>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>PID · ④ 位置式</span><span><b>25</b> / 33</span></div>
+</section>
+
+<!-- ===================== 26 两种写法 ===================== -->
+<section class="slide" id="p25">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ⑤ 同一个公式</div>
+    <h2 class="s-title">数学上是一回事，调起来是两回事</h2>
+    <div class="s-sub">同一组系数算出的 u 一样；但先拧哪个旋钮、盯哪条线，是两套习惯。</div>
+  </div>
+  <div class="row anim" style="margin-top:6px;gap:10px;align-items:stretch">
+    <div class="card" style="flex:1">
+      <h3 style="color:var(--teal-d)">位置式</h3>
+      <p style="font-family:var(--mono);font-size:13.6px;line-height:1.9;margin-top:4px">
+        u = K<sub>p</sub>e + K<sub>i</sub>Σe + K<sub>d</sub>(e−e<sub>1</sub>)</p>
+      <p style="font-size:12.8px;color:var(--muted);margin-top:4px">直接算全量，积分是显式状态。</p>
+    </div>
+    <div style="flex:0 0 120px;display:grid;place-items:center;text-align:center">
+      <div><div style="font-size:12px;color:var(--muted);line-height:1.4">相邻两拍<br>相减</div>
+        <div style="font-family:var(--mono);font-size:20px;color:var(--teal);margin-top:4px">→</div></div>
+    </div>
+    <div class="card" style="flex:1">
+      <h3 style="color:var(--orange)">增量式</h3>
+      <p style="font-family:var(--mono);font-size:13.2px;line-height:1.9;margin-top:4px">
+        Δu = K<sub>p</sub>(e−e<sub>1</sub>) + K<sub>i</sub>e + K<sub>d</sub>(e−2e<sub>1</sub>+e<sub>2</sub>)</p>
+      <p style="font-size:12.8px;color:var(--muted);margin-top:4px">只算这一拍的变化，再累加回 u。</p>
+    </div>
+  </div>
+  <div class="note o anim" style="margin-top:10px;font-size:14.6px"><span class="t">关键结论</span>
+    同一组 K<sub>p</sub>/K<sub>i</sub>/K<sub>d</sub>，两种写法算出的 u 一模一样；但调参手感差很远——先拧谁、看哪条线，是两套习惯。</div>
+  <div class="grid4 anim" style="margin-top:10px;gap:10px">
+    <div class="card tight"><h3 style="font-size:14px">限幅</h3>
+      <p style="font-size:12.6px">位置式夹住 u，integ 还在涨；增量式夹 u 就是夹状态，天然抗饱和。</p></div>
+    <div class="card tight"><h3 style="font-size:14px">重启</h3>
+      <p style="font-size:12.6px">位置式要清 integ、e1；增量式要清 u、e1、e2。</p></div>
+    <div class="card tight"><h3 style="font-size:14px">噪声</h3>
+      <p style="font-size:12.6px">位置式 D 是一阶差分；增量式 D 是二阶差分，同样的 K<sub>d</sub> 更吃噪声。速度环干脆不加 D。</p></div>
+    <div class="card tight"><h3 style="font-size:14px">起手</h3>
+      <p style="font-size:12.6px">位置式先给 P、盯 u；增量式先给 I、盯 Δu。先拧谁不一样。</p></div>
+  </div>
+  <div class="note anim" style="margin-top:9px"><span class="t">所以</span>
+    数学等价，不等于调参一样；也别把“增量式更先进”讲成结论。</div>
+  <div class="note o anim" style="margin-top:8px"><span class="t">自己验证一次</span>
+    把同一组系数分别填进两种写法，曲线应该完全重合；不重合，先查限幅写回和上电初值。</div>
+  <div class="s-foot"><span>PID · ⑤ 两种写法</span><span><b>26</b> / 33</span></div>
+</section>
+
+<!-- ===================== 27 三个旋钮 ===================== -->
+<section class="slide" id="p26">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ⑥ 三个旋钮</div>
+    <h2 class="s-title">每个旋钮，都有“合适”和“过头”</h2>
+    <div class="s-sub">同一台电机，只改一个量；左边是加到刚好，右边是加多了。</div>
+  </div>
+  <div class="fig anim" style="margin-top:4px">
+    <canvas id="gainCanvas" width="1080" height="368"></canvas>
+    <p class="cap">橙框那一列是“加过头”：P 过头抖、I 过头摆、D 过头毛。</p>
+  </div>
+  <div class="note anim" style="margin-top:8px"><span class="t">一句话</span>
+    P 管硬度，I 管静差，D 管趋势；三个都是过犹不及。加多了先退半步，再谈别的。</div>
+  <div class="s-foot"><span>PID · ⑥ 三个旋钮</span><span><b>27</b> / 33</span></div>
+</section>
+
+<!-- ===================== 28 调参台 ===================== -->
+<section class="slide" id="p27">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ⑦ 调参台</div>
+    <h2 class="s-title">改一个参数，看两条曲线</h2>
+    <div class="s-sub">上方是转速（虚线为目标），下方橙色是 PWM；按住“受阻”相当于捏住电机轴。</div>
+  </div>
+  <div class="row anim" style="margin-top:2px;gap:16px">
+    <div class="col" style="flex:1">
+      <div class="fig" style="padding:6px 8px"><canvas id="benchCanvas" width="700" height="356"></canvas></div>
+      <div class="readout" style="margin-top:8px;gap:6px">
+        <div class="box"><span>k</span><b id="bK">0</b></div>
+        <div class="box"><span>e</span><b id="bE">0</b></div>
+        <div class="box"><span>Δu</span><b id="bDU">0</b></div>
+        <div class="box"><span>u</span><b id="bU">0</b></div>
+        <div class="box ok"><span>实测 y</span><b id="bY">0</b></div>
+        <div class="box warn"><span>峰值</span><b id="bOS">0</b></div>
+        <div class="box warn"><span>超调</span><b id="bOV">0%</b></div>
+        <div class="box"><span>静差</span><b id="bSS">0</b></div>
+      </div>
+    </div>
+    <div class="col" style="flex:0 0 330px">
+      <div class="btns" style="margin-bottom:9px">
+        <button class="btn primary" id="bModeInc" aria-pressed="true">增量式</button>
+        <button class="btn" id="bModePos" aria-pressed="false">位置式</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="bNoise"> 计数噪声 ×3</label>
+      <label class="chk" style="margin-top:4px"><input type="checkbox" id="bGhost" checked> 保留上一轮（灰线）</label>
+      <div class="ctrl" style="flex-direction:column;align-items:stretch;gap:7px;margin-top:8px">
+        <label>K<sub>p</sub> <b id="bKpVal">0.90</b>
+          <input type="range" id="bKp" min="0" max="4" value="0.9" step="0.01"></label>
+        <label>K<sub>i</sub> <b id="bKiVal">0.06</b>
+          <input type="range" id="bKi" min="0" max="0.6" value="0.06" step="0.005"></label>
+        <label>K<sub>d</sub> <b id="bKdVal">0.00</b>
+          <input type="range" id="bKd" min="0" max="2" value="0" step="0.02"></label>
+        <label>目标 <b id="bSpVal">50</b>
+          <input type="range" id="bSp" min="10" max="90" value="50" step="1"></label>
+        <label>限幅 <b id="bLimVal">±100%</b>
+          <input type="range" id="bLim" min="20" max="100" value="100" step="5"></label>
+      </div>
+      <div class="btns" style="margin-top:8px">
+        <button class="btn sm" id="bStart">重新开始</button>
+        <button class="btn sm" id="bRun">暂停</button>
+        <button class="btn sm" id="bBlock">按住受阻</button>
+      </div>
+      <div class="btns" style="margin-top:6px">
+        <button class="btn sm" id="bStepUp">目标 +10</button>
+        <button class="btn sm" id="bStepDown">目标 −10</button>
+      </div>
+    </div>
+  </div>
+  <div class="s-foot"><span>PID · ⑦ 调参台</span><span><b>28</b> / 33</span></div>
+</section>
+
+<!-- ===================== 29 两条路线 ===================== -->
+<section class="slide" id="p28">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ⑧ 两条路线</div>
+    <h2 class="s-title">先调谁，取决于你看的是 u 还是 Δu</h2>
+    <div class="s-sub">两条路都能到同一组系数，区别是起手先动哪个旋钮、看哪条曲线。</div>
+  </div>
+  <div class="row anim" style="margin-top:6px;gap:16px;align-items:flex-start">
+    <div class="col">
+      <div class="card"><h3 style="color:var(--teal-d)">位置式：P → I → D</h3>
+        <ol class="steps" style="margin-top:8px">
+          <li><b>P 加到“微微超调”</b>振荡要少，别加到刚好不差</li>
+          <li><b>加 I</b>一定要小，慢慢加；大了会低频摆</li>
+          <li><b>必要时加 D</b>压超调；I 可以不加</li>
+          <li><b>每次只改一个量</b>改完看三条曲线</li>
+        </ol>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card"><h3 style="color:var(--orange)">增量式：I → P，D 基本不用</h3>
+        <ol class="steps" style="margin-top:8px">
+          <li><b>I 加到“微微超调”</b>让它微微振荡，别压平</li>
+          <li><b>加 P</b>抑制振荡，同时加快响应</li>
+          <li><b>不加 D</b>二阶差分吃噪声，看不出明显效果</li>
+          <li><b>每次只改一个量</b>看上升、超调、受阻恢复</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="row anim" style="margin-top:12px;gap:14px">
+    <div class="note" style="flex:1"><span class="t">顺序不是定理</span>
+      先 P 后 I 和先 I 后 P 都能到同一组系数；先给 I 会显得慢，是调法，不是算法。</div>
+    <div class="note o" style="flex:1"><span class="t">记录参数</span>
+      K<sub>p</sub>/K<sub>i</sub>/K<sub>d</sub>、T<sub>s</sub>、限幅、负载一起写进注释，不然下周就忘了。</div>
+  </div>
+  <div class="kpi anim" style="margin-top:14px">
+    <div><b>先定数量级</b><span>Kp/Ki 从 0.1、1 试起，别一上来给 10</span></div>
+    <div><b>一次一个量</b><span>改两个说不清是谁的功劳</span></div>
+    <div><b>看曲线</b><span>上升、超调、受阻恢复</span></div>
+  </div>
+  <div class="s-foot"><span>PID · ⑧ 两条路线</span><span><b>29</b> / 33</span></div>
+</section>
+
+<!-- ===================== 30 实际例子 ===================== -->
+<section class="slide" id="p29">
+  <div class="s-head anim">
+    <div class="s-kicker">PID · ⑨ 实际例子</div>
+    <h2 class="s-title">实际项目里，内环外环各用什么</h2>
+    <div class="s-sub">同样是 PID，内环盯执行器，外环盯目标；写法跟着场景走。</div>
+  </div>
+  <table class="tbl anim" style="margin-top:8px">
+    <thead><tr><th style="width:250px">场景</th><th style="width:150px">用什么</th><th>为什么</th></tr></thead>
+    <tbody>
+      <tr><td>电机速度环 <span class="tag">本次</span></td><td>增量 PI</td><td>编码器计数有量化噪声，占空比要限幅，受阻后要立刻补</td></tr>
+      <tr><td>平衡车最内角速度环</td><td>增量 PI</td><td>内环周期短、输出限幅、噪声大，PI 够用</td></tr>
+      <tr><td>无人机最内角速度环</td><td>位置 PID</td><td>内环要快、要直接限幅，D 压超调</td></tr>
+      <tr><td>外环（角度 / 位置）</td><td>位置 PD</td><td>只给内环目标，不需要再积一次；D 提供阻尼</td></tr>
+    </tbody>
+  </table>
+  <div class="flow anim" style="margin-top:14px">
+    <div class="st"><div class="n">外环</div><h4>位置 PD</h4><p>角度/位置偏差 → 给内环一个目标速度</p></div>
+    <div class="st"><div class="n">内环</div><h4>增量 PI（或位置 PID）</h4><p>速度偏差 → 给执行器一个占空比</p></div>
+    <div class="st"><div class="n">执行器</div><h4>限幅输出</h4><p>电机 / 舵机 / 电调，u 有上限</p></div>
+  </div>
+  <div class="note anim" style="margin-top:10px"><span class="t">规律</span>
+    内环输出直接给执行器，偏增量 PI；外环只给内环目标，偏位置 PD。没有一条规则套所有——看执行器、看噪声、看要不要抗饱和。</div>
+  <div class="s-foot"><span>PID · ⑨ 实际例子</span><span><b>30</b> / 33</span></div>
+</section>
+
+<!-- ===================== 31 考核标准 ===================== -->
+<section class="slide" id="p30">
+  <div class="s-head anim">
+    <div class="s-kicker">考核 · 标准</div>
+    <h2 class="s-title">这次考什么，怎样算通过</h2>
+    <div class="s-sub">严格按企划书这五条，现场逐条对。</div>
+  </div>
+  <div class="flow anim" style="margin-top:6px;gap:14px">
+    <div class="st" style="padding:9px 12px"><div class="n">① 上电</div><h4 style="font-size:14px">静止</h4>
+      <p style="font-size:12.4px">y≈0，u 不抖</p></div>
+    <div class="st" style="padding:9px 12px"><div class="n">② 稳定</div><h4 style="font-size:14px">跟到目标</h4>
+      <p style="font-size:12.4px">±2 个计数以内</p></div>
+    <div class="st" style="padding:9px 12px"><div class="n">③ 挡住</div><h4 style="font-size:14px">输出补上</h4>
+      <p style="font-size:12.4px">u 上升，y 平住</p></div>
+    <div class="st" style="padding:9px 12px"><div class="n">④ 松手</div><h4 style="font-size:14px">回到目标</h4>
+      <p style="font-size:12.4px">不来回摆</p></div>
+    <div class="st" style="padding:9px 12px"><div class="n">⑤ 曲线</div><h4 style="font-size:14px">三条线同屏</h4>
+      <p style="font-size:12.4px">目标 / 实际 / 占空比</p></div>
+  </div>
+  <table class="tbl anim" style="margin-top:12px">
+    <thead><tr><th style="width:78px">项</th><th>标准</th><th style="width:300px">常见失分</th></tr></thead>
+    <tbody>
+      <tr><td>算法</td><td>直流有刷电机速度闭环，用增量式 PID</td><td>写成位置式，或把 rpm 和 count 混用</td></tr>
+      <tr><td>目标</td><td>目标转速以编码器脉冲计数给出：每 5 ms 采样周期 50 个脉冲</td><td>目标、反馈量纲不一致</td></tr>
+      <tr><td>表现</td><td>受阻时控制输出明显增大、转速明显维持</td><td>只看到 u 变大、转速掉一半</td></tr>
+      <tr><td>验收</td><td>现场演示，负责人当场验收</td><td>演示时讲不清</td></tr>
+      <tr><td>时长</td><td>1 周</td><td>拖到第二周</td></tr>
+    </tbody>
+  </table>
+  <div class="note o anim" style="margin-top:10px"><span class="t">VOFA 上怎么核对</span>
+    把目标、实际、占空比三条线同时发上去：挡住时占空比明显上升、转速基本平住，就是闭环生效的证据。演示顺序：上电 → 稳定 → 挡住 → 松手 → 看曲线。</div>
+  <div class="note anim" style="margin-top:8px"><span class="t">判定只看这五条</span>
+    工程分模块、现场讲代码是培训要求，不单独作为通过条件。</div>
+  <div class="s-foot"><span>考核 · 标准</span><span><b>31</b> / 33</span></div>
+</section>
+
+<!-- ===================== 32 烧录与上电 ===================== -->
+<section class="slide" id="p31">
+  <div class="s-head anim">
+    <div class="s-kicker">实操 · 烧录与上电</div>
+    <h2 class="s-title">烧录时不上电，烧完再上电</h2>
+    <div class="s-sub">烧录全程电池断开、由下载器供电；确认程序能跑，再断电接电池。</div>
+  </div>
+  <div class="grid3 anim" style="margin-top:8px;gap:10px">
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">1</span> 断开一切电源</h3>
+      <p style="font-size:12.6px">开关拨 OFF，电池插头不插。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">2</span> 接下载器</h3>
+      <p style="font-size:12.6px">3V3 / SWDIO / SWCLK / GND，以丝印为准。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">3</span> 只插 USB</h3>
+      <p style="font-size:12.6px">由下载器给板子供电，电池仍断开。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">4</span> 编译</h3>
+      <p style="font-size:12.6px">MounRiver 里 Ctrl+B，确认 0 error。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">5</span> 下载</h3>
+      <p style="font-size:12.6px">点 Download，等 Success。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">6</span> 复位观察</h3>
+      <p style="font-size:12.6px">串口有打印，VOFA 里能看到 y 和 u。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">7</span> 断电接电池</h3>
+      <p style="font-size:12.6px">先拔 USB，再插电池，最后开开关。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">8</span> 架空试转</h3>
+      <p style="font-size:12.6px">轮子离地，确认方向与转速正常。</p></div>
+    <div class="card tight"><h3 style="font-size:14px"><span class="tag">9</span> 落地演示</h3>
+      <p style="font-size:12.6px">确认无误再放地面，别一开始就带载。</p></div>
+  </div>
+  <div class="row anim" style="margin-top:10px;gap:12px">
+    <div class="note o" style="flex:1"><span class="t">轮子必须架空</span>
+      下载后电机可能立刻转起来，落地会窜出去。</div>
+    <div class="note o" style="flex:1"><span class="t">不要带电插拔电机线</span>
+      拔插瞬间的电感反峰会打坏驱动。</div>
+    <div class="note b" style="flex:1"><span class="t">带电池能不能烧</span>
+      可以，但电流突变可能让板子复位；仍建议先用 USB 供电烧录。</div>
+  </div>
+  <div class="grid3 anim" style="margin-top:10px;gap:10px">
+    <div class="note" style="font-size:12.6px"><span class="t">找不到芯片</span>
+      先看下载器驱动和接线，再确认板子由 USB 供电。</div>
+    <div class="note" style="font-size:12.6px"><span class="t">下载成功但不转</span>
+      先看串口有没有打印，再看 PWM 引脚和方向引脚。</div>
+    <div class="note o" style="font-size:12.6px"><span class="t">一上电就窜</span>
+      十有八九是方向反了或目标太大，架空再试。</div>
+  </div>
+  <div class="s-foot"><span>实操 · 烧录与上电</span><span><b>32</b> / 33</span></div>
+</section>
+
+<!-- ===================== 33 结束 ===================== -->
+<section class="slide cover end" id="p32">
+  <div class="cover-deco"></div>
+  <div class="cover-inner" style="top:118px">
+    <div class="s-kicker" style="color:#7fc9c3">收个尾</div>
+    <h1 style="font-size:46px">记住三句话</h1>
+    <ul class="end-list">
+      <li><b>没有反馈就没有闭环</b>　编码器把“转了多少”变成可以比较的数字。</li>
+      <li><b>周期必须固定</b>　5 ms 里做完读、算、写，最好放进定时器中断。</li>
+      <li><b>顺序看写法</b>　位置式 P → I → D；增量式 I → P，D 基本不用。</li>
+    </ul>
+    <div class="cover-meta" style="margin-top:24px">软件培训 · 第三次　|　电机闭环控制　|　演示数据为教学仿真，实际以实物为准</div>
+    <div class="cover-meta" style="margin-top:8px;color:#7fc9c3">下一讲 · 第四次培训：嵌入式数字图像处理入门</div>
+  </div>
+  <div class="cover-ring"></div>
+</section>
+
+    <nav class="nav">
+      <button id="prev" aria-label="上一页" title="上一页（←）">‹</button>
+      <button id="next" aria-label="下一页" title="下一页（→）">›</button>
+    </nav>
+    <div class="page" id="pageNum">01 / 24</div>
+    <div class="overview" id="overview">
+      <h3>目录 · 点击跳转</h3>
+      <div class="ov-grid" id="ovGrid"></div>
+    </div>
+  </div><!-- /deck -->
+</div><!-- /stage -->
+<div class="rotate-tip">横屏或投到大屏观看效果更好</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const $$ = (s,r) => Array.from((r||document).querySelectorAll(s));
+const clamp = (v,a,b) => v<a?a:(v>b?b:v);
+const nf = (v,d) => (isFinite(v)?v:0).toFixed(d===undefined?0:d);
+
+/* ================= 舞台缩放与翻页 ================= */
+const deck = $('deck');
+function fit(){
+  const s = Math.min((innerWidth-40)/1280, (innerHeight-40)/720);
+  deck.style.setProperty('--s', s.toFixed(4));
+}
+addEventListener('resize', fit); fit();
+
+const slides = $$('.slide');
+let cur = 0;
+const total = slides.length;
+function show(i, silent){
+  cur = clamp(i, 0, total-1);
+  slides.forEach((s,k) => s.classList.toggle('active', k===cur));
+  $('progress').style.width = ((cur+1)/total*100).toFixed(2)+'%';
+  $('pageNum').textContent = String(cur+1).padStart(2,'0') + ' / ' + total;
+  $('prev').disabled = cur===0;
+  $('next').disabled = cur===total-1;
+  if(!silent){ try{ history.replaceState(null,'','#'+(cur+1)); }catch(e){} }
+  redrawAll();
+}
+$('prev').addEventListener('click', ()=>show(cur-1));
+$('next').addEventListener('click', ()=>show(cur+1));
+addEventListener('keydown', e => {
+  if(/input|textarea|select/i.test(e.target.tagName)) return;
+  const k = e.key;
+  if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||k===' '){ e.preventDefault(); show(cur+1); }
+  else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); show(cur-1); }
+  else if(k==='Home'){ show(0); }
+  else if(k==='End'){ show(total-1); }
+  else if(k==='o'||k==='O'){ $('overview').classList.toggle('on'); }
+  else if(k==='Escape'){ $('overview').classList.remove('on'); }
+});
+let tx=0, ty=0;
+deck.addEventListener('touchstart', e => { tx=e.touches[0].clientX; ty=e.touches[0].clientY; }, {passive:true});
+deck.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)){ dx<0?show(cur+1):show(cur-1); }
+});
+
+/* ================= 总览目录 ================= */
+const PARTS=[
+  {t:'一 · 原理', ids:['p01','p02','p03','p04','p05']},
+  {t:'二 · 器件', ids:['p06','p07','p08','p09','p10','p11','p12','p13','p14']},
+  {t:'三 · 出力', ids:['p15','p16']},
+  {t:'四 · 实现', ids:['p17','p18','p19','p20']},
+  {t:'五 · PID', ids:['p21','p22','p23','p24','p25','p26','p27','p28','p29']},
+  {t:'六 · 验收', ids:['p30','p31','p32']}
+];
+(function overview(){
+  const grid=$('ovGrid');
+  const idxOf=id=>slides.findIndex(s=>s.id===id);
+  grid.innerHTML=PARTS.map(function(part){
+    const items=part.ids.map(function(id){
+      const i=idxOf(id); if(i<0) return '';
+      const s=slides[i];
+      const tEl=s.querySelector('.s-title')||s.querySelector('h1');
+      const title=tEl?tEl.textContent.trim():('第 '+(i+1)+' 页');
+      const dEl=s.querySelector('.s-sub');
+      const desc=dEl?dEl.textContent.trim().slice(0,26):'';
+      return '<button data-i="'+i+'"><b>'+String(i+1).padStart(2,'0')+'</b><span>'+title+'</span><em>'+desc+'</em></button>';
+    }).join('');
+    return '<section class="ov-part"><h4>'+part.t+'</h4>'+items+'</section>';
+  }).join('');
+  grid.addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    show(+b.dataset.i); $('overview').classList.remove('on');
+  });
+})();
+
+/* ================= 画布 ================= */
+const CVS = {};
+const DPR = 2;
+function regCanvas(id, W, H, draw){
+  const c = $(id); if(!c) return null;
+  const o = {c, W, H, draw, ctx:null};
+  CVS[id] = o;
+  c.width = W*DPR; c.height = H*DPR;
+  const ctx = c.getContext('2d');
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  o.ctx = ctx;
+  return o;
+}
+function redrawAll(){ Object.values(CVS).forEach(o => o.draw(o.ctx,o.W,o.H)); }
+
+const C = {ink:'#0f2a3d', ink2:'#24485c', muted:'#5f7787', line:'#d5e2e5', teal:'#0f7c83',
+           orange:'#d9704a', blue:'#3f6fb5', green:'#2f8f6b', grid:'#e9f1f2'};
+function roundRect(ctx,x,y,w,h,r){
+  r = Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+function arrow(ctx,x1,y1,x2,y2,color,w){
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w||1.8;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1), s=7;
+  ctx.beginPath(); ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-s*Math.cos(a-.42), y2-s*Math.sin(a-.42));
+  ctx.lineTo(x2-s*Math.cos(a+.42), y2-s*Math.sin(a+.42));
+  ctx.closePath(); ctx.fill();
+}
+function label(ctx,txt,x,y,o){
+  o=o||{}; ctx.save();
+  ctx.font=(o.weight||'')+' '+(o.size||12)+'px "Microsoft YaHei","PingFang SC",sans-serif';
+  ctx.fillStyle=o.color||C.muted; ctx.textAlign=o.align||'left'; ctx.textBaseline=o.baseline||'middle';
+  ctx.fillText(txt,x,y); ctx.restore();
+}
+function polyline(ctx,pts,color,w,dash){
+  if(pts.length<2) return;
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=w||2;
+  ctx.lineJoin='round'; ctx.lineCap='round';
+  if(dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+  ctx.stroke(); ctx.restore();
+}
+function niceScale(min,max,n){
+  const span=Math.max(1e-6,max-min); let step=span/(n||4);
+  const mag=Math.pow(10,Math.floor(Math.log10(step))); const norm=step/mag;
+  const mult = norm<=1?1:norm<=2?2:norm<=2.5?2.5:norm<=5?5:10;
+  step=mult*mag;
+  return {lo:Math.floor(min/step)*step, hi:Math.ceil(max/step)*step, step};
+}
+function chart(ctx,W,H,cfg){
+  const pad=cfg.pad||{l:48,r:16,t:18,b:26};
+  const x0=pad.l,y0=pad.t,x1=W-pad.r,y1=H-pad.b;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const sc=niceScale(cfg.yMin===undefined?0:cfg.yMin, cfg.yMax, cfg.yTicks||3);
+  const X=i=>x0+(x1-x0)*(cfg.n<=1?1:i/(cfg.n-1));
+  const Y=v=>y1-(y1-y0)*((v-sc.lo)/(sc.hi-sc.lo));
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  const steps=Math.round((sc.hi-sc.lo)/sc.step);
+  for(let i=0;i<=steps;i++){
+    const v=sc.lo+sc.step*i, y=Y(v);
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+    label(ctx, sc.step<1?v.toFixed(1):String(Math.round(v)), x0-8, y, {align:'right',size:11});
+  }
+  ctx.strokeStyle='#c9d8db'; ctx.beginPath(); ctx.moveTo(x0,y1); ctx.lineTo(x1,y1); ctx.stroke();
+  return {x0,y0,x1,y1,X,Y};
+}
+function badge(ctx,x,y,txt,color){
+  ctx.beginPath(); ctx.arc(x,y,13,0,Math.PI*2);
+  ctx.fillStyle=color||C.teal; ctx.fill();
+  label(ctx,txt,x,y+0.5,{size:12,align:'center',color:'#fff',weight:'bold'});
+}
+
+/* ================= 仿真小工具 ================= */
+function simCurve(o){
+  const kp=o.kp, ki=o.ki||0, kd=o.kd||0, sp=o.sp||50, steps=o.steps||200;
+  const delay=o.delay||0, Kv=o.Kv||1.25, tau=o.tau||0.07, lim=o.lim||100;
+  const pos=!!o.pos, aw=o.aw!==false, noise=o.noise||0, loadFn=o.loadFn;
+  let y=0,u=o.u0||0,e1=0,e2=0,I=0;
+  const out=[], buf=[];
+  for(let k=0;k<steps;k++){
+    const ym=Math.round(y + (noise?(Math.random()-0.5)*noise*2:0));
+    const e=sp-ym;
+    if(!pos){
+      const du=kp*(e-e1)+ki*e+kd*(e-2*e1+e2);
+      u=clamp(u+du,-lim,lim);
+    } else {
+      I+=ki*e;
+      let ut=kp*e+I+kd*(e-e1);
+      if(aw && ((ut>lim&&e>0)||(ut<-lim&&e<0))){ I-=ki*e; ut=kp*e+I+kd*(e-e1); }
+      u=clamp(ut,-lim,lim);
+    }
+    buf.push(u);
+    const uu = buf[Math.max(0, buf.length-1-delay)];
+    const load = loadFn?loadFn(k):0;
+    y += (Kv*uu*(1-0.9*load) - y)*(0.005/tau);
+    out.push({y:y,u:u,e:e});
+    e2=e1; e1=e;
+  }
+  return out;
+}
+/* ================= 03 开环 / 闭环 ================= */
+regCanvas('schemCanvas',1120,360,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const box=(x,y,w,h,t,s,fill,border)=>{
+    ctx.fillStyle=fill; ctx.strokeStyle=border; ctx.lineWidth=1.6;
+    roundRect(ctx,x,y,w,h,10); ctx.fill(); ctx.stroke();
+    label(ctx,t,x+w/2,y+h/2-8,{size:15,align:'center',color:C.ink,weight:'bold'});
+    if(s) label(ctx,s,x+w/2,y+h/2+11,{size:11.5,align:'center'});
+  };
+  const sigma=(x,y,r)=>{
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle='#eaf4f4'; ctx.fill(); ctx.strokeStyle='#9ed3d3'; ctx.lineWidth=2; ctx.stroke();
+    label(ctx,'Σ',x,y-4,{size:17,align:'center',color:C.ink,weight:'bold'});
+    label(ctx,'+',x-r+3,y-r-4,{size:12,align:'center',color:C.teal});
+    label(ctx,'−',x-r+3,y+r+6,{size:14,align:'center',color:C.orange});
+  };
+  const y1=52, y2=204, bh=60;
+  label(ctx,'开环',40,30,{size:13,color:C.orange,weight:'bold'});
+  label(ctx,'只按指令走，输出没人看',86,30,{size:13,color:C.muted});
+
+  box(40,y1,100,bh,'目标 r','给定值','#eef3f4','#c9dade');
+  box(180,y1,140,bh,'控制器','占空比','#fbeee7','#e8b49c');
+  box(360,y1,120,bh,'驱动','H 桥','#fbeee7','#e8b49c');
+  box(520,y1,110,bh,'电机','电压→转速','#eaf0fa','#a9bde0');
+  box(670,y1,110,bh,'输出 y','转速','#e7f4ee','#9ecdb9');
+  const yc1=y1+bh/2;
+  arrow(ctx,140,yc1,178,yc1,'#9db3b9'); label(ctx,'u',159,yc1-12,{size:11,align:'center'});
+  arrow(ctx,320,yc1,358,yc1,'#9db3b9'); label(ctx,'PWM',339,yc1-12,{size:11,align:'center'});
+  arrow(ctx,480,yc1,518,yc1,'#9db3b9'); label(ctx,'电压',499,yc1-12,{size:11,align:'center'});
+  arrow(ctx,630,yc1,668,yc1,'#9db3b9'); label(ctx,'n',649,yc1-12,{size:11,align:'center'});
+  ctx.save(); ctx.setLineDash([6,6]); ctx.strokeStyle='#d8b3a4'; ctx.lineWidth=1.6;
+  ctx.beginPath(); ctx.moveTo(755,y1+bh); ctx.lineTo(755,166); ctx.lineTo(250,166); ctx.lineTo(250,y1+bh+2); ctx.stroke(); ctx.restore();
+  ctx.strokeStyle='#c0504d'; ctx.lineWidth=2.6;
+  ctx.beginPath(); ctx.moveTo(470,157); ctx.lineTo(484,175); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(484,157); ctx.lineTo(470,175); ctx.stroke();
+  label(ctx,'这条线断了：负载变了它不知道',500,166,{size:12,color:'#a8766a'});
+
+  label(ctx,'闭环',40,182,{size:13,color:C.teal,weight:'bold'});
+  label(ctx,'目标与实测比较，按偏差修正',86,182,{size:13,color:C.muted});
+  box(40,y2,100,bh,'目标 r','50 count/5ms','#eef3f4','#c9dade');
+  sigma(176,y2+bh/2,24);
+  box(216,y2,150,bh,'控制器','增量式 PID','#e6f4f4','#4fb3a8');
+  box(402,y2,120,bh,'驱动','H 桥 + PWM','#fbeee7','#e8b49c');
+  box(558,y2,110,bh,'电机','电压→转速','#eaf0fa','#a9bde0');
+  box(704,y2,110,bh,'输出 y','转速','#e7f4ee','#9ecdb9');
+  const yc2=y2+bh/2;
+  arrow(ctx,140,yc2,150,yc2,'#9db3b9');
+  arrow(ctx,200,yc2,214,yc2,'#9db3b9'); label(ctx,'e',207,yc2-12,{size:11,align:'center'});
+  arrow(ctx,366,yc2,400,yc2,'#9db3b9'); label(ctx,'u',383,yc2-12,{size:11,align:'center'});
+  arrow(ctx,522,yc2,556,yc2,'#9db3b9'); label(ctx,'电压',539,yc2-12,{size:11,align:'center'});
+  arrow(ctx,668,yc2,702,yc2,'#9db3b9'); label(ctx,'n',685,yc2-12,{size:11,align:'center'});
+  // 反馈
+  ctx.strokeStyle='#5f9d8a'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(759,y2+bh); ctx.lineTo(759,314); ctx.lineTo(176,314); ctx.lineTo(176,y2+bh+26); ctx.stroke();
+  arrow(ctx,176,318,176,y2+bh+24,'#5f9d8a',2);
+  label(ctx,'y：每 5 ms 数一次增量（count/5ms）',440,306,{size:12.5,align:'center',color:'#4b7f6e'});
+
+  label(ctx,'多一个 Σ',870,226,{size:14,color:C.teal,weight:'bold'});
+  label(ctx,'多一条反馈',870,248,{size:14,color:C.teal,weight:'bold'});
+  label(ctx,'结果完全不同',870,274,{size:12.5,color:C.muted});
+});
+
+/* ================= 02 一拍一拍看结果 ================= */
+regCanvas('conceptCanvas',1080,130,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const x0=110,x1=1024,top=24,bot=92;
+  const X=i=>x0+(x1-x0)*i/5, Y=v=>bot-(bot-top)*(v/60);
+  const ys=[0,18,34,44,48,49];
+  ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle='#a7bcc0'; ctx.lineWidth=1.3;
+  ctx.beginPath(); ctx.moveTo(x0,Y(50)); ctx.lineTo(x1,Y(50)); ctx.stroke(); ctx.restore();
+  label(ctx,'目标 50',x0-10,Y(50),{size:11,align:'right'});
+  label(ctx,'实测 y',x0,10,{size:11.5,color:C.teal,weight:'bold'});
+  polyline(ctx,ys.map((v,i)=>[X(i),Y(v)]),C.teal,2.6);
+  ys.forEach((v,i)=>{
+    ctx.fillStyle=C.teal; ctx.beginPath(); ctx.arc(X(i),Y(v),3.6,0,Math.PI*2); ctx.fill();
+    label(ctx,String(v),X(i),Y(v)-13,{size:11,align:'center',color:C.teal});
+    label(ctx,'e='+(50-v),X(i),112,{size:11,align:'center',color:C.orange});
+  });
+});
+
+/* ================= 04 抗干扰 ================= */
+regCanvas('distCanvas',660,330,function(ctx,W,H){
+  const f=chart(ctx,W,H,{yMax:80,yTicks:4,pad:{l:52,r:16,t:24,b:28}});
+  const spY=f.Y(50);
+  ctx.save(); ctx.setLineDash([6,5]); ctx.strokeStyle='#a7bcc0'; ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(f.x0,spY); ctx.lineTo(f.x1,spY); ctx.stroke(); ctx.restore();
+  label(ctx,'目标 50',f.x0+6,spY-11,{size:11.5});
+  const N=240, X=t=>f.x0+(f.x1-f.x0)*t;
+  ctx.fillStyle='rgba(217,112,74,.07)'; ctx.fillRect(X(0.55),f.y0,X(1)-X(0.55),f.y1-f.y0);
+  ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='#d9704a'; ctx.lineWidth=1.3;
+  ctx.beginPath(); ctx.moveTo(X(0.55),f.y0); ctx.lineTo(X(0.55),f.y1); ctx.stroke(); ctx.restore();
+  label(ctx,'负载加入',X(0.56),f.y0+10,{size:11.5,color:C.orange});
+  const ol=[],cl=[];
+  for(let i=0;i<N;i++){
+    const t=i/(N-1); let o=50,c=50;
+    if(t>0.55){ o=50-12*Math.min(1,(t-0.55)/0.12); c=50-6*Math.exp(-(t-0.55)/0.09); }
+    ol.push([X(t),f.Y(o)]); cl.push([X(t),f.Y(c)]);
+  }
+  polyline(ctx,ol,C.orange,2.4); polyline(ctx,cl,C.teal,2.6);
+  label(ctx,'开环：掉了就回不来',X(0.78),f.Y(35),{size:12.5,color:C.orange,weight:'bold'});
+  label(ctx,'闭环：掉一点就补回',X(0.60),f.Y(58),{size:12.5,color:C.teal,weight:'bold'});
+  // 掉速标注
+  ctx.strokeStyle='#d9704a'; ctx.lineWidth=1.4; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(X(0.93),f.Y(50)); ctx.lineTo(X(0.93),f.Y(38)); ctx.stroke(); ctx.setLineDash([]);
+  label(ctx,'−12',X(0.94),f.Y(44),{size:11.5,color:C.orange});
+  label(ctx,'转速 y',f.x0+4,f.y0-8,{size:12.5,color:C.ink,weight:'bold'});
+});
+
+/* ================= 07 有刷结构 ================= */
+regCanvas('brushedCanvas',1080,392,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  label(ctx,'剖面',28,24,{size:14,color:C.ink,weight:'bold'});
+  const cx=250, cy=180, R=104;
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.strokeStyle='#c3d5d8'; ctx.lineWidth=3; ctx.stroke();
+  ctx.lineWidth=18; ctx.lineCap='butt';
+  ctx.strokeStyle='#5b86c9'; ctx.beginPath(); ctx.arc(cx,cy,R-9,Math.PI*0.60,Math.PI*1.40); ctx.stroke();
+  ctx.strokeStyle='#c0504d'; ctx.beginPath(); ctx.arc(cx,cy,R-9,-Math.PI*0.40,Math.PI*0.40); ctx.stroke();
+  label(ctx,'N',cx-R+6,cy,{size:15,weight:'bold',color:'#5b86c9',align:'center'});
+  label(ctx,'S',cx+R-6,cy,{size:15,weight:'bold',color:'#c0504d',align:'center'});
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(0.45);
+  ctx.fillStyle='#e3f2f2'; ctx.strokeStyle='#0f7c83'; ctx.lineWidth=2;
+  roundRect(ctx,-52,-22,104,44,6); ctx.fill(); ctx.stroke();
+  arrow(ctx,-34,0,34,0,'#d9704a',2.4);
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx,cy,8,0,Math.PI*2); ctx.fillStyle=C.ink; ctx.fill();
+  // 换向器与电刷
+  const ky=328;
+  ctx.strokeStyle='#8fa9ae'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.moveTo(cx,cy+R+4); ctx.lineTo(cx,ky-26); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,ky,26,0,Math.PI*2); ctx.fillStyle='#eef3f4'; ctx.fill();
+  ctx.strokeStyle='#7d969c'; ctx.lineWidth=1.6; ctx.stroke();
+  ctx.fillStyle='#d9704a';
+  ctx.beginPath(); ctx.moveTo(cx,ky); ctx.arc(cx,ky,26,-Math.PI/2,Math.PI/2); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.moveTo(cx,ky-26); ctx.lineTo(cx,ky+26); ctx.stroke();
+  ctx.fillStyle='#3a3a3a';
+  roundRect(ctx,cx-58,ky-10,20,20,4); ctx.fill();
+  roundRect(ctx,cx+38,ky-10,20,20,4); ctx.fill();
+  label(ctx,'电刷',cx-48,ky+26,{size:11.5,align:'center'});
+  // 编号
+  const lead=(x1,y1,x2,y2)=>{ctx.strokeStyle='#b9cdd0';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();};
+  lead(152,108,122,96); badge(ctx,112,92,'①');
+  lead(214,156,180,138); badge(ctx,170,132,'②');
+  lead(276,306,300,292); badge(ctx,310,288,'③');
+  lead(300,338,330,352); badge(ctx,340,356,'④');
+  label(ctx,'永磁定子',54,62,{size:11.5});
+  label(ctx,'转子线圈',54,126,{size:11.5});
+
+  // 换向三步
+  label(ctx,'换向三步',560,24,{size:14,color:C.ink,weight:'bold'});
+  const frames=[{x:660,a:0,t:'0°'},{x:820,a:Math.PI/2,t:'90° 换向'},{x:980,a:Math.PI,t:'180°'}];
+  frames.forEach(function(f){
+    const y=150, r=46;
+    ctx.beginPath(); ctx.arc(f.x,y,r,0,Math.PI*2); ctx.strokeStyle='#c3d5d8'; ctx.lineWidth=2.4; ctx.stroke();
+    ctx.fillStyle='#f1f7f7'; ctx.fill();
+    ctx.save(); ctx.translate(f.x,y); ctx.rotate(f.a);
+    ctx.fillStyle='#fff'; ctx.strokeStyle='#0f7c83'; ctx.lineWidth=2;
+    roundRect(ctx,-7,-34,14,68,5); ctx.fill(); ctx.stroke();
+    arrow(ctx,0,-24,0,24,'#d9704a',2.2);
+    ctx.restore();
+    label(ctx,f.t,f.x,y+r+22,{size:12,align:'center',color:f.a===Math.PI/2?C.orange:C.muted,weight:f.a===Math.PI/2?'bold':''});
+    label(ctx,'转矩 →',f.x,y+r+44,{size:11.5,align:'center',color:C.teal});
+  });
+  label(ctx,'电流在 90° 处反向，转矩方向保持不变',660,354,{size:12.5,color:C.muted});
+});
+
+/* ================= 08 无刷结构（自动循环） ================= */
+const BLDC=[['U','V',0],['U','W',60],['V','W',120],['V','U',180],['W','U',240],['W','V',300]];
+let bldcStep=0;
+function drawBldc(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const cx=330, cy=196, R=132;
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.strokeStyle='#c3d5d8'; ctx.lineWidth=2.4; ctx.stroke();
+  const st=BLDC[bldcStep], act={};
+  act[st[0]]=1; act[st[1]]=1;
+  const coils=[['U',-Math.PI/2,C.teal],['V',Math.PI/6,C.blue],['W',Math.PI*5/6,C.green]];
+  coils.forEach(function(c){
+    const a=c[0]==='U'?-Math.PI/2:(c[0]==='V'?Math.PI/6:Math.PI*5/6);
+    const on=!!act[c[0]];
+    ctx.strokeStyle=c[2]; ctx.globalAlpha=on?1:.22; ctx.lineWidth=on?18:12; ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(cx,cy,R-22,a-0.40,a+0.40); ctx.stroke();
+    ctx.globalAlpha=1;
+    label(ctx,c[0],cx+Math.cos(a)*(R+2),cy+Math.sin(a)*(R+2),
+      {size:15,align:'center',color:c[2],weight:'bold'});
+  });
+  // 转子
+  const ang=(BLDC[bldcStep][2]-90)*Math.PI/180;
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(ang);
+  ctx.fillStyle='#c0504d'; roundRect(ctx,-13,-62,26,62,5); ctx.fill();
+  ctx.fillStyle='#5b86c9'; roundRect(ctx,-13,0,26,62,5); ctx.fill();
+  label(ctx,'N',0,-34,{size:12.5,align:'center',color:'#fff',weight:'bold'});
+  label(ctx,'S',0,34,{size:12.5,align:'center',color:'#fff',weight:'bold'});
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx,cy,7,0,Math.PI*2); ctx.fillStyle=C.ink; ctx.fill();
+  // 合成磁场
+  ctx.strokeStyle='#d9704a'; ctx.lineWidth=2.2; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(ang)*92,cy+Math.sin(ang)*92); ctx.stroke();
+  ctx.setLineDash([]);
+  arrow(ctx,cx+Math.cos(ang)*80,cy+Math.sin(ang)*80,cx+Math.cos(ang)*94,cy+Math.sin(ang)*94,'#d9704a',2.2);
+  label(ctx,'定子三相',cx,cy+R+30,{size:12,align:'center'});
+  label(ctx,'永磁转子',cx,cy-R-30,{size:12,align:'center'});
+
+  // 六步表
+  label(ctx,'六步换相',700,34,{size:14,color:C.ink,weight:'bold'});
+  label(ctx,'步',706,62,{size:11.5}); label(ctx,'通电',760,62,{size:11.5}); label(ctx,'磁场',900,62,{size:11.5});
+  for(let i=0;i<6;i++){
+    const y=84+i*46, on=i===bldcStep;
+    ctx.fillStyle=on?'#e6f4f4':'#fff'; ctx.strokeStyle=on?'#4fb3a8':'#e2ecee'; ctx.lineWidth=on?1.8:1;
+    roundRect(ctx,700,y,340,38,8); ctx.fill(); ctx.stroke();
+    label(ctx,String(i+1),716,y+19,{size:12,color:on?C.teal:C.muted,weight:on?'bold':''});
+    label(ctx,BLDC[i][0]+' → '+BLDC[i][1],760,y+19,{size:13,color:on?C.ink:C.ink2,weight:on?'bold':''});
+    label(ctx,BLDC[i][2]+'°',906,y+19,{size:12,color:on?C.teal:C.muted,weight:on?'bold':''});
+    if(on){ arrow(ctx,1010,y+19,1026,y+19,C.teal,2); }
+  }
+}
+regCanvas('bldcCanvas',1080,390,drawBldc);
+
+/* ================= 09 电机特性 ================= */
+regCanvas('motorCharCanvas',660,400,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const x0=74,y0=36,x1=W-24,y1=H-56;
+  ctx.strokeStyle='#c9d8db'; ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x0,y1); ctx.lineTo(x1,y1); ctx.stroke();
+  const X=t=>x0+(x1-x0)*t, Y=n=>y1-(y1-y0)*(n/4200);
+  label(ctx,'转速 n（rpm）',x0,y0-12,{size:12.5,color:C.ink,weight:'bold'});
+  label(ctx,'转矩 T →',x1,y1+20,{size:12.5,align:'right'});
+  [[4200,'4200'],[3000,'3000'],[1500,'1500']].forEach(function(v){
+    ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x0,Y(v[0])); ctx.lineTo(x1,Y(v[0])); ctx.stroke();
+    label(ctx,v[1],x0-8,Y(v[0]),{size:11,align:'right'});
+  });
+  const line=(n0,color,text,lx,ly)=>{
+    polyline(ctx,[[X(0),Y(n0)],[X(1),Y(0)]],color,2.6);
+    label(ctx,text,X(lx),Y(ly),{size:12.5,color:color,weight:'bold'});
+  };
+  line(4000,C.teal,'12 V',0.54,2150);
+  line(2000,C.blue,'6 V',0.54,1180);
+  ctx.fillStyle=C.orange;
+  ctx.beginPath(); ctx.arc(X(0.30),Y(2800),5.5,0,Math.PI*2); ctx.fill();
+  label(ctx,'带载工作点 2800',X(0.30)+10,Y(2800)-14,{size:12,color:C.orange});
+  ctx.beginPath(); ctx.arc(X(0.975),Y(100),5,0,Math.PI*2); ctx.fill();
+  label(ctx,'堵转',X(0.975),Y(430),{size:12,color:C.orange,align:'right'});
+  label(ctx,'同一电压下，负载越大，转速越低',x0+6,y1-16,{size:12.5,color:C.muted});
+});
+
+/* ================= 11 编码器盘 ================= */
+regCanvas('diskCanvas',1080,272,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  // 增量式
+  const ax=230, ay=118, R=86;
+  ctx.beginPath(); ctx.arc(ax,ay,R,0,Math.PI*2); ctx.fillStyle='#f4f9f9'; ctx.fill();
+  ctx.strokeStyle='#c3d5d8'; ctx.lineWidth=2; ctx.stroke();
+  for(let i=0;i<24;i++){
+    const a0=i*Math.PI/12, a1=a0+Math.PI/24;
+    ctx.beginPath(); ctx.arc(ax,ay,R-3,a0,a1); ctx.lineWidth=14;
+    ctx.strokeStyle=i%2?'#0f7c83':'#dbe7e9'; ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(ax,ay,52,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+  ctx.strokeStyle='#c3d5d8'; ctx.lineWidth=1.4; ctx.stroke();
+  // Z 缺口
+  ctx.beginPath(); ctx.arc(ax,ay,R-1,Math.PI*1.25-0.10,Math.PI*1.25+0.10);
+  ctx.lineWidth=7; ctx.strokeStyle='#d9704a'; ctx.stroke();
+  // 传感器
+  ctx.fillStyle='#fff'; ctx.strokeStyle=C.ink2; ctx.lineWidth=1.4;
+  roundRect(ctx,ax+R+4,ay-11,26,22,5); ctx.fill(); ctx.stroke();
+  roundRect(ctx,ax-11,ay-R-30,22,26,5); ctx.fill(); ctx.stroke();
+  label(ctx,'A',ax+R+17,ay,{size:12,align:'center',weight:'bold'});
+  label(ctx,'B',ax,ay-R-17,{size:12,align:'center',weight:'bold'});
+  label(ctx,'Z',ax-70,ay-70,{size:11.5,color:C.orange,weight:'bold'});
+  label(ctx,'增量式：一圈 N 个缝',ax,ay+R+28,{size:13,align:'center',color:C.ink,weight:'bold'});
+  label(ctx,'A/B 错开 1/4 缝距，Z 每圈一次',ax,ay+R+48,{size:11.8,align:'center'});
+
+  // 绝对式
+  const bx=820, by=118, R2=86;
+  const bits=['000','001','010','011','100','101','110','111'];
+  for(let i=0;i<8;i++){
+    const a0=i*Math.PI/4-Math.PI/2, a1=a0+Math.PI/4;
+    ctx.beginPath(); ctx.moveTo(bx,by); ctx.arc(bx,by,R2,a0,a1); ctx.closePath();
+    ctx.fillStyle=i%2?'#e7f4ee':'#f7fbfb'; ctx.fill();
+    ctx.strokeStyle='#c3d5d8'; ctx.lineWidth=1.2; ctx.stroke();
+    const am=a0+Math.PI/8;
+    label(ctx,bits[i],bx+Math.cos(am)*R2*0.66,by+Math.sin(am)*R2*0.66,{size:11,align:'center',color:C.ink2});
+  }
+  ctx.beginPath(); ctx.arc(bx,by,30,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+  ctx.strokeStyle='#c3d5d8'; ctx.stroke();
+  label(ctx,'绝对式：每格一个编号',bx,by+R2+28,{size:13,align:'center',color:C.ink,weight:'bold'});
+  label(ctx,'上电就知道自己在哪一格',bx,by+R2+48,{size:11.8,align:'center'});
+});
+
+/* ================= 14 测速窗口 ================= */
+regCanvas('speedCanvas',660,300,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const x0=60,x1=620,y=196;
+  ctx.strokeStyle='#c9d8db'; ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+  label(ctx,'时间 →',x1,y+24,{size:11.5,align:'right'});
+  label(ctx,'编码器脉冲',x0+2,y-58,{size:12});
+  // 脉冲
+  const pulse=(x)=>{ctx.strokeStyle=C.teal;ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-34);ctx.stroke();
+    ctx.fillStyle=C.teal;ctx.beginPath();ctx.arc(x,y-36,2.6,0,Math.PI*2);ctx.fill();};
+  for(let i=0;i<13;i++) pulse(120+i*33);
+  // 窗口
+  ctx.strokeStyle=C.orange; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(120,96); ctx.lineTo(120,120); ctx.moveTo(120,96); ctx.lineTo(516,96);
+  ctx.moveTo(516,96); ctx.lineTo(516,120); ctx.stroke();
+  label(ctx,'T s = 5 ms',318,82,{size:12.5,align:'center',color:C.orange,weight:'bold'});
+  label(ctx,'这一窗过了 Δn = 50 个计数',318,150,{size:13,align:'center',color:C.ink,weight:'bold'});
+  // 上一窗（淡）
+  ctx.save(); ctx.globalAlpha=.35;
+  ctx.strokeStyle=C.teal; ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(60,196); ctx.lineTo(60,160); ctx.moveTo(110,196); ctx.lineTo(110,160); ctx.stroke();
+  ctx.restore();
+  label(ctx,'上一拍',85,150,{size:11,align:'center'});
+  label(ctx,'y = Δn / T s　→　50 / 5 ms = 10000 count/s',330,250,{size:12.5,align:'center',color:C.ink2});
+});
+
+
+/* ================= 16 PWM ================= */
+let pwmDuty = 50;
+function drawPwm(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const x0=54,x1=W-20,yHi=64,yLo=232,cyc=3,per=(x1-x0)/cyc;
+  const yAvg=yLo-(yLo-yHi)*(pwmDuty/100);
+  // 填充高电平段
+  for(let c=0;c<cyc;c++){
+    const sx=x0+c*per;
+    ctx.fillStyle='rgba(217,112,74,.16)';
+    ctx.fillRect(sx,yHi,per*pwmDuty/100,yLo-yHi);
+    ctx.strokeStyle=C.teal; ctx.lineWidth=2.6; ctx.lineJoin='miter';
+    ctx.beginPath();
+    ctx.moveTo(sx,yLo); ctx.lineTo(sx,yHi);
+    ctx.lineTo(sx+per*pwmDuty/100,yHi); ctx.lineTo(sx+per*pwmDuty/100,yLo);
+    ctx.lineTo(sx+per,yLo);
+    ctx.stroke();
+  }
+  // 平均线
+  ctx.save(); ctx.setLineDash([7,5]); ctx.strokeStyle=C.orange; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x0,yAvg); ctx.lineTo(x1,yAvg); ctx.stroke(); ctx.restore();
+  label(ctx,'平均 '+nf(12*pwmDuty/100,1)+' V',x1-4,yAvg-12,{size:12.5,align:'right',color:C.orange,weight:'bold'});
+  label(ctx,'12 V',x0-8,yHi,{size:12,align:'right'});
+  label(ctx,'0 V',x0-8,yLo,{size:12,align:'right'});
+  label(ctx,'一个开关周期 50 µs（20 kHz）',x0,yLo+30,{size:11.5});
+  label(ctx,'占空比 '+pwmDuty+'%',x0+(x1-x0)/2,yHi-18,{size:13.5,align:'center',color:C.ink,weight:'bold'});
+}
+regCanvas('pwmCanvas',660,330,drawPwm);
+
+/* ================= 17 H 桥 ================= */
+let hbState='fwd';
+const HBLABEL={fwd:'正转：Q1 + Q4 导通',rev:'反转：Q2 + Q3 导通',brake:'刹车：下桥全通，电机短接',coast:'滑行：全部关断，靠摩擦停'};
+function drawHb(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const L=120,R=420,top=64,bot=322,mid=196;
+  const sy1=110, sy2=276, sh=38, swW=64;
+  const on={Q1:0,Q2:0,Q3:0,Q4:0};
+  if(hbState==='fwd'){ on.Q1=on.Q4=1; }
+  if(hbState==='rev'){ on.Q2=on.Q3=1; }
+  if(hbState==='brake'){ on.Q3=on.Q4=1; }
+  const seg=(x1,y1,x2,y2,color,w)=>{
+    ctx.strokeStyle=color; ctx.lineWidth=w||2.4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  };
+  // 母线
+  seg(L-26,top,R+26,top,'#8fa9ae',2.6);
+  seg(L-26,bot,R+26,bot,'#8fa9ae',2.6);
+  label(ctx,'VCC',L-30,top-8,{size:11.5,align:'right',color:C.ink2});
+  label(ctx,'GND',L-30,bot+14,{size:11.5,align:'right',color:C.ink2});
+  // 桥腿（在开关处断开）
+  [L,R].forEach(function(x){
+    seg(x,top,x,sy1-sh/2,'#8fa9ae',2.4);
+    seg(x,sy1+sh/2,x,mid,'#8fa9ae',2.4);
+    seg(x,mid,x,sy2-sh/2,'#8fa9ae',2.4);
+    seg(x,sy2+sh/2,x,bot,'#8fa9ae',2.4);
+  });
+  // 开关
+  const sw=(x,y,name)=>{
+    ctx.fillStyle=on[name]?'#e6f4f4':'#fff';
+    ctx.strokeStyle=on[name]?C.teal:'#b9c9cd'; ctx.lineWidth=on[name]?2.4:1.5;
+    roundRect(ctx,x-swW/2,y-sh/2,swW,sh,8); ctx.fill(); ctx.stroke();
+    label(ctx,name,x,y,{size:12.5,align:'center',color:on[name]?C.teal:'#7d9499',weight:on[name]?'bold':''});
+    if(on[name]){ ctx.fillStyle=C.teal; ctx.beginPath(); ctx.arc(x+swW/2-9,y-sh/2+9,4,0,Math.PI*2); ctx.fill(); }
+  };
+  sw(L,sy1,'Q1'); sw(R,sy1,'Q2'); sw(L,sy2,'Q3'); sw(R,sy2,'Q4');
+  // 电机
+  ctx.beginPath(); ctx.arc(270,mid,40,0,Math.PI*2);
+  ctx.fillStyle='#fff'; ctx.strokeStyle='#4f6f7a'; ctx.lineWidth=2.2; ctx.stroke();
+  label(ctx,'M',270,mid,{size:17,align:'center',color:C.ink,weight:'bold'});
+  seg(L,mid,230,mid,'#8fa9ae',2.4);
+  seg(310,mid,R,mid,'#8fa9ae',2.4);
+  // 电流路径
+  const I='rgba(217,112,74,.92)';
+  const path=(pts)=>{
+    ctx.save(); ctx.strokeStyle=I; ctx.lineWidth=4.2; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.stroke(); ctx.restore();
+  };
+  if(hbState==='fwd'){
+    path([[L,top],[L,sy1-sh/2]]);
+    path([[L,sy1+sh/2],[L,mid],[230,mid]]);
+    path([[310,mid],[R,mid],[R,sy2-sh/2]]);
+    path([[R,sy2+sh/2],[R,bot]]);
+    arrow(ctx,300,mid-22,340,mid-22,I,2.2);
+  } else if(hbState==='rev'){
+    path([[R,top],[R,sy1-sh/2]]);
+    path([[R,sy1+sh/2],[R,mid],[310,mid]]);
+    path([[230,mid],[L,mid],[L,sy2-sh/2]]);
+    path([[L,sy2+sh/2],[L,bot]]);
+    arrow(ctx,240,mid-22,200,mid-22,I,2.2);
+  } else if(hbState==='brake'){
+    path([[230,mid],[L,mid],[L,sy2-sh/2]]);
+    path([[L,sy2+sh/2],[L,bot],[R,bot],[R,sy2+sh/2]]);
+    path([[R,sy2-sh/2],[R,mid],[310,mid]]);
+    label(ctx,'电机被短接',270,bot-46,{size:12,align:'center',color:C.orange,weight:'bold'});
+  } else {
+    label(ctx,'四条腿全关，电流没有回路',270,bot-46,{size:12,align:'center',color:C.muted});
+  }
+  label(ctx,HBLABEL[hbState],270,26,{size:13.5,align:'center',color:hbState==='coast'?C.muted:C.teal,weight:'bold'});
+}
+regCanvas('hbCanvas',540,380,drawHb);
+
+/* ================= 18 闭环结构 ================= */
+regCanvas('loopCanvas',1120,310,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const box=(x,y,w,h,t,s,fill,border)=>{
+    ctx.fillStyle=fill; ctx.strokeStyle=border; ctx.lineWidth=1.6;
+    roundRect(ctx,x,y,w,h,10); ctx.fill(); ctx.stroke();
+    label(ctx,t,x+w/2,y+h/2-9,{size:14.5,align:'center',color:C.ink,weight:'bold'});
+    if(s) label(ctx,s,x+w/2,y+h/2+11,{size:11.5,align:'center'});
+  };
+  const cy=130, bh=62;
+  box(30,cy-31,110,bh,'目标 r','count/5ms','#eef3f4','#c9dade');
+  ctx.beginPath(); ctx.arc(178,cy,25,0,Math.PI*2); ctx.fillStyle='#eaf4f4'; ctx.fill();
+  ctx.strokeStyle='#9ed3d3'; ctx.lineWidth=2; ctx.stroke();
+  label(ctx,'Σ',178,cy-3,{size:17,align:'center',color:C.ink,weight:'bold'});
+  label(ctx,'+',158,cy-24,{size:12,align:'center',color:C.teal});
+  label(ctx,'−',158,cy+24,{size:14,align:'center',color:C.orange});
+  box(216,cy-31,150,bh,'控制器','e → Δu','#e6f4f4','#4fb3a8');
+  box(396,cy-31,130,bh,'驱动','H 桥 + PWM','#fbeee7','#e8b49c');
+  box(556,cy-31,120,bh,'电机','电压 → 转速','#eaf0fa','#a9bde0');
+  box(706,cy-31,110,bh,'输出 y','count/5ms','#e7f4ee','#9ecdb9');
+  arrow(ctx,140,cy,152,cy,'#9db3b9');
+  arrow(ctx,203,cy,214,cy,'#9db3b9'); label(ctx,'e',208,cy-14,{size:11.5,align:'center'});
+  arrow(ctx,366,cy,394,cy,'#9db3b9');  arrow(ctx,526,cy,554,cy,'#9db3b9');  arrow(ctx,676,cy,704,cy,'#9db3b9');  // 反馈
+  ctx.strokeStyle='#5f9d8a'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(761,cy+31); ctx.lineTo(761,262); ctx.lineTo(178,262); ctx.lineTo(178,cy+25); ctx.stroke();
+  arrow(ctx,178,266,178,cy+27,'#5f9d8a',2);
+  label(ctx,'编码器：每 5 ms 数一次增量',470,254,{size:12.5,align:'center',color:'#4b7f6e'});
+  label(ctx,'负反馈：看见结果，才能纠正结果',470,286,{size:13,align:'center',color:C.teal,weight:'bold'});
+});
+
+/* ================= 19 5 ms 节拍 ================= */
+regCanvas('tickCanvas',1120,300,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const x0=60,x1=1060,n=6,bw=(x1-x0)/n;
+  label(ctx,'控制周期：每 5 ms 一次',x0,28,{size:13.5,color:C.ink,weight:'bold'});
+  for(let i=0;i<n;i++){
+    const x=x0+i*bw;
+    ctx.fillStyle=i===2?'#e6f4f4':'#fff'; ctx.strokeStyle=i===2?C.teal:'#dbe7e9'; ctx.lineWidth=i===2?2:1;
+    roundRect(ctx,x+4,44,bw-8,44,8); ctx.fill(); ctx.stroke();
+    label(ctx,'5 ms',x+bw/2,66,{size:11.5,align:'center',color:i===2?C.teal:C.muted});
+  }
+  arrow(ctx,x0+2.5*bw,92,x0+2.5*bw,116,C.teal,2);
+  // 放大
+  const zx0=60,zx1=1060,zy=150,zh=52;
+  const seg=[{w:.26,t:'读编码器',s:'8 µs',c:'#0f7c83'},{w:.44,t:'算 PID',s:'20 µs',c:'#3f6fb5'},
+             {w:.18,t:'写 PWM',s:'4 µs',c:'#d9704a'},{w:.12,t:'预算余量',s:'8 µs',c:'#c9d8db'}];
+  let px=zx0;
+  seg.forEach(function(s){
+    const w=(zx1-zx0)*s.w;
+    ctx.fillStyle=s.c; ctx.globalAlpha=s.c==='#c9d8db'?0.6:1;
+    ctx.fillRect(px,zy,w,zh); ctx.globalAlpha=1;
+    label(ctx,s.t,px+w/2,zy-12,{size:12,align:'center',color:C.ink2,weight:'bold'});
+    label(ctx,s.s,px+w/2,zy+zh+16,{size:11,align:'center',color:C.muted});
+    px+=w;
+  });
+});
+
+/* ================= 20 中断 ================= */
+regCanvas('isrCanvas',1120,280,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const x0=80,x1=1060,y0=44,y1=124;
+  label(ctx,'主循环',x0-10,y0+40,{size:12,align:'right',color:C.muted,weight:'bold'});
+  ctx.fillStyle='#eaf4f4'; ctx.strokeStyle='#c9e0e0'; ctx.lineWidth=1.5;
+  roundRect(ctx,x0,y0,x1-x0,y1-y0,10); ctx.fill(); ctx.stroke();
+  const tasks=['刷屏','串口','按键','刷屏','串口','按键','刷屏'];
+  const tw=(x1-x0)/tasks.length;
+  tasks.forEach(function(t,i){
+    label(ctx,t,x0+tw*(i+0.5),(y0+y1)/2,{size:12,align:'center',color:C.ink2});
+  });
+  // ISR
+  [300,600,900].forEach(function(cx,i){
+    const bx=cx-66, by=176, bw=132, bh=58;
+    ctx.fillStyle='#fbeee7'; ctx.strokeStyle=C.orange; ctx.lineWidth=1.8;
+    roundRect(ctx,bx,by,bw,bh,9); ctx.fill(); ctx.stroke();
+    label(ctx,'ISR',cx,by+18,{size:11,align:'center',color:'#a8502c',weight:'bold'});
+    label(ctx,['读 → 算 → 写','读 → 算 → 写','读 → 算 → 写'][i],cx,by+39,{size:11.5,align:'center',color:C.ink2});
+    ctx.strokeStyle=C.orange; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(cx,y1); ctx.lineTo(cx,by-2); ctx.stroke();
+    arrow(ctx,cx,by-2,cx,by,C.orange,2);
+    label(ctx,'5 ms',cx,by+bh+14,{size:10.5,align:'center',color:C.muted});
+  });
+});
+
+/* ================= 22 PID 三项 ================= */
+regCanvas('roleCanvas',1120,322,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const cases=[
+    {x:20,y:16,kp:.5,ki:0,kd:0,delay:1,t:'P 小（0.5）',s:'慢，停在下边',c:C.teal,note:'稳态 19'},
+    {x:570,y:16,kp:1.8,ki:0,kd:0,delay:12,t:'P 大（1.8）',s:'快，但来回摆',c:C.orange,note:'来回摆'},
+    {x:20,y:168,kp:.9,ki:.06,kd:0,delay:2,t:'P + I',s:'静差消失',c:C.blue,note:'稳到 50'},
+    {x:570,y:168,kp:1.2,ki:.2,kd:.6,delay:6,t:'P + I + D',s:'超调更小',c:C.green,note:'峰值 62→56'}
+  ];
+  cases.forEach(function(cs){
+    const x0=cs.x+20,x1=cs.x+530,y0=cs.y+48,y1=cs.y+140;
+    label(ctx,cs.t,x0,cs.y+12,{size:13.5,color:cs.c,weight:'bold'});
+    label(ctx,cs.s,x0+120,cs.y+12,{size:11.5,color:C.muted});
+    ctx.fillStyle='#fff'; ctx.strokeStyle='#e2ecee'; ctx.lineWidth=1;
+    ctx.fillRect(x0,y0,x1-x0,y1-y0); ctx.strokeRect(x0,y0,x1-x0,y1-y0);
+    const Y=v=>y1-(y1-y0)*(clamp(v,0,80)/80);
+    ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle='#a7bcc0'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(x0,Y(50)); ctx.lineTo(x1,Y(50)); ctx.stroke(); ctx.restore();
+    label(ctx,'50',x0-6,Y(50),{size:10,align:'right'});
+    const d=simCurve({kp:cs.kp,ki:cs.ki,kd:cs.kd,steps:240,delay:cs.delay||1});
+    polyline(ctx,d.map((p,i)=>[x0+(x1-x0)*i/(d.length-1),Y(p.y)]),cs.c,2.4);
+    const tail=d.slice(-20).reduce((a,p)=>a+p.y,0)/20;
+    if(tail>=0&&tail<=80){
+      ctx.fillStyle=cs.c; ctx.beginPath(); ctx.arc(x1-4,Y(tail),4,0,Math.PI*2); ctx.fill();
+    }
+    label(ctx,cs.note,x1-8,y0+12,{size:11,align:'right',color:cs.c,weight:'bold'});
+  });
+});
+
+/* ================= 23 静差（可拖） ================= */
+let poKp=0.6;
+function drawPo(ctx,W,H){
+  const d=simCurve({kp:poKp,steps:260,delay:1});
+  const f=chart(ctx,W,H,{yMax:60,yTicks:3,n:d.length,pad:{l:48,r:20,t:24,b:30}});
+  const spY=f.Y(50);
+  ctx.save(); ctx.setLineDash([6,5]); ctx.strokeStyle='#a7bcc0'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(f.x0,spY); ctx.lineTo(f.x1,spY); ctx.stroke(); ctx.restore();
+  label(ctx,'目标 50',f.x0+6,spY-11,{size:11.5});
+  polyline(ctx,d.map((p,i)=>[f.X(i),f.Y(clamp(p.y,0,60))]),C.teal,2.6);
+  const tail=d.slice(-25).reduce((a,p)=>a+p.y,0)/25;
+  const px=f.X(d.length-1)-12, py=f.Y(tail);
+  ctx.fillStyle=C.orange; ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2); ctx.fill();
+  label(ctx,'稳态 '+tail.toFixed(1),px-8,py+20,{size:12,align:'right',color:C.orange,weight:'bold'});
+  ctx.strokeStyle=C.orange; ctx.lineWidth=1.6; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(px-34,py); ctx.lineTo(px-34,spY); ctx.stroke(); ctx.setLineDash([]);
+  arrow(ctx,px-34,py,px-34,spY,C.orange,1.6);
+  label(ctx,'静差 '+(50-tail).toFixed(1),px-40,(py+spY)/2,{size:11.5,align:'right',color:C.orange});
+  label(ctx,'Kp = '+poKp.toFixed(2),f.x0+6,f.y0+10,{size:12.5,color:C.ink,weight:'bold'});
+  return tail;
+}
+function updatePo(){
+  const tail=drawPo(CVS.poCanvas.ctx,700,330);
+  if($('ssY')) $('ssY').textContent=(Math.round(tail*10)/10).toFixed(1);
+  if($('ssE')) $('ssE').textContent=(Math.round((50-tail)*10)/10).toFixed(1);
+}
+regCanvas('poCanvas',700,330,drawPo);
+
+/* ================= 27 三个旋钮 ================= */
+regCanvas('gainCanvas',1080,368,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const rows=[
+    {t:'P',cases:[
+      {p:{kp:.9},tag:'Kp 0.9',note:'停在下边'},
+      {p:{kp:1.6,delay:12},tag:'Kp 1.6',note:'抖、来回摆',bad:1}]},
+    {t:'I',cases:[
+      {p:{kp:.9,ki:.06},tag:'Ki 0.06',note:'静差消掉'},
+      {p:{kp:.9,ki:.55},tag:'Ki 0.55',note:'超调、低频摆',bad:1}]},
+    {t:'D',cases:[
+      {p:{kp:.9,ki:.06,kd:.12,noise:.8},tag:'Kd 0.12',note:'峰值压低'},
+      {p:{kp:.9,ki:.06,kd:1.2,noise:.8},tag:'Kd 1.2',note:'毛刺、发热',bad:1}]}
+  ];
+  label(ctx,'合适',400,16,{size:12.5,align:'center',color:C.teal,weight:'bold'});
+  label(ctx,'加过头',820,16,{size:12.5,align:'center',color:C.orange,weight:'bold'});
+  rows.forEach(function(row,ri){
+    const y=32+ri*110;
+    label(ctx,row.t,30,y+52,{size:22,align:'center',color:C.ink,weight:'bold'});
+    row.cases.forEach(function(cs,ci){
+      const x0=200+ci*420, x1=x0+400, y0=y+16, y1=y+88;
+      ctx.fillStyle='#fff'; ctx.strokeStyle=cs.bad?'#e8b49c':'#dfe9ea'; ctx.lineWidth=cs.bad?1.8:1;
+      ctx.fillRect(x0,y0,x1-x0,y1-y0); ctx.strokeRect(x0,y0,x1-x0,y1-y0);
+      const Y=v=>y1-(y1-y0)*(clamp(v,0,80)/80);
+      ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='#b8cbce'; ctx.lineWidth=1.1;
+      ctx.beginPath(); ctx.moveTo(x0,Y(50)); ctx.lineTo(x1,Y(50)); ctx.stroke(); ctx.restore();
+      const d=simCurve(Object.assign({steps:220,delay:1},cs.p));
+      polyline(ctx,d.map((p,i)=>[x0+(x1-x0)*i/(d.length-1),Y(p.y)]),cs.bad?C.orange:C.teal,1.9);
+      label(ctx,cs.tag,x0,y-8,{size:12,color:cs.bad?C.orange:C.teal,weight:'bold'});
+      label(ctx,cs.note,x1,y-8,{size:11.5,align:'right',color:cs.bad?C.orange:C.muted});
+    });
+  });
+});
+
+/* ================= 12 正交 A/B ================= */
+const enc = {angle:0, ppr:20, dir:1, spinning:false};
+function encState(){
+  const t=enc.angle/360*enc.ppr;
+  const frac=((t%1)+1)%1;
+  let idx=Math.floor(frac*4)%4;
+  if(enc.dir<0) idx=(4-idx)%4;
+  const s=[[1,0],[1,1],[0,1],[0,0]][idx];
+  return {A:s[0],B:s[1],idx,frac};
+}
+function squareWave(ctx,x0,x1,cycles,cy,amp,hiFn){
+  const per=(x1-x0)/cycles, bounds=[0,0.25,0.5,0.75,1];
+  ctx.beginPath(); let started=false;
+  for(let c=0;c<cycles;c++){
+    const sx=x0+c*per;
+    for(let k=0;k<4;k++){
+      const a=bounds[k], b=bounds[k+1];
+      const lvl = hiFn((a+b)/2) ? -amp : amp;
+      const ax=sx+a*per, bx=sx+b*per;
+      if(!started){ ctx.moveTo(ax,cy+lvl); started=true; } else { ctx.lineTo(ax,cy+lvl); }
+      ctx.lineTo(bx,cy+lvl);
+    }
+  }
+  ctx.stroke();
+}
+function drawQuad(ctx,W,H){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0c2531'; roundRect(ctx,4,4,W-8,H-8,12); ctx.fill();
+  const pad={l:74,r:52,t:88,b:46};
+  const x0=pad.l,x1=W-pad.r,y0=pad.t,y1=H-pad.b;
+  const cycles=2, per=(x1-x0)/cycles;
+  const amp=(y1-y0)*0.16;
+  const cyA=y0+(y1-y0)*0.30, cyB=y0+(y1-y0)*0.74;
+  ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1;
+  for(let i=0;i<=8;i++){ const x=x0+(x1-x0)*i/8; ctx.beginPath(); ctx.moveTo(x,y0-10); ctx.lineTo(x,y1+8); ctx.stroke(); }
+  const st=encState();
+  const states=[['①','A1 B0'],['②','A1 B1'],['③','A0 B1'],['④','A0 B0']];
+  const chipW=Math.min(168,(x1-x0)/4-10);
+  states.forEach((s,i)=>{
+    const bx=x0+i*(chipW+10), on=(st.idx===i);
+    ctx.fillStyle = on ? 'rgba(79,214,194,.16)' : 'rgba(255,255,255,.04)';
+    ctx.strokeStyle = on ? 'rgba(79,214,194,.65)' : 'rgba(255,255,255,.10)';
+    ctx.lineWidth = on ? 1.6 : 1;
+    roundRect(ctx, bx, 40, chipW, 30, 8); ctx.fill(); ctx.stroke();
+    label(ctx, s[0]+' '+s[1], bx+chipW/2, 55, {size:11.5,align:'center',
+      color: on?'#7fe6d6':'#7f9aa3', weight: on?'bold':''});
+  });
+  const phase=enc.angle/360*enc.ppr;
+  const shift=(((phase%1)+1)%1)*per;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0-2,y0-10,(x1-x0)+4,(y1-y0)+20); ctx.clip();
+  ctx.translate(-shift,0);
+  [[cyA,'A 相','#4fd6c2',p=>p<0.5],[cyB,'B 相','#82aaf2',p=>p>=0.25&&p<0.75]].forEach(ch=>{
+    const cy=ch[0];
+    ctx.strokeStyle='rgba(255,255,255,.14)'; ctx.lineWidth=1; ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.moveTo(x0-per,cy); ctx.lineTo(x1+per,cy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle=ch[2]; ctx.lineWidth=2.6; ctx.lineJoin='miter';
+    ctx.shadowColor=ch[2]; ctx.shadowBlur=8;
+    squareWave(ctx,x0-per,x1+per,4,cy,amp,ch[3]);
+    ctx.shadowBlur=0;
+  });
+  ctx.restore();
+  [[cyA,'A 相','#4fd6c2'],[cyB,'B 相','#82aaf2']].forEach(ch=>{
+    label(ctx,ch[1],18,ch[0],{size:12.5,weight:'bold',color:ch[2]});
+    label(ctx,'1', x0-12, ch[0]-amp+2, {size:10,align:'right',color:'#7f9aa3'});
+    label(ctx,'0', x0-12, ch[0]+amp, {size:10,align:'right',color:'#7f9aa3'});
+  });
+  ctx.strokeStyle='rgba(255,170,120,.9)'; ctx.lineWidth=1.6; ctx.setLineDash([5,5]);
+  ctx.beginPath(); ctx.moveTo(x1,y0-12); ctx.lineTo(x1,y1+8); ctx.stroke(); ctx.setLineDash([]);
+  [[cyA,st.A],[cyB,st.B]].forEach(([cy,lvl])=>{
+    const y=cy+(lvl?-amp:amp);
+    ctx.fillStyle='#ffb08a'; ctx.beginPath(); ctx.arc(x1,y,4.5,0,Math.PI*2); ctx.fill();
+  });
+  label(ctx,'此刻', x1, y1+22, {size:10,align:'right',color:'#ffb08a'});
+  label(ctx,'时间 →', x0, y1+22, {size:10});
+  const cnt=Math.round(enc.angle/360*enc.ppr*4)*enc.dir;
+  label(ctx,'计数 '+cnt, x1, 24, {size:12,align:'right',color:'#9fd6cf',weight:'bold'});
+}
+regCanvas('quadCanvas',1120,322,drawQuad);
+
+/* ================= 13 A/B 判向 ================= */
+regCanvas('abDirCanvas',1120,330,function(ctx,W,H){
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#0c2531'; roundRect(ctx,4,4,W-8,H-8,12); ctx.fill();
+  const x0=110,x1=W-40,per=(x1-x0)/2;
+  const rows=[
+    {title:'正转：A 相领先 B 相',yA:78,yB:122,dir:1,note:'A 上升沿时 B=0 → 计数 +1'},
+    {title:'反转：B 相领先 A 相',yA:216,yB:260,dir:-1,note:'A 上升沿时 B=1 → 计数 −1'}
+  ];
+  rows.forEach(function(r){
+    ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1;
+    for(let i=0;i<=8;i++){ const x=x0+(x1-x0)*i/8; ctx.beginPath(); ctx.moveTo(x,40); ctx.lineTo(x,300); ctx.stroke(); }
+    const amp=18;
+    ctx.strokeStyle='rgba(255,255,255,.14)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x0,r.yA+amp); ctx.lineTo(x1,r.yA+amp); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x0,r.yB+amp); ctx.lineTo(x1,r.yB+amp); ctx.stroke();
+    label(ctx,'A',x0-16,r.yA,{size:12,align:'right',color:'#4fd6c2'});
+    label(ctx,'B',x0-16,r.yB,{size:12,align:'right',color:'#82aaf2'});
+    ctx.strokeStyle='#4fd6c2'; ctx.lineWidth=2.6; ctx.lineJoin='miter';
+    squareWave(ctx,x0,x1,2,r.yA,amp,p=>p<0.5);
+    ctx.strokeStyle='#82aaf2';
+    squareWave(ctx,x0,x1,2,r.yB,amp,r.dir>0?(p=>p>=0.25&&p<0.75):(p=>p<0.25||p>=0.5));
+    // A 上升沿
+    for(let c=0;c<2;c++){
+      const ex=x0+c*per;
+      ctx.strokeStyle='rgba(255,170,120,.85)'; ctx.lineWidth=1.4; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(ex,r.yA-24); ctx.lineTo(ex,r.yA+30); ctx.stroke(); ctx.setLineDash([]);
+      const lvl = r.dir>0 ? 0 : 1;
+      const dotY = r.yB + (lvl?-amp:amp);
+      ctx.fillStyle='#ffb08a'; ctx.beginPath(); ctx.arc(ex,dotY,4,0,Math.PI*2); ctx.fill();
+      label(ctx,lvl?'B=1':'B=0',ex+6,dotY-12,{size:10.5,color:'#ffb08a'});
+    }
+    label(ctx,r.note,x1, r.yB+42, {size:11.5,align:'right',color:'#9fd6cf'});
+  });
+});
+/* ================= 28 调参台 ================= */
+const bench={kp:.9,ki:.06,kd:0,sp:50,lim:100,y:0,u:0,e1:0,e2:0,integ:0,k:0,
+  hist:[],peak:0,block:false,run:true,ubuf:[],mode:'inc',noise:0,ghost:null,ghostOn:true,du:0,pu:0};
+function benchStep(){
+  const b=bench;
+  const ym=Math.round(b.y + (b.noise?(Math.random()-.5)*b.noise*2:0));
+  const e=b.sp-ym;
+  if(b.mode==='inc'){
+    const du=b.kp*(e-b.e1)+b.ki*e+b.kd*(e-2*b.e1+b.e2);
+    b.du=du; b.u=clamp(b.u+du,-b.lim,b.lim);
+  } else {
+    b.integ+=e;
+    let ut=b.kp*e+b.ki*b.integ+b.kd*(e-b.e1);
+    if((ut>b.lim&&e>0)||(ut<-b.lim&&e<0)){ b.integ-=e; ut=b.kp*e+b.ki*b.integ+b.kd*(e-b.e1); }
+    b.u=clamp(ut,-b.lim,b.lim); b.du=b.u-(b.pu||0); b.pu=b.u;
+  }
+  b.ubuf.push(b.u); if(b.ubuf.length>7) b.ubuf.shift();
+  const uu=b.ubuf.length>=7?b.ubuf[0]:0;
+  const load=b.block?0.55:0;
+  b.y += (1.25*uu*(1-0.9*load)-b.y)*(0.005/0.07);
+  b.k++;
+  b.hist.push({y:b.y,u:b.u,e:e});
+  if(b.hist.length>300) b.hist.shift();
+  if(b.y>b.peak) b.peak=b.y;
+  b.e2=b.e1; b.e1=e;
+}
+function benchReset(){
+  const b=bench;
+  if(b.ghostOn && b.hist.length>30) b.ghost=b.hist.slice(-240);
+  b.hist=[]; b.y=0; b.u=0; b.e1=0; b.e2=0; b.integ=0; b.peak=0; b.k=0; b.ubuf=[]; b.du=0; b.pu=0;
+}
+function drawBench(ctx,W,H){
+  const b=bench;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fbfdfd'; ctx.fillRect(0,0,W,H);
+  const topH=238, WIN=120;
+  const x0=46,x1=W-14,y0=26,y1=topH-16;
+  const dx=(x1-x0)/(WIN-1);
+  const Y=v=>y1-(y1-y0)*(clamp(v,0,100)/100);
+  // 网格
+  ctx.strokeStyle='#eef4f4'; ctx.lineWidth=1;
+  [0,25,50,75,100].forEach(v=>{ ctx.beginPath(); ctx.moveTo(x0,Y(v)); ctx.lineTo(x1,Y(v)); ctx.stroke();
+    label(ctx,String(v),x0-7,Y(v),{size:10,align:'right'}); });
+  ctx.strokeStyle='#c9d8db'; ctx.beginPath(); ctx.moveTo(x0,y1); ctx.lineTo(x1,y1); ctx.stroke();
+  // 残影
+  if(b.ghost && b.ghost.length){
+    const gn=b.ghost.length;
+    ctx.save(); ctx.globalAlpha=.5; ctx.strokeStyle='#7f9aa3'; ctx.lineWidth=3; ctx.setLineDash([7,5]);
+    ctx.beginPath();
+    b.ghost.forEach((p,i)=>{ const X=x1-(gn-1-i)*dx; i?ctx.lineTo(X,Y(p.y)):ctx.moveTo(X,Y(p.y)); });
+    ctx.stroke(); ctx.restore();
+  }
+  // 目标
+  ctx.save(); ctx.setLineDash([6,5]); ctx.strokeStyle='#a7bcc0'; ctx.lineWidth=1.3;
+  ctx.beginPath(); ctx.moveTo(x0,Y(b.sp)); ctx.lineTo(x1,Y(b.sp)); ctx.stroke(); ctx.restore();
+  label(ctx,'目标 '+b.sp,x0+2,Y(b.sp)-10,{size:11});
+  // 曲线
+  const n=b.hist.length;
+  if(n>1){
+    ctx.strokeStyle=C.teal; ctx.lineWidth=2.4; ctx.lineJoin='round';
+    ctx.beginPath();
+    b.hist.forEach((p,i)=>{ const X=x1-(n-1-i)*dx; i?ctx.lineTo(X,Y(p.y)):ctx.moveTo(X,Y(p.y)); });
+    ctx.stroke();
+    const p=b.hist[n-1];
+    ctx.fillStyle=C.teal; ctx.beginPath(); ctx.arc(x1,Y(p.y),3.6,0,Math.PI*2); ctx.fill();
+    label(ctx,Math.round(p.y)+'',x1-8,Y(p.y)-11,{size:10,align:'right',color:C.teal,weight:'bold'});
+  }
+  label(ctx,'实测 y（count / 5 ms）',x0+2,y0-10,{size:10.5,color:C.teal});
+  label(ctx,'此刻',x1,y0-10,{size:10,align:'right'});
+  // PWM
+  const uy0=topH+24, uy1=H-18, mid=(uy0+uy1)/2;
+  ctx.fillStyle='#fff'; ctx.fillRect(x0,uy0,x1-x0,uy1-uy0);
+  ctx.strokeStyle='#e2ecee'; ctx.strokeRect(x0,uy0,x1-x0,uy1-uy0);
+  ctx.strokeStyle='#e6eef0'; ctx.beginPath(); ctx.moveTo(x0,mid); ctx.lineTo(x1,mid); ctx.stroke();
+  label(ctx,'PWM 输出（%）',x0+2,uy0-10,{size:10.5});
+  label(ctx,'+100',x0-7,uy0+2,{size:9,align:'right'});
+  label(ctx,'0',x0-7,mid,{size:9,align:'right'});
+  label(ctx,'−100',x0-7,uy1-2,{size:9,align:'right'});
+  const SEG=60, segW=(x1-x0)/SEG;
+  const show=b.hist.slice(-SEG);
+  show.forEach((p,i)=>{
+    const px=x1-(show.length-i)*segW;
+    const hgt=Math.abs(p.u)/100*((uy1-uy0)/2-6);
+    ctx.fillStyle=p.u>=0?'rgba(217,112,74,.72)':'rgba(63,111,181,.72)';
+    ctx.fillRect(px, p.u>=0?mid-hgt:mid+1, Math.max(1,segW-1), Math.max(1,hgt));
+  });
+  if(b.block){
+    ctx.fillStyle='rgba(217,112,74,.07)'; ctx.fillRect(x0,y0,x1-x0,uy1-y0);
+    label(ctx,'受阻中',(x0+x1)/2,y0+12,{size:11,align:'center',color:C.orange,weight:'bold'});
+  }
+  if(b.ghost && b.ghost.length) label(ctx,'灰线：上一轮',x0+2,uy0-26,{size:10,color:'#7f9aa3'});
+  if(b.noise) label(ctx,'计数噪声 ×3',x1,uy0-26,{size:10,align:'right',color:C.orange});
+}
+regCanvas('benchCanvas',700,356,drawBench);
+function benchReadout(){
+  const b=bench, n=b.hist.length; if(!n) return;
+  const p=b.hist[n-1];
+  const tail=b.hist.slice(-20).reduce((a,q)=>a+q.y,0)/Math.min(20,n);
+  const ov=Math.max(0,(b.peak-b.sp)/b.sp*100);
+  const ss=Math.abs(b.sp-tail);
+  if($('bK')) $('bK').textContent=b.k;
+  if($('bE')) $('bE').textContent=Math.round(p.e);
+  if($('bDU')) $('bDU').textContent=nf(b.du,2);
+  if($('bU')) $('bU').textContent=nf(b.u,1);
+  if($('bY')) $('bY').textContent=Math.round(p.y);
+  if($('bOS')) $('bOS').textContent=Math.round(b.peak);
+  if($('bOV')) $('bOV').textContent=ov.toFixed(0)+'%';
+  if($('bSS')) $('bSS').textContent=ss.toFixed(1);
+}
+
+/* ================= 控件 ================= */
+function fillRange(el){
+  const mn=+el.min||0, mx=+el.max||100, v=+el.value;
+  el.style.setProperty('--p', ((v-mn)/(mx-mn)*100).toFixed(1)+'%');
+}
+
+// PWM
+if($('pwmDuty')){
+  const upd=()=>{
+    pwmDuty=+$('pwmDuty').value;
+    $('pwmDutyVal').textContent=pwmDuty+'%';
+    $('pwmU').textContent=(12*pwmDuty/100).toFixed(1)+' V';
+    $('pwmN').textContent=Math.round(4000*pwmDuty/100);
+    fillRange($('pwmDuty'));
+    drawPwm(CVS.pwmCanvas.ctx,660,330);
+  };
+  $('pwmDuty').addEventListener('input',upd);
+}
+// H 桥
+$$('[data-hb]').forEach(function(b){
+  b.addEventListener('click',function(){
+    hbState=b.dataset.hb;
+    $$('[data-hb]').forEach(x=>x.classList.toggle('primary',x===b));
+    drawHb(CVS.hbCanvas.ctx,540,380);
+  });
+});
+// 静差
+if($('kpDrag')){
+  $('kpDrag').addEventListener('input',function(e){
+    poKp=+e.target.value;
+    $('kpVal').textContent=poKp.toFixed(2);
+    fillRange(e.target);
+    updatePo();
+  });
+}
+// 编码器
+function updateEnc(){
+  const st=encState();
+  $('qState').textContent=''+st.A+st.B;
+  $('qCount').textContent=Math.round(enc.angle/360*enc.ppr*4)*enc.dir;
+  $('qDirOut').textContent = enc.dir>0?'正转（A 领先）':'反转（B 领先）';
+  $('qAngleVal').textContent=Math.round(enc.angle)+'°';
+  drawQuad(CVS.quadCanvas.ctx,1120,322);
+}
+if($('qAngle')){
+  $('qAngle').addEventListener('input', e=>{ enc.angle=+e.target.value; fillRange(e.target); updateEnc(); });
+  $('qDirBtn').addEventListener('click', e=>{
+    enc.dir=-enc.dir;
+    e.currentTarget.textContent='方向：'+(enc.dir>0?'正转':'反转');
+    e.currentTarget.setAttribute('aria-pressed', String(enc.dir<0));
+    updateEnc();
+  });
+  $('qSpinBtn').addEventListener('click', e=>{
+    enc.spinning=!enc.spinning;
+    e.currentTarget.textContent = enc.spinning?'停下':'让它转';
+    e.currentTarget.classList.toggle('primary', !enc.spinning);
+  });
+}
+
+// 调参台
+const bindRange=(id,fn)=>{
+  const el=$(id); if(!el) return;
+  el.addEventListener('input',function(e){ fn(+e.target.value); fillRange(e.target); benchReset(); });
+};
+bindRange('bKp',v=>{bench.kp=v;$('bKpVal').textContent=v.toFixed(2);});
+bindRange('bKi',v=>{bench.ki=v;$('bKiVal').textContent=v.toFixed(3);});
+bindRange('bKd',v=>{bench.kd=v;$('bKdVal').textContent=v.toFixed(2);});
+bindRange('bSp',v=>{bench.sp=v;$('bSpVal').textContent=v;});
+$('bLim')&&$('bLim').addEventListener('input',function(e){
+  bench.lim=+e.target.value; $('bLimVal').textContent='±'+e.target.value+'%'; fillRange(e.target);
+});
+if($('bModeInc')){
+  const setMode=m=>{
+    bench.mode=m; benchReset();
+    $('bModeInc').classList.toggle('primary',m==='inc');
+    $('bModePos').classList.toggle('primary',m==='pos');
+    $('bModeInc').setAttribute('aria-pressed',String(m==='inc'));
+    $('bModePos').setAttribute('aria-pressed',String(m==='pos'));
+  };
+  $('bModeInc').addEventListener('click',()=>setMode('inc'));
+  $('bModePos').addEventListener('click',()=>setMode('pos'));
+  $('bNoise').addEventListener('change',e=>{ bench.noise=e.target.checked?3:0; benchReset(); });
+  $('bGhost').addEventListener('change',e=>{ bench.ghostOn=e.target.checked; if(!e.target.checked) bench.ghost=null; });
+  $('bStart').addEventListener('click',()=>benchReset());
+  $('bRun').addEventListener('click',()=>{ bench.run=!bench.run; $('bRun').textContent=bench.run?'暂停':'继续'; });
+  ['pointerdown','pointerup','pointerleave'].forEach(evt=>{
+    $('bBlock').addEventListener(evt,()=>{
+      bench.block = evt==='pointerdown';
+      $('bBlock').setAttribute('aria-pressed', String(bench.block));
+    });
+  });
+  $('bStepUp').addEventListener('click',()=>{ bench.sp=clamp(bench.sp+10,10,90); $('bSp').value=bench.sp; $('bSpVal').textContent=bench.sp; fillRange($('bSp')); benchReset(); });
+  $('bStepDown').addEventListener('click',()=>{ bench.sp=clamp(bench.sp-10,10,90); $('bSp').value=bench.sp; $('bSpVal').textContent=bench.sp; fillRange($('bSp')); benchReset(); });
+}
+
+/* ================= 代码复制 ================= */
+document.addEventListener('click', e=>{
+  const b=e.target.closest('.copy-btn'); if(!b) return;
+  const pre=$(b.dataset.copy); if(!pre) return;
+  const txt=pre.innerText;
+  const done=()=>{ const o=b.textContent; b.textContent='已复制 ✓'; setTimeout(()=>b.textContent=o,1300); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, ()=>fallback(txt,done));
+  else fallback(txt,done);
+});
+function fallback(txt,cb){
+  const ta=document.createElement('textarea'); ta.value=txt;
+  ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta);
+  ta.select(); try{ document.execCommand('copy'); cb(); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ================= 主循环 ================= */
+let last=0, acc=0, bacc=0;
+function frame(ts){
+  const dt=Math.min(80, ts-last); last=ts;
+  const s=document.querySelector('.slide.active');
+  const id=s?s.id:'';
+  if(id==='p12' && enc.spinning){
+    enc.angle=(enc.angle+0.03*dt*enc.dir)%720;
+    if(enc.angle<0) enc.angle+=720;
+    updateEnc();
+  }
+  if(id==='p08'){
+    bacc+=dt;
+    if(bacc>900){ bacc=0; bldcStep=(bldcStep+1)%6; drawBldc(CVS.bldcCanvas.ctx,1080,390); }
+  }
+  if(id==='p27'){
+    acc+=dt;
+    if(acc>44){ acc=0; if(bench.run) benchStep(); benchReadout(); }
+    drawBench(CVS.benchCanvas.ctx,700,356);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ================= 打印前补一张满曲线 ================= */
+addEventListener('beforeprint', ()=>{
+  if(CVS.benchCanvas && bench.hist.length<80){
+    bench.ghost=null;
+    for(let i=0;i<110;i++) benchStep();
+    benchReadout();
+    drawBench(CVS.benchCanvas.ctx,700,356);
+  }
+});
+
+/* ================= 启动 ================= */
+slides.forEach((s,i)=>{
+  const foot=s.querySelector('.s-foot');
+  if(foot) foot.lastElementChild.innerHTML='<b>'+String(i+1).padStart(2,'0')+'</b> / '+total;
+});
+$$('input[type=range]').forEach(fillRange);
+if($('pwmDuty')){
+  $('pwmDutyVal').textContent=pwmDuty+'%';
+  $('pwmU').textContent=(12*pwmDuty/100).toFixed(1)+' V';
+  $('pwmN').textContent=Math.round(4000*pwmDuty/100);
+}
+updatePo();
+updateEnc();
+const start=Math.min(total-1, Math.max(0, (parseInt(location.hash.slice(1),10)||1)-1));
+show(start, true);
+requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
